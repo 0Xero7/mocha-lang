@@ -7,6 +7,11 @@ namespace MochaLang
 	{
 		NEWLINE,
 
+		INT,
+		FLOAT,
+		STRING,
+
+		SEMICOLON,
 		COMMA,
 		IF,
 		ELSE,
@@ -26,7 +31,7 @@ namespace MochaLang
 		GR,
 		GE,
 		LS,
-		LE,
+		LE, 
 
 		PRINTLN,
 

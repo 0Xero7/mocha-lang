@@ -15,7 +15,7 @@ using namespace std;
 int main()
 {// if (x * (abc + def)) 
 
-	std::ifstream in("C:/Users/smpsm/source/repos/neon-lang/test/if_test.neo", std::ios::in);
+	std::ifstream in("C:/Users/smpsm/source/repos/mocha-lang/test/if_test.mocha", std::ios::in);
 	string fileContents((std::istreambuf_iterator<char>(in)),
 		std::istreambuf_iterator<char>());
 	//std::stringstream buffer;
@@ -28,10 +28,10 @@ int main()
 
 	for (auto& v : tokens.get_tokens()) cout << "[" << v.tokenValue << "]" << endl;
 
-	auto parser = MochaLang::Parser::Parser();
+	/*auto parser = MochaLang::Parser::Parser();
 	auto tree = parser.parse(tokens, false, true);
 
 	cout << endl << endl;
-	MochaLang::Debug::debug(tree, 0);
+	MochaLang::Debug::debug(tree, 0);*/
 	//cout << "ok";
 }

@@ -14,8 +14,9 @@ namespace MochaLang
 			"elif",
 
 			"var",
-			"let",
-			"int"
+			"int",
+			"float",
+			"string"
 		};
 
 
@@ -41,7 +42,9 @@ namespace MochaLang
 			">",
 			">=",
 			"<",
-			"<="
+			"<=",
+
+			";"
 		};
 
 
@@ -63,7 +66,8 @@ namespace MochaLang
 			{ ">", TokenType::GR },
 			{ ">=", TokenType::GE },
 			{ "<", TokenType::LS },
-			{ "<=", TokenType::LE }
+			{ "<=", TokenType::LE },
+			{ ";", TokenType::SEMICOLON }
 		};
 
 
@@ -144,6 +148,12 @@ namespace MochaLang
 					}
 					else if (str == "else") {
 						tokens.push_back(str, TokenType::ELSE, 0, 0);
+					}
+					else if (str == "int") {
+						tokens.push_back(str, TokenType::INT, 0, 0);
+					}
+					else if (str == "float") {
+						tokens.push_back(str, TokenType::FLOAT, 0, 0);
 					}
 					else {
 						tokens.push_back(str, TokenType::IDEN, 0, 0);
