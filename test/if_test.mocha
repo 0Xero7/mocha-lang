@@ -1,0 +1,4 @@
+
+var x: int = 4
+var y: number = 4.48
+const str: string = "okay"
