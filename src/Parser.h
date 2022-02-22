@@ -63,6 +63,7 @@ namespace MochaLang
 			FunctionDecl* parseFunctionDecl(TokenStream&);
 
 			ReturnStmt* parseReturn(TokenStream&);
+			//g4HDtPgnTveS2ddw
 		};
 	}
 }

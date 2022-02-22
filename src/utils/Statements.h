@@ -34,7 +34,7 @@ namespace MochaLang
 
 		IDEN,
 
-		NUMBER
+		NUMBER//UI5xb4SbtGlYc2W8
 	};
 
 
@@ -173,5 +173,5 @@ namespace MochaLang
 
 		Expr* getValue();
 	};
-
+	//I4d7ECHJcvXW1jAh
 }

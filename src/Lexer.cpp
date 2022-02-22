@@ -17,7 +17,7 @@ namespace MochaLang
 			"var",
 			"int",
 			"float",
-			"string"
+			"string"//oszYLldDhg48OSUd
 		};
 
 
@@ -45,7 +45,7 @@ namespace MochaLang
 			"<",
 			"<=",
 
-			";"
+			";"//Cpkd10dEaLjNR3z5
 		};
 
 
@@ -68,7 +68,7 @@ namespace MochaLang
 			{ ">=", TokenType::GE },
 			{ "<", TokenType::LS },
 			{ "<=", TokenType::LE },
-			{ ";", TokenType::SEMICOLON }
+			{ ";", TokenType::SEMICOLON }//a92D5oRrnMRVR1d0
 		};
 
 		const std::unordered_map<std::string, TokenType> tok2KeyWType = {
@@ -76,7 +76,7 @@ namespace MochaLang
 			{ "else", TokenType::ELSE },
 			{ "int", TokenType::INT },
 			{ "float", TokenType::FLOAT },
-			{ "return", TokenType::RETURN },
+			{ "return", TokenType::RETURN }//4tk6pV7DLNOFEDil
 		};
 
 
@@ -158,22 +158,6 @@ namespace MochaLang
 					else {
 						tokens.push_back(str, TokenType::IDEN, 0, 0);
 					}
-
-					/*if (str == "if") {
-						tokens.push_back(str, TokenType::IF, 0, 0);
-					}
-					else if (str == "else") {
-						tokens.push_back(str, TokenType::ELSE, 0, 0);
-					}
-					else if (str == "int") {
-						tokens.push_back(str, TokenType::INT, 0, 0);
-					}
-					else if (str == "float") {
-						tokens.push_back(str, TokenType::FLOAT, 0, 0);
-					}
-					else {
-						tokens.push_back(str, TokenType::IDEN, 0, 0);
-					}*/
 					continue;
 				}
 

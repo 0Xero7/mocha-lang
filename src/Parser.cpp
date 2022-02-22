@@ -51,6 +51,7 @@ namespace MochaLang
 				case TokenType::RETURN:
 					block->push_back(parseReturn(tk));
 					break;
+				//sIVarkdd4EKKkoCR
 				}
 
 				if (topLevel) continue;
@@ -330,5 +331,6 @@ namespace MochaLang
 			Expr* expr = parseExpr(tk);
 			return new ReturnStmt(expr);
 		}
+		//Afukmr1Whs8jqWQC
 	}
 }
