@@ -30,6 +30,7 @@ namespace MochaLang
 			{ StmtType::BLOCK, "Block" },
 
 			{ StmtType::VARDECL, "VariableDeclaration" },
+			{ StmtType::RETURN, "Return" },
 		};
 
 		const std::unordered_map<StmtType, std::string> stmt2debug = {
@@ -52,6 +53,7 @@ namespace MochaLang
 		void debug_function_call(std::string& indentText, FunctionCall* stmt, int indent);
 		void debug_vardecl(std::string&, VarDecl*, int);
 		void debug_funcdecl(std::string& indentText, FunctionDecl* stmt, int indent);
+		void debug_return(std::string& indentText, ReturnStmt* stmt, int indent);
 
 		void debug(Statement* stmt, int indent) {
 
@@ -102,6 +104,10 @@ namespace MochaLang
 
 			case StmtType::FUNCTION_DECL:
 				debug_funcdecl(indentText, (FunctionDecl*)stmt, indent);
+				break;
+
+			case StmtType::RETURN:
+				debug_return(indentText, (ReturnStmt*)stmt, indent);
 				break;
 
 			}
@@ -155,6 +161,12 @@ namespace MochaLang
 
 			std::cout << indentText << " <Body>" << std::endl;
 			debug(stmt->getBody(), indent + 1);
+		}
+
+		void debug_return(std::string& indentText, ReturnStmt* stmt, int indent) {
+			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::RETURN) << "] " << std::endl;
+			std::cout << indentText << " <Value>" << std::endl;
+			debug(stmt->getValue(), indent + 1);
 		}
 	}
 }

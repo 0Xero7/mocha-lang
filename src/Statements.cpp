@@ -58,4 +58,7 @@ namespace MochaLang
 	std::string FunctionDecl::getReturnType() { return returnType; }
 	std::vector<VarDecl*> FunctionDecl::getFormalParams() { return formalParams; }
 	BlockStmt* FunctionDecl::getBody() { return body; }
+
+	ReturnStmt::ReturnStmt(Expr* value) : Statement(StmtType::RETURN), value(value) { }
+	Expr* ReturnStmt::getValue() { return value; }
 }

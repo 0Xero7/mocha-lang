@@ -12,6 +12,7 @@ namespace MochaLang
 			"if",
 			"else",
 			"elif",
+			"return",
 
 			"var",
 			"int",
@@ -68,6 +69,14 @@ namespace MochaLang
 			{ "<", TokenType::LS },
 			{ "<=", TokenType::LE },
 			{ ";", TokenType::SEMICOLON }
+		};
+
+		const std::unordered_map<std::string, TokenType> tok2KeyWType = {
+			{ "if", TokenType::IF },
+			{ "else", TokenType::ELSE },
+			{ "int", TokenType::INT },
+			{ "float", TokenType::FLOAT },
+			{ "return", TokenType::RETURN },
 		};
 
 
@@ -143,7 +152,14 @@ namespace MochaLang
 						++i;
 					}
 
-					if (str == "if") {
+					if (tok2KeyWType.count(str)) {
+						tokens.push_back(str, tok2KeyWType.at(str), 0, 0);
+					}
+					else {
+						tokens.push_back(str, TokenType::IDEN, 0, 0);
+					}
+
+					/*if (str == "if") {
 						tokens.push_back(str, TokenType::IF, 0, 0);
 					}
 					else if (str == "else") {
@@ -157,7 +173,7 @@ namespace MochaLang
 					}
 					else {
 						tokens.push_back(str, TokenType::IDEN, 0, 0);
-					}
+					}*/
 					continue;
 				}
 

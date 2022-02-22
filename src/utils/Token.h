@@ -11,11 +11,12 @@ namespace MochaLang
 		FLOAT,
 		STRING,
 
+		RETURN,
+
 		SEMICOLON,
 		COMMA,
 		IF,
 		ELSE,
-		DEF,
 
 		IDEN,
 		NUMBER,

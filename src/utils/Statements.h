@@ -15,6 +15,7 @@ namespace MochaLang
 		VARDECL,
 
 		IF,
+		RETURN,
 
 		PAREN_OPEN,
 
@@ -161,6 +162,16 @@ namespace MochaLang
 		std::string getReturnType();
 		std::vector<VarDecl*> getFormalParams();
 		BlockStmt* getBody();
+	};
+
+	class ReturnStmt : public Statement 
+	{
+	private:
+		Expr* value;
+	public:
+		ReturnStmt(Expr*);
+
+		Expr* getValue();
 	};
 
 }

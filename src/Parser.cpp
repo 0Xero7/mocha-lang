@@ -47,6 +47,10 @@ namespace MochaLang
 						if (init) block->push_back(init);
 					}
 					break;
+
+				case TokenType::RETURN:
+					block->push_back(parseReturn(tk));
+					break;
 				}
 
 				if (topLevel) continue;
@@ -320,5 +324,11 @@ namespace MochaLang
 			return new FunctionDecl(returnType, functionName, formalParams, (BlockStmt*)block);
 		}
 
+		ReturnStmt* Parser::parseReturn(TokenStream& tk) {
+			tk.ignore(); // ignore return keyword
+
+			Expr* expr = parseExpr(tk);
+			return new ReturnStmt(expr);
+		}
 	}
 }
