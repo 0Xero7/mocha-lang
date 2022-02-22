@@ -28,10 +28,10 @@ int main()
 
 	for (auto& v : tokens.get_tokens()) cout << "[" << v.tokenValue << "]" << endl;
 
-	/*auto parser = MochaLang::Parser::Parser();
+	auto parser = MochaLang::Parser::Parser();
 	auto tree = parser.parse(tokens, false, true);
 
 	cout << endl << endl;
-	MochaLang::Debug::debug(tree, 0);*/
+	MochaLang::Debug::debug(tree, 0);
 	//cout << "ok";
 }

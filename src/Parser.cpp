@@ -12,7 +12,6 @@ namespace MochaLang
 		}
 
 		Statement* Parser::parse(TokenStream& tk, bool without_braces = false, bool topLevel = false) {
-
 			Token _token;
 			if (!without_braces) tk.accept(_token); // ignore the first { of a block
 
@@ -34,8 +33,19 @@ namespace MochaLang
 					break;
 
 				case TokenType::BRACE_OP:
-					auto _block = parse(tk, true);
-					block->push_back(_block);
+					block->push_back(parse(tk, true));
+					break;
+
+				case TokenType::INT:
+				case TokenType::FLOAT:
+					if (tk.peekType(2) == TokenType::PAREN_OP) {
+						block->push_back(parseFunctionDecl(tk));
+					}
+					else {
+						auto [decl, init] = parseVarDecl(tk);
+						block->push_back(decl);
+						if (init) block->push_back(init);
+					}
 					break;
 				}
 
@@ -254,6 +264,60 @@ namespace MochaLang
 			tk.ignore();
 
 			return params;
+		}
+
+		std::pair<VarDecl*, Expr*> Parser::parseVarDecl(TokenStream& tk, bool readEnd) {
+			Token token;
+			tk.accept(token);
+			auto varType = token.tokenValue;
+
+			tk.accept(token);
+			auto varName = token.tokenValue;
+
+			auto decl = new VarDecl(varName, varType, false);
+			Expr* expr = nullptr;
+
+			if (tk.match(TokenType::ASSIGN)) {
+				tk.ignore();
+				auto rhs = parseExpr(tk, false);
+				expr = new BinaryOp(new Identifier(varName), StmtType::OP_ASSIGN, rhs);
+			}
+
+			// Expect a ; at the end
+			if (readEnd)
+				tk.ignore();
+
+			return { decl, expr };
+		}
+
+		FunctionDecl* Parser::parseFunctionDecl(TokenStream& tk) {
+			Token token;
+			tk.accept(token);
+			auto returnType = token.tokenValue;
+
+			tk.accept(token);
+			auto functionName = token.tokenValue;
+
+			tk.ignore(); // (
+
+			std::vector<VarDecl*> formalParams;
+			while (!tk.eof() && tk.peekType() != TokenType::PAREN_CL) {
+				auto [decl, init] = parseVarDecl(tk, false);
+				formalParams.push_back(decl);
+
+				// TODO: implement default values for params
+				if (tk.peekType() == TokenType::COMMA) {
+					tk.ignore();
+				}
+			}
+
+			// ignore closing )
+			tk.ignore();
+
+			// now parse the body
+			Statement* block = parse(tk, false);
+
+			return new FunctionDecl(returnType, functionName, formalParams, (BlockStmt*)block);
 		}
 
 	}

@@ -12,6 +12,7 @@ namespace MochaLang
 			{ StmtType::NUMBER, "Number" },
 			{ StmtType::IDEN, "Identifier" },
 			{ StmtType::FUNCTION_CALL, "FunctionCall" },
+			{ StmtType::FUNCTION_DECL, "FunctionDecl" },
 
 			{ StmtType::OP_ADD, "BinaryOperator::Add" },
 			{ StmtType::OP_MINUS, "BinaryOperator::Subtract" },
@@ -27,6 +28,8 @@ namespace MochaLang
 
 			{ StmtType::IF, "If" },
 			{ StmtType::BLOCK, "Block" },
+
+			{ StmtType::VARDECL, "VariableDeclaration" },
 		};
 
 		const std::unordered_map<StmtType, std::string> stmt2debug = {
@@ -47,6 +50,8 @@ namespace MochaLang
 		void debug_if(std::string&, IfStmt*, int);
 		void debug_block(std::string&, BlockStmt*, int);
 		void debug_function_call(std::string& indentText, FunctionCall* stmt, int indent);
+		void debug_vardecl(std::string&, VarDecl*, int);
+		void debug_funcdecl(std::string& indentText, FunctionDecl* stmt, int indent);
 
 		void debug(Statement* stmt, int indent) {
 
@@ -91,6 +96,14 @@ namespace MochaLang
 				debug_block(indentText, (BlockStmt*)stmt, indent);
 				break;
 
+			case StmtType::VARDECL:
+				debug_vardecl(indentText, (VarDecl*)stmt, indent);
+				break;
+
+			case StmtType::FUNCTION_DECL:
+				debug_funcdecl(indentText, (FunctionDecl*)stmt, indent);
+				break;
+
 			}
 
 		}
@@ -128,5 +141,20 @@ namespace MochaLang
 				debug(stmt->getParamAt(i), indent + 1);
 		}
 
+		void debug_vardecl(std::string& indentText, VarDecl* stmt, int indent) {
+			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::VARDECL) << "] " 
+				<< stmt->get() << " :: " << stmt->getVarType() << std::endl;
+		}
+
+		void debug_funcdecl(std::string& indentText, FunctionDecl* stmt, int indent) {
+			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::FUNCTION_DECL) << "] " 
+				<< stmt->getFunctionName() << " :: " << stmt->getReturnType() << std::endl;
+			std::cout << indentText << " <Formal Parameters>" << std::endl;
+			for (VarDecl* decl : stmt->getFormalParams())
+				debug(decl, indent + 1);
+
+			std::cout << indentText << " <Body>" << std::endl;
+			debug(stmt->getBody(), indent + 1);
+		}
 	}
 }

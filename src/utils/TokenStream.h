@@ -45,9 +45,9 @@ namespace MochaLang
 			return true;
 		}
 
-		TokenType peekType() {
-			if (eof()) return TokenType::INVALID;
-			return tokens[i].tokType;
+		TokenType peekType(int lookForwardBy = 0) {
+			if (i + lookForwardBy >= (int)tokens.size()) return TokenType::INVALID;
+			return tokens[i + lookForwardBy].tokType;
 		}
 
 

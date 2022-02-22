@@ -6,11 +6,12 @@
 namespace MochaLang
 {
 
-	enum class StmtType 
+	enum class StmtType
 	{
 		BLOCK,
 
 		FUNCTION_CALL,
+		FUNCTION_DECL,
 		VARDECL,
 
 		IF,
@@ -135,12 +136,31 @@ namespace MochaLang
 	private:
 		bool constantFlag		= false;
 		std::string varName;
+		std::string varType;
 
 	public:
-		VarDecl(std::string&, bool);
+		VarDecl(const std::string&, const std::string&, bool);
 
 		bool isConstant();
 		std::string get();
+		std::string getVarType();
+	};
+
+	class FunctionDecl : public Statement
+	{
+	private:
+		std::string returnType;
+		std::string functionName;
+		std::vector<VarDecl*> formalParams;
+		BlockStmt *body;
+		
+	public:
+		FunctionDecl(const std::string&, const std::string&, std::vector<VarDecl*>, BlockStmt*);
+
+		std::string getFunctionName();
+		std::string getReturnType();
+		std::vector<VarDecl*> getFormalParams();
+		BlockStmt* getBody();
 	};
 
 }
