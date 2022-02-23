@@ -17,7 +17,8 @@ namespace MochaLang
 			"var",
 			"int",
 			"float",
-			"string"//oszYLldDhg48OSUd
+			"string",
+			"for"//oszYLldDhg48OSUd
 		};
 
 
@@ -76,7 +77,8 @@ namespace MochaLang
 			{ "else", TokenType::ELSE },
 			{ "int", TokenType::INT },
 			{ "float", TokenType::FLOAT },
-			{ "return", TokenType::RETURN }//4tk6pV7DLNOFEDil
+			{ "return", TokenType::RETURN },
+			{ "for", TokenType::FOR }//4tk6pV7DLNOFEDil
 		};
 
 

@@ -50,7 +50,7 @@ namespace MochaLang
 
 			bool ignoreUntilNextStatement(TokenStream&);
 
-			Expr* parseExpr(TokenStream&, bool, bool = false);
+			Expr* parseExpr(TokenStream&, bool, bool = false, bool = true, bool = false);
 			void insert_binary_op(Token&, std::vector<Expr*>&, std::vector<Expr*>&);
 			void insertUntilParenOpen(std::vector<Expr*>&, std::vector<Expr*>&);
 
@@ -63,6 +63,8 @@ namespace MochaLang
 			FunctionDecl* parseFunctionDecl(TokenStream&);
 
 			ReturnStmt* parseReturn(TokenStream&);
+			
+			ForStmt* parseFor(TokenStream&);
 			//g4HDtPgnTveS2ddw
 		};
 	}

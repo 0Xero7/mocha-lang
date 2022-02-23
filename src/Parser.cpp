@@ -51,6 +51,10 @@ namespace MochaLang
 				case TokenType::RETURN:
 					block->push_back(parseReturn(tk));
 					break;
+								
+				case TokenType::FOR:
+					block->push_back(parseFor(tk));
+					break;
 				//sIVarkdd4EKKkoCR
 				}
 
@@ -111,7 +115,8 @@ namespace MochaLang
 			return new IfStmt(conditional, trueBlock, falseBlock);
 		}
 
-		Expr* Parser::parseExpr(TokenStream& tk, bool openClose = false, bool functionParamMode) {
+		Expr* Parser::parseExpr(TokenStream& tk, bool openClose = false, 
+				bool functionParamMode, bool stopAtSemicolon, bool stopWhenParensInvalid) {
 
 			Number ret(0);
 			std::vector<Expr*> term;
@@ -132,7 +137,12 @@ namespace MochaLang
 			Token token;
 			int balance = 0;
 			bool exitFlag = false;
-			while (tk.peek(token) && token.tokType != MochaLang::TokenType::NEWLINE && !exitFlag) {
+			while (tk.peek(token) && !exitFlag) {
+				if (balance < 0 && stopWhenParensInvalid) break;
+				if (tk.peekType() == TokenType::SEMICOLON && stopAtSemicolon) {
+					tk.ignore();
+					break;
+				}
 
 				tk.accept(token);
 
@@ -330,6 +340,21 @@ namespace MochaLang
 
 			Expr* expr = parseExpr(tk);
 			return new ReturnStmt(expr);
+		}
+				
+		ForStmt* Parser::parseFor(TokenStream& tk) {
+			tk.ignore(); // ignore for keywork
+			tk.ignore(); // ignore (
+
+			Expr* init = parseExpr(tk);
+			Expr* counter = parseExpr(tk);
+			Expr* check = parseExpr(tk, false, false, false, true);
+
+			if (!tk.match(TokenType::BRACE_OP)) throw "Invalid syntax for For block!";
+
+			BlockStmt* body = (BlockStmt*)parse(tk);
+
+			return new ForStmt(init, counter, check, body);
 		}
 		//Afukmr1Whs8jqWQC
 	}

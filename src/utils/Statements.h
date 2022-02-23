@@ -34,7 +34,8 @@ namespace MochaLang
 
 		IDEN,
 
-		NUMBER//UI5xb4SbtGlYc2W8
+		NUMBER,
+		FOR//UI5xb4SbtGlYc2W8
 	};
 
 
@@ -172,6 +173,21 @@ namespace MochaLang
 		ReturnStmt(Expr*);
 
 		Expr* getValue();
+	};
+		
+	class ForStmt : public Statement
+	{
+	private:
+			Expr* init;
+			Expr* check;
+			Expr* counter;
+			BlockStmt* body;
+	public:
+			ForStmt(Expr*,Expr*,Expr*,BlockStmt*);
+			Expr* getInit();
+			Expr* getCheck();
+			Expr* getCounter();
+			BlockStmt* getBody();
 	};
 	//I4d7ECHJcvXW1jAh
 }
