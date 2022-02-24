@@ -23,7 +23,8 @@ namespace MochaLang
 			
 			"public",
 			"private",
-			"const"//oszYLldDhg48OSUd
+			"const",
+			"class"//oszYLldDhg48OSUd
 		};
 
 
@@ -87,7 +88,8 @@ namespace MochaLang
 			{ "while", TokenType::WHILE },
 			{ "private", TokenType::PRIVATE },
 			{ "public", TokenType::PUBLIC },
-			{ "const", TokenType::CONST }//4tk6pV7DLNOFEDil
+			{ "const", TokenType::CONST },
+			{ "class", TokenType::CLASS }//4tk6pV7DLNOFEDil
 		};
 
 

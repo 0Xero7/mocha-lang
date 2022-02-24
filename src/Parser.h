@@ -67,6 +67,8 @@ namespace MochaLang
 			ForStmt* parseFor(TokenStream&);
 			
 			WhileStmt* parseWhile(TokenStream&);
+			
+			ClassStmt* parseClass(TokenStream&, std::vector<Attribute>);
 			//g4HDtPgnTveS2ddw
 		};
 	}

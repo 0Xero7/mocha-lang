@@ -37,7 +37,8 @@ namespace MochaLang
 
 		NUMBER,
 		FOR,
-		WHILE//UI5xb4SbtGlYc2W8
+		WHILE,
+		CLASS//UI5xb4SbtGlYc2W8
 	};
 
 
@@ -203,6 +204,21 @@ namespace MochaLang
 			WhileStmt(Expr*,BlockStmt*);
 			Expr* getCheck();
 			BlockStmt* getBody();
+	};
+		
+	class ClassStmt : public Statement
+	{
+	private:
+			std::vector<FunctionDecl*> memberFunctions;
+			std::vector<VarDecl*> memberVariables;
+			std::vector<Attribute> attrbs;
+			std::string className;
+	public:
+			ClassStmt(std::vector<FunctionDecl*>,std::vector<VarDecl*>,std::vector<Attribute>,std::string);
+			std::vector<FunctionDecl*> getMemberFunctions();
+			std::vector<VarDecl*> getMemberVariables();
+			std::vector<Attribute> getAttrbs();
+			std::string getClassName();
 	};
 	//I4d7ECHJcvXW1jAh
 }

@@ -51,7 +51,7 @@ namespace MochaLang
 
 	FunctionDecl::FunctionDecl(std::vector<Attribute> attrbs, const std::string& returnType, const std::string& functionName,
 		std::vector<VarDecl*> formalParams, BlockStmt* body) :
-		Statement(StmtType::FUNCTION_DECL), attrbs(attrbs), returnType(returnType), 
+		Statement(StmtType::FUNCTION_DECL), attrbs(attrbs), returnType(returnType),
 		formalParams(formalParams), functionName(functionName), body(body) { }
 	std::string FunctionDecl::getFunctionName() { return functionName; }
 	std::string FunctionDecl::getReturnType() { return returnType; }
@@ -68,10 +68,17 @@ namespace MochaLang
 	Expr* ForStmt::getCounter() { return counter; }
 	Expr* ForStmt::getCheck() { return check; }
 	BlockStmt* ForStmt::getBody() { return body; }
-		
-	WhileStmt::WhileStmt(Expr* check,BlockStmt* body)
-	: Statement(StmtType::WHILE), check(check),body(body){ }
+
+	WhileStmt::WhileStmt(Expr* check, BlockStmt* body)
+		: Statement(StmtType::WHILE), check(check), body(body) { }
 	Expr* WhileStmt::getCheck() { return check; }
 	BlockStmt* WhileStmt::getBody() { return body; }
+
+	ClassStmt::ClassStmt(std::vector<FunctionDecl*> memberFunctions, std::vector<VarDecl*> memberVariables, std::vector<Attribute> attrbs, std::string className)
+		: Statement(StmtType::CLASS), memberFunctions(memberFunctions), memberVariables(memberVariables), attrbs(attrbs), className(className) { }
+	std::vector<FunctionDecl*> ClassStmt::getMemberFunctions() { return memberFunctions; }
+	std::vector<VarDecl*> ClassStmt::getMemberVariables() { return memberVariables; }
+	std::vector<Attribute> ClassStmt::getAttrbs() { return attrbs; }
+	std::string ClassStmt::getClassName() { return className; }
 	//ypFDtJzEFW08p3xH
 }

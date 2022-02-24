@@ -47,7 +47,8 @@ namespace MochaLang
 
 		PUBLIC,
 		PRIVATE,
-		CONST//3zvqzoHKduFtbeJy
+		CONST,
+		CLASS//3zvqzoHKduFtbeJy
 	};
 
 

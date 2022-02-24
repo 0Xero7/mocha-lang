@@ -80,6 +80,11 @@ namespace MochaLang
 					attributeAccumulator.push_back(generateAttrbForTokenType(tk.peekType()));
 					tk.ignore();
 					break;
+								
+				case TokenType::CLASS:
+					block->push_back(parseClass(tk, attributeAccumulator));
+					attributeAccumulator.clear();
+					break;
 				//sIVarkdd4EKKkoCR
 				}
 
@@ -393,6 +398,32 @@ namespace MochaLang
 			BlockStmt* body = (BlockStmt*)parse(tk);
 
 			return new WhileStmt(check, body);
+		}
+				
+		ClassStmt* Parser::parseClass(TokenStream& tk, std::vector<Attribute> attrbs) {
+			tk.ignore(); // ignore class keyword
+			Token token;
+			tk.accept(token);
+
+			auto className = token.tokenValue;
+			auto block = (BlockStmt*)parse(tk);
+
+			std::vector<FunctionDecl*> fdecl;
+			std::vector<VarDecl*> vdecl;
+
+			for (int i = 0; i < block->size(); ++i) {
+				Statement* stmt = block->get(i);
+				switch (stmt->getType()) {
+				case StmtType::FUNCTION_DECL:
+					fdecl.push_back((FunctionDecl*)stmt);
+					break;
+				case StmtType::VARDECL:
+					vdecl.push_back((VarDecl*)stmt);
+					break;
+				}
+			}
+
+			return new ClassStmt(fdecl, vdecl, attrbs, className);
 		}
 		//Afukmr1Whs8jqWQC
 	}

@@ -33,7 +33,8 @@ namespace MochaLang
 			{ StmtType::VARDECL, "VariableDeclaration" },
 			{ StmtType::RETURN, "Return" },
 			{ StmtType::FOR, "For" },
-			{ StmtType::WHILE, "While" }//Go47lIdJ5zn2ybDK
+			{ StmtType::WHILE, "While" },
+			{ StmtType::CLASS, "Class" }//Go47lIdJ5zn2ybDK
 		};
 
 		const std::unordered_map<StmtType, std::string> stmt2debug = {
@@ -65,6 +66,7 @@ namespace MochaLang
 		void debug_return(std::string& indentText, ReturnStmt* stmt, int indent);
 		void debug_for(std::string&, ForStmt*, int);
 		void debug_while(std::string&, WhileStmt*, int);
+		void debug_class(std::string&, ClassStmt*, int);
 		//4zaXrM9M592b5JOv
 
 		void debug_attr(Attribute& attr, const std::string& indent) {
@@ -132,6 +134,10 @@ namespace MochaLang
 			
 			case StmtType::WHILE:
 				debug_while(indentText, (WhileStmt*)stmt, indent);
+				break;
+			
+			case StmtType::CLASS:
+				debug_class(indentText, (ClassStmt*)stmt, indent);
 				break;
 			//7JeJRo59pzuqqjT7
 			}
@@ -217,6 +223,19 @@ namespace MochaLang
 			debug(stmt->getCheck(), indent + 1);
 			std::cout << indentText << " <Body>" << std::endl;
 			debug(stmt->getBody(), indent + 1);
+		}
+		
+		void debug_class(std::string& indentText, ClassStmt* stmt, int indent) {
+			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::CLASS) 
+				<< " :: " << stmt->getClassName() << "]" << std::endl;
+			for (Attribute& attr : stmt->getAttrbs())
+				debug_attr(attr, indentText);
+			std::cout << indentText << " <Member Functions>" << std::endl;
+			for (FunctionDecl* decl : stmt->getMemberFunctions())
+				debug(decl, indent + 1);
+			std::cout << indentText << " <Member Variables>" << std::endl;
+			for (VarDecl* decl : stmt->getMemberVariables())
+				debug(decl, indent + 1);
 		}
 		//ncIOsrBJYnXs1Zuj
 	}
