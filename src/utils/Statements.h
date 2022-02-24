@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include "Attributes.h"
 
 namespace MochaLang
 {
@@ -137,33 +138,35 @@ namespace MochaLang
 	class VarDecl : public Statement
 	{
 	private:
-		bool constantFlag		= false;
+		std::vector<Attribute> attrbs;
 		std::string varName;
 		std::string varType;
 
 	public:
-		VarDecl(const std::string&, const std::string&, bool);
+		VarDecl(const std::string&, const std::string&, std::vector<Attribute> = {});
 
-		bool isConstant();
 		std::string get();
 		std::string getVarType();
+		std::vector<Attribute> getAttrbs();
 	};
 
 	class FunctionDecl : public Statement
 	{
 	private:
+		std::vector<Attribute> attrbs;
 		std::string returnType;
 		std::string functionName;
 		std::vector<VarDecl*> formalParams;
 		BlockStmt *body;
 		
 	public:
-		FunctionDecl(const std::string&, const std::string&, std::vector<VarDecl*>, BlockStmt*);
-
+		FunctionDecl(std::vector<Attribute>, const std::string&, const std::string&, std::vector<VarDecl*>, BlockStmt*);
+		
 		std::string getFunctionName();
 		std::string getReturnType();
 		std::vector<VarDecl*> getFormalParams();
 		BlockStmt* getBody();
+		std::vector<Attribute> getAttrbs();
 	};
 
 	class ReturnStmt : public Statement 

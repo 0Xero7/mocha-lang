@@ -19,7 +19,11 @@ namespace MochaLang
 			"float",
 			"string",
 			"for",
-			"while"//oszYLldDhg48OSUd
+			"while",
+			
+			"public",
+			"private",
+			"const"//oszYLldDhg48OSUd
 		};
 
 
@@ -80,7 +84,10 @@ namespace MochaLang
 			{ "float", TokenType::FLOAT },
 			{ "return", TokenType::RETURN },
 			{ "for", TokenType::FOR },
-			{ "while", TokenType::WHILE }//4tk6pV7DLNOFEDil
+			{ "while", TokenType::WHILE },
+			{ "private", TokenType::PRIVATE },
+			{ "public", TokenType::PUBLIC },
+			{ "const", TokenType::CONST }//4tk6pV7DLNOFEDil
 		};
 
 

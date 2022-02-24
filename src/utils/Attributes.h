@@ -1,5 +1,8 @@
 #pragma once
 
+#include <unordered_map>
+#include "Token.h"
+
 namespace MochaLang {
 
 	enum class AttrType {
@@ -18,19 +21,18 @@ namespace MochaLang {
 	};
 
 
-	class PrivateAttr : Attribute {
+	class PrivateAttr : public Attribute {
 	public:
 		PrivateAttr() : Attribute(AttrType::PRIVATE) { }
 	};
 	
-	class PublicAttr : Attribute {
+	class PublicAttr : public Attribute {
 	public:
 		PublicAttr() : Attribute(AttrType::PUBLIC) { }
 	};
 
-	class ConstAttr : Attribute {
+	class ConstAttr : public Attribute {
 	public:
 		ConstAttr() : Attribute(AttrType::CONST) { }
 	};
-
 };

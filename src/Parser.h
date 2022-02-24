@@ -54,13 +54,13 @@ namespace MochaLang
 			void insert_binary_op(Token&, std::vector<Expr*>&, std::vector<Expr*>&);
 			void insertUntilParenOpen(std::vector<Expr*>&, std::vector<Expr*>&);
 
-			std::pair<VarDecl*, Expr*> Parser::parseVarDecl(TokenStream&, bool = true);
+			std::pair<VarDecl*, Expr*> Parser::parseVarDecl(TokenStream&, bool = true, const std::vector<Attribute> & = {});
 
 			std::vector<Expr*> parseFunctionCall(TokenStream&);
 
 			IfStmt* parseIf(TokenStream&);
 
-			FunctionDecl* parseFunctionDecl(TokenStream&);
+			FunctionDecl* parseFunctionDecl(TokenStream&, const std::vector<Attribute> & = {});
 
 			ReturnStmt* parseReturn(TokenStream&);
 			

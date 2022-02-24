@@ -43,20 +43,21 @@ namespace MochaLang
 	Statement* IfStmt::getTrueBlock() { return trueBlock; }
 	Statement* IfStmt::getFalseBlock() { return falseBlock; }
 
-	VarDecl::VarDecl(const std::string& varName, const std::string& varType, bool constant) :
-		Statement(StmtType::VARDECL), varName(varName), varType(varType), constantFlag(constant) { }
-	bool VarDecl::isConstant() { return constantFlag; }
+	VarDecl::VarDecl(const std::string& varName, const std::string& varType, std::vector<Attribute> attrbs) :
+		Statement(StmtType::VARDECL), varName(varName), varType(varType), attrbs(attrbs) { }
 	std::string VarDecl::get() { return varName; }
 	std::string VarDecl::getVarType() { return varType; }
+	std::vector<Attribute> VarDecl::getAttrbs() { return attrbs; }
 
-	FunctionDecl::FunctionDecl(const std::string& returnType, const std::string& functionName,
+	FunctionDecl::FunctionDecl(std::vector<Attribute> attrbs, const std::string& returnType, const std::string& functionName,
 		std::vector<VarDecl*> formalParams, BlockStmt* body) :
-		Statement(StmtType::FUNCTION_DECL), returnType(returnType), formalParams(formalParams),
-		functionName(functionName), body(body) { }
+		Statement(StmtType::FUNCTION_DECL), attrbs(attrbs), returnType(returnType), 
+		formalParams(formalParams), functionName(functionName), body(body) { }
 	std::string FunctionDecl::getFunctionName() { return functionName; }
 	std::string FunctionDecl::getReturnType() { return returnType; }
 	std::vector<VarDecl*> FunctionDecl::getFormalParams() { return formalParams; }
 	BlockStmt* FunctionDecl::getBody() { return body; }
+	std::vector<Attribute> FunctionDecl::getAttrbs() { return attrbs; }
 
 	ReturnStmt::ReturnStmt(Expr* value) : Statement(StmtType::RETURN), value(value) { }
 	Expr* ReturnStmt::getValue() { return value; }

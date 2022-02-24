@@ -11,10 +11,22 @@ namespace MochaLang
 			return tk.eof();
 		}
 
+		Attribute generateAttrbForTokenType(TokenType type) {
+			switch (type) {
+			case TokenType::PRIVATE:
+				return PrivateAttr();
+			case TokenType::PUBLIC:
+				return PublicAttr();
+			case TokenType::CONST:
+				return ConstAttr();
+			}
+		};
+
 		Statement* Parser::parse(TokenStream& tk, bool without_braces = false, bool topLevel = false) {
 			Token _token;
 			if (!without_braces) tk.accept(_token); // ignore the first { of a block
 
+			std::vector<Attribute> attributeAccumulator;
 			BlockStmt* block = new BlockStmt();
 
 			while (!tk.eof() && tk.peekType() != TokenType::BRACE_CL) {
@@ -39,13 +51,15 @@ namespace MochaLang
 				case TokenType::INT:
 				case TokenType::FLOAT:
 					if (tk.peekType(2) == TokenType::PAREN_OP) {
-						block->push_back(parseFunctionDecl(tk));
+						block->push_back(parseFunctionDecl(tk, attributeAccumulator));
 					}
 					else {
-						auto [decl, init] = parseVarDecl(tk);
+						auto [decl, init] = parseVarDecl(tk, true, attributeAccumulator);
 						block->push_back(decl);
 						if (init) block->push_back(init);
 					}
+
+					attributeAccumulator.clear();
 					break;
 
 				case TokenType::RETURN:
@@ -58,6 +72,13 @@ namespace MochaLang
 								
 				case TokenType::WHILE:
 					block->push_back(parseWhile(tk));
+					break;
+
+				case TokenType::PUBLIC:
+				case TokenType::PRIVATE:
+				case TokenType::CONST:
+					attributeAccumulator.push_back(generateAttrbForTokenType(tk.peekType()));
+					tk.ignore();
 					break;
 				//sIVarkdd4EKKkoCR
 				}
@@ -285,7 +306,7 @@ namespace MochaLang
 			return params;
 		}
 
-		std::pair<VarDecl*, Expr*> Parser::parseVarDecl(TokenStream& tk, bool readEnd) {
+		std::pair<VarDecl*, Expr*> Parser::parseVarDecl(TokenStream& tk, bool readEnd, const std::vector<Attribute>& attrbs) {
 			Token token;
 			tk.accept(token);
 			auto varType = token.tokenValue;
@@ -293,7 +314,7 @@ namespace MochaLang
 			tk.accept(token);
 			auto varName = token.tokenValue;
 
-			auto decl = new VarDecl(varName, varType, false);
+			auto decl = new VarDecl(varName, varType, attrbs);
 			Expr* expr = nullptr;
 
 			if (tk.match(TokenType::ASSIGN)) {
@@ -309,7 +330,7 @@ namespace MochaLang
 			return { decl, expr };
 		}
 
-		FunctionDecl* Parser::parseFunctionDecl(TokenStream& tk) {
+		FunctionDecl* Parser::parseFunctionDecl(TokenStream& tk, const std::vector<Attribute>& attrbs) {
 			Token token;
 			tk.accept(token);
 			auto returnType = token.tokenValue;
@@ -336,7 +357,7 @@ namespace MochaLang
 			// now parse the body
 			Statement* block = parse(tk, false);
 
-			return new FunctionDecl(returnType, functionName, formalParams, (BlockStmt*)block);
+			return new FunctionDecl(attrbs, returnType, functionName, formalParams, (BlockStmt*)block);
 		}
 
 		ReturnStmt* Parser::parseReturn(TokenStream& tk) {

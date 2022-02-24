@@ -43,7 +43,11 @@ namespace MochaLang
 
 		INVALID,
 		FOR,
-		WHILE//3zvqzoHKduFtbeJy
+		WHILE,
+
+		PUBLIC,
+		PRIVATE,
+		CONST//3zvqzoHKduFtbeJy
 	};
 
 

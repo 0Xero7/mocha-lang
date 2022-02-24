@@ -3,6 +3,7 @@
 #include <iostream>
 #include <unordered_map>
 #include "../utils/Statements.h"
+#include "../utils/Attributes.h"
 
 namespace MochaLang
 {
@@ -49,6 +50,12 @@ namespace MochaLang
 			{ StmtType::OP_LE, "<=" }//qqeQR5eblCdjCPzv
 		};
 
+		std::unordered_map<AttrType, std::string> attrb2str = {
+			{ AttrType::PUBLIC, "Public"},
+			{ AttrType::PRIVATE, "Private"},
+			{ AttrType::CONST, "Const"}
+		};
+
 		void debug_bin_op(std::string&, Statement*, int);
 		void debug_if(std::string&, IfStmt*, int);
 		void debug_block(std::string&, BlockStmt*, int);
@@ -59,6 +66,10 @@ namespace MochaLang
 		void debug_for(std::string&, ForStmt*, int);
 		void debug_while(std::string&, WhileStmt*, int);
 		//4zaXrM9M592b5JOv
+
+		void debug_attr(Attribute& attr, const std::string& indent) {
+			std::cout << indent << "  " << attrb2str.at(attr.getType()) << std::endl;
+		}
 
 		void debug(Statement* stmt, int indent) {
 
@@ -163,11 +174,17 @@ namespace MochaLang
 		void debug_vardecl(std::string& indentText, VarDecl* stmt, int indent) {
 			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::VARDECL) << "] " 
 				<< stmt->get() << " :: " << stmt->getVarType() << std::endl;
+			std::cout << indentText << " <Attributes>" << std::endl;
+			for (Attribute& attr : stmt->getAttrbs())
+				debug_attr(attr, indentText);
 		}
 
 		void debug_funcdecl(std::string& indentText, FunctionDecl* stmt, int indent) {
 			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::FUNCTION_DECL) << "] " 
 				<< stmt->getFunctionName() << " :: " << stmt->getReturnType() << std::endl;
+			std::cout << indentText << " <Attributes>" << std::endl;
+			for (Attribute& attr : stmt->getAttrbs())
+				debug_attr(attr, indentText);
 			std::cout << indentText << " <Formal Parameters>" << std::endl;
 			for (VarDecl* decl : stmt->getFormalParams())
 				debug(decl, indent + 1);
