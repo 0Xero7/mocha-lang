@@ -18,7 +18,8 @@ namespace MochaLang
 			"int",
 			"float",
 			"string",
-			"for"//oszYLldDhg48OSUd
+			"for",
+			"while"//oszYLldDhg48OSUd
 		};
 
 
@@ -78,7 +79,8 @@ namespace MochaLang
 			{ "int", TokenType::INT },
 			{ "float", TokenType::FLOAT },
 			{ "return", TokenType::RETURN },
-			{ "for", TokenType::FOR }//4tk6pV7DLNOFEDil
+			{ "for", TokenType::FOR },
+			{ "while", TokenType::WHILE }//4tk6pV7DLNOFEDil
 		};
 
 

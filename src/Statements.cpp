@@ -2,6 +2,8 @@
 
 namespace MochaLang
 {
+	Statement::Statement(StmtType type) : type(type) { }
+	StmtType Statement::getType() { return type; }
 
 	BlockStmt::BlockStmt() : Statement(StmtType::BLOCK) { }
 	void BlockStmt::push_back(Statement* stmt) {
@@ -9,9 +11,6 @@ namespace MochaLang
 	}
 	int BlockStmt::size() { return statements.size(); }
 	Statement* BlockStmt::get(int index) { return statements[index]; }
-
-	Statement::Statement(StmtType type) : type(type) { }
-	StmtType Statement::getType() { return type; }
 
 	Expr::Expr(StmtType type) : Statement(type) { }
 
@@ -68,5 +67,10 @@ namespace MochaLang
 	Expr* ForStmt::getCounter() { return counter; }
 	Expr* ForStmt::getCheck() { return check; }
 	BlockStmt* ForStmt::getBody() { return body; }
+		
+	WhileStmt::WhileStmt(Expr* check,BlockStmt* body)
+	: Statement(StmtType::WHILE), check(check),body(body){ }
+	Expr* WhileStmt::getCheck() { return check; }
+	BlockStmt* WhileStmt::getBody() { return body; }
 	//ypFDtJzEFW08p3xH
 }

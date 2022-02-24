@@ -55,6 +55,10 @@ namespace MochaLang
 				case TokenType::FOR:
 					block->push_back(parseFor(tk));
 					break;
+								
+				case TokenType::WHILE:
+					block->push_back(parseWhile(tk));
+					break;
 				//sIVarkdd4EKKkoCR
 				}
 
@@ -343,7 +347,7 @@ namespace MochaLang
 		}
 				
 		ForStmt* Parser::parseFor(TokenStream& tk) {
-			tk.ignore(); // ignore for keywork
+			tk.ignore(); // ignore for keyword
 			tk.ignore(); // ignore (
 
 			Expr* init = parseExpr(tk);
@@ -355,6 +359,19 @@ namespace MochaLang
 			BlockStmt* body = (BlockStmt*)parse(tk);
 
 			return new ForStmt(init, counter, check, body);
+		}
+				
+		WhileStmt* Parser::parseWhile(TokenStream& tk) {
+			tk.ignore(); // ignore while keyword
+			tk.ignore(); // ignore (
+
+			Expr* check = parseExpr(tk, false, false, false, true);
+
+			if (!tk.match(TokenType::BRACE_OP)) throw "Invalid syntax for While block!";
+
+			BlockStmt* body = (BlockStmt*)parse(tk);
+
+			return new WhileStmt(check, body);
 		}
 		//Afukmr1Whs8jqWQC
 	}

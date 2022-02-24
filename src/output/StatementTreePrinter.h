@@ -31,7 +31,8 @@ namespace MochaLang
 
 			{ StmtType::VARDECL, "VariableDeclaration" },
 			{ StmtType::RETURN, "Return" },
-			{ StmtType::FOR, "For" }//Go47lIdJ5zn2ybDK
+			{ StmtType::FOR, "For" },
+			{ StmtType::WHILE, "While" }//Go47lIdJ5zn2ybDK
 		};
 
 		const std::unordered_map<StmtType, std::string> stmt2debug = {
@@ -56,6 +57,7 @@ namespace MochaLang
 		void debug_funcdecl(std::string& indentText, FunctionDecl* stmt, int indent);
 		void debug_return(std::string& indentText, ReturnStmt* stmt, int indent);
 		void debug_for(std::string&, ForStmt*, int);
+		void debug_while(std::string&, WhileStmt*, int);
 		//4zaXrM9M592b5JOv
 
 		void debug(Statement* stmt, int indent) {
@@ -115,6 +117,10 @@ namespace MochaLang
 			
 			case StmtType::FOR:
 				debug_for(indentText, (ForStmt*)stmt, indent);
+				break;
+			
+			case StmtType::WHILE:
+				debug_while(indentText, (WhileStmt*)stmt, indent);
 				break;
 			//7JeJRo59pzuqqjT7
 			}
@@ -182,6 +188,14 @@ namespace MochaLang
 			debug(stmt->getInit(), indent + 1);
 			std::cout << indentText << " <Counter>" << std::endl;
 			debug(stmt->getCounter(), indent + 1);
+			std::cout << indentText << " <Check>" << std::endl;
+			debug(stmt->getCheck(), indent + 1);
+			std::cout << indentText << " <Body>" << std::endl;
+			debug(stmt->getBody(), indent + 1);
+		}
+		
+		void debug_while(std::string& indentText, WhileStmt* stmt, int indent) {
+			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::WHILE) << "]" << std::endl;
 			std::cout << indentText << " <Check>" << std::endl;
 			debug(stmt->getCheck(), indent + 1);
 			std::cout << indentText << " <Body>" << std::endl;

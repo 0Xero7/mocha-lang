@@ -42,7 +42,8 @@ namespace MochaLang
 		BRACE_CL,
 
 		INVALID,
-		FOR//3zvqzoHKduFtbeJy
+		FOR,
+		WHILE//3zvqzoHKduFtbeJy
 	};
 
 

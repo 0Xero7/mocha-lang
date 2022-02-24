@@ -35,7 +35,8 @@ namespace MochaLang
 		IDEN,
 
 		NUMBER,
-		FOR//UI5xb4SbtGlYc2W8
+		FOR,
+		WHILE//UI5xb4SbtGlYc2W8
 	};
 
 
@@ -187,6 +188,17 @@ namespace MochaLang
 			Expr* getInit();
 			Expr* getCheck();
 			Expr* getCounter();
+			BlockStmt* getBody();
+	};
+		
+	class WhileStmt : public Statement
+	{
+	private:
+			Expr* check;
+			BlockStmt* body;
+	public:
+			WhileStmt(Expr*,BlockStmt*);
+			Expr* getCheck();
 			BlockStmt* getBody();
 	};
 	//I4d7ECHJcvXW1jAh

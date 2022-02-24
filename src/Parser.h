@@ -65,6 +65,8 @@ namespace MochaLang
 			ReturnStmt* parseReturn(TokenStream&);
 			
 			ForStmt* parseFor(TokenStream&);
+			
+			WhileStmt* parseWhile(TokenStream&);
 			//g4HDtPgnTveS2ddw
 		};
 	}
