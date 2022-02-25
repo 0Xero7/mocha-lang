@@ -8,7 +8,8 @@ namespace MochaLang {
 	enum class AttrType {
 		PRIVATE,
 		PUBLIC,
-		CONST
+		CONST,
+		STATIC
 	};
 
 	class Attribute {
@@ -34,5 +35,10 @@ namespace MochaLang {
 	class ConstAttr : public Attribute {
 	public:
 		ConstAttr() : Attribute(AttrType::CONST) { }
+	};
+
+	class StaticAttr : public Attribute {
+	public:
+		StaticAttr() : Attribute(AttrType::STATIC) { }
 	};
 };

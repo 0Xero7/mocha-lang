@@ -57,7 +57,8 @@ namespace MochaLang
 		std::unordered_map<AttrType, std::string> attrb2str = {
 			{ AttrType::PUBLIC, "Public"},
 			{ AttrType::PRIVATE, "Private"},
-			{ AttrType::CONST, "Const"}
+			{ AttrType::CONST, "Const"},
+			{ AttrType::STATIC, "Static"},
 		};
 
 		void debug_bin_op(std::string&, Statement*, int);

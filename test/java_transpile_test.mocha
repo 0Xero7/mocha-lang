@@ -1,7 +1,7 @@
 
 
 class Test {
-	pub int sum(int a, int b) {
+	pub static int sum(int a, int b) {
 		return a + b;
 	}
 }

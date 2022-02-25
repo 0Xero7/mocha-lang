@@ -24,6 +24,8 @@ namespace MochaLang
 			"pub",
 			"private",
 			"const",
+			"static",
+
 			"class",
 			"import"//oszYLldDhg48OSUd
 		};
@@ -92,6 +94,7 @@ namespace MochaLang
 			{ "private", TokenType::PRIVATE },
 			{ "pub", TokenType::PUBLIC },
 			{ "const", TokenType::CONST },
+			{ "static", TokenType::STATIC },
 			{ "class", TokenType::CLASS },
 			{ "import", TokenType::IMPORT }//4tk6pV7DLNOFEDil
 		};

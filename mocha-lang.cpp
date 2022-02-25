@@ -22,7 +22,7 @@ int main()
 	//std::stringstream buffer;
 	//buffer << in.rdbuf();
 
-	std::string s = fileContents; // buffer.str(); // "if (x * (abc + def)) { \n3 + 4\n abc * def }";
+	std::string s = fileContents;
 	cout << s << endl << endl;
 	auto lexer = MochaLang::Lexer::Tokenizer();
 	auto tokens = lexer.tokenize(s);
@@ -33,9 +33,9 @@ int main()
 	auto tree = parser.parse(tokens, false, true);
 
 	cout << endl << endl;
-	//MochaLang::Debug::debug(tree, 0);
+	MochaLang::Debug::debug(tree, 0);
 	//cout << "ok";
 
 	auto jw = MochaLang::Targets::Java::JavaWriter("  ");
-	jw.transpileToJava("", tree);
+	jw.transpileToJava("C:/Users/smpsm/source/repos/mocha-lang/dev/build/Main.java", tree);
 }

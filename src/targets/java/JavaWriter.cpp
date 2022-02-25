@@ -4,6 +4,7 @@ std::unordered_map<MochaLang::AttrType, std::string> attr2java{
 				{ MochaLang::AttrType::PUBLIC, "public" },
 				{ MochaLang::AttrType::PRIVATE, "private" },
 				{ MochaLang::AttrType::CONST, "const" },
+				{ MochaLang::AttrType::STATIC, "static" },
 };
 
 const std::unordered_map<MochaLang::StmtType, std::string> stmt2debug = {
@@ -185,7 +186,7 @@ void MochaLang::Targets::Java::JavaWriter::writeAttributes(std::vector<MochaLang
 	int n = attrbs.size();
 	for (int i = 0; i < n; ++i) {
 		pw.write({ attr2java.at(attrbs[i].getType()) });
-		if (i < n - 1) pw.write({ ", " });
+		if (i < n - 1) pw.write({ " " });
 	}
 	if (n > 0) pw.write({ " " });
 }

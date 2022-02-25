@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <fstream>
 #include "../../utils/Statements.h"
 #include "../../utils/Attributes.h"
 #include "../../utils/PrettyWriter.h"
@@ -45,6 +46,12 @@ namespace MochaLang {
 
 				void transpileToJava(std::string outputPath, Statement* program) {
 					write(program);
+
+					std::ofstream file;
+					file.open(outputPath);
+					file << pw.getString();
+					file.close();
+
 					std::cout << pw.getString() << std::endl;
 				}
 			};

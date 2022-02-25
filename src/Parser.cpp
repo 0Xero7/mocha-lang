@@ -19,6 +19,8 @@ namespace MochaLang
 				return PublicAttr();
 			case TokenType::CONST:
 				return ConstAttr();
+			case TokenType::STATIC:
+				return StaticAttr();
 			}
 		};
 
@@ -75,6 +77,7 @@ namespace MochaLang
 				case TokenType::PUBLIC:
 				case TokenType::PRIVATE:
 				case TokenType::CONST:
+				case TokenType::STATIC:
 					attributeAccumulator.push_back(generateAttrbForTokenType(tk.peekType()));
 					tk.ignore();
 					break;

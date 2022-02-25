@@ -49,6 +49,7 @@ namespace MochaLang
 		PUBLIC,
 		PRIVATE,
 		CONST,
+		STATIC,
 		CLASS,
 		IMPORT//3zvqzoHKduFtbeJy
 	};
