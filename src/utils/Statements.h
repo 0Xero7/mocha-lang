@@ -39,7 +39,8 @@ namespace MochaLang
 		NUMBER,
 		FOR,
 		WHILE,
-		CLASS//UI5xb4SbtGlYc2W8
+		CLASS,
+		IMPORT//UI5xb4SbtGlYc2W8
 	};
 
 
@@ -220,6 +221,15 @@ namespace MochaLang
 			std::vector<VarDecl*> getMemberVariables();
 			std::vector<Attribute> getAttrbs();
 			std::string getClassName();
+	};
+		
+	class ImportStmt : public Statement
+	{
+	private:
+			std::vector<Expr*> imports;
+	public:
+			ImportStmt(std::vector<Expr*>);
+			std::vector<Expr*> getImports();
 	};
 	//I4d7ECHJcvXW1jAh
 }

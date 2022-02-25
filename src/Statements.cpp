@@ -80,5 +80,9 @@ namespace MochaLang
 	std::vector<VarDecl*> ClassStmt::getMemberVariables() { return memberVariables; }
 	std::vector<Attribute> ClassStmt::getAttrbs() { return attrbs; }
 	std::string ClassStmt::getClassName() { return className; }
+		
+	ImportStmt::ImportStmt(std::vector<Expr*> imports)
+	: Statement(StmtType::IMPORT), imports(imports){ }
+	std::vector<Expr*> ImportStmt::getImports() { return imports; }
 	//ypFDtJzEFW08p3xH
 }

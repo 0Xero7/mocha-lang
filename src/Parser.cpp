@@ -85,6 +85,10 @@ namespace MochaLang
 					block->push_back(parseClass(tk, attributeAccumulator));
 					attributeAccumulator.clear();
 					break;
+								
+				case TokenType::IMPORT:
+					block->push_back(parseImport(tk));
+					break;
 				//sIVarkdd4EKKkoCR
 				}
 
@@ -425,6 +429,27 @@ namespace MochaLang
 			}
 
 			return new ClassStmt(fdecl, vdecl, attrbs, className);
+		}
+				
+		ImportStmt* Parser::parseImport(TokenStream& tk) {
+			tk.ignore(); // ignore import keyboard
+
+			if (tk.match(TokenType::BRACE_OP)) {
+				tk.ignore();
+
+				auto impBlock = (BlockStmt*)parse(tk);
+				std::vector<Expr*> imports;
+				for (int i = 0; i < impBlock->size(); ++i) {
+					// TODO : check if expr is valid classpath
+					imports.push_back((Expr*)impBlock->get(i));
+				}
+
+				return new ImportStmt(imports);
+			}
+			else {
+				auto imp = parseExpr(tk, false, false, true);
+				return new ImportStmt({ imp });
+			}
 		}
 		//Afukmr1Whs8jqWQC
 	}
