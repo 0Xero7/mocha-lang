@@ -9,13 +9,14 @@
 #include "src/Lexer.h"
 #include "src/Parser.h"
 #include "src/output/StatementTreePrinter.h"
+#include "src/targets/java/JavaWriter.h"
 
 using namespace std;
 
 int main()
 {// if (x * (abc + def)) 
 
-	std::ifstream in("C:/Users/smpsm/source/repos/mocha-lang/test/dot_test.mocha", std::ios::in);
+	std::ifstream in("C:/Users/smpsm/source/repos/mocha-lang/test/java_transpile_test.mocha", std::ios::in);
 	string fileContents((std::istreambuf_iterator<char>(in)),
 		std::istreambuf_iterator<char>());
 	//std::stringstream buffer;
@@ -32,6 +33,9 @@ int main()
 	auto tree = parser.parse(tokens, false, true);
 
 	cout << endl << endl;
-	MochaLang::Debug::debug(tree, 0);
+	//MochaLang::Debug::debug(tree, 0);
 	//cout << "ok";
+
+	auto jw = MochaLang::Targets::Java::JavaWriter("  ");
+	jw.transpileToJava("", tree);
 }

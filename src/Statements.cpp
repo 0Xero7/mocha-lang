@@ -43,11 +43,12 @@ namespace MochaLang
 	Statement* IfStmt::getTrueBlock() { return trueBlock; }
 	Statement* IfStmt::getFalseBlock() { return falseBlock; }
 
-	VarDecl::VarDecl(const std::string& varName, const std::string& varType, std::vector<Attribute> attrbs) :
-		Statement(StmtType::VARDECL), varName(varName), varType(varType), attrbs(attrbs) { }
+	VarDecl::VarDecl(const std::string& varName, const std::string& varType, std::vector<Attribute> attrbs, Expr* init) :
+		Statement(StmtType::VARDECL), varName(varName), varType(varType), attrbs(attrbs), init(init) { }
 	std::string VarDecl::get() { return varName; }
 	std::string VarDecl::getVarType() { return varType; }
 	std::vector<Attribute> VarDecl::getAttrbs() { return attrbs; }
+	Expr* VarDecl::getInit() { return init; }
 
 	FunctionDecl::FunctionDecl(std::vector<Attribute> attrbs, const std::string& returnType, const std::string& functionName,
 		std::vector<VarDecl*> formalParams, BlockStmt* body) :

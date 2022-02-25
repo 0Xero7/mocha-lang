@@ -144,13 +144,15 @@ namespace MochaLang
 		std::vector<Attribute> attrbs;
 		std::string varName;
 		std::string varType;
+		Expr* init;
 
 	public:
-		VarDecl(const std::string&, const std::string&, std::vector<Attribute> = {});
+		VarDecl(const std::string&, const std::string&, std::vector<Attribute> = {}, Expr* = nullptr);
 
 		std::string get();
 		std::string getVarType();
 		std::vector<Attribute> getAttrbs();
+		Expr* getInit();
 	};
 
 	class FunctionDecl : public Statement

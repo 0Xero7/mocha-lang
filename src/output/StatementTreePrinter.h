@@ -192,6 +192,10 @@ namespace MochaLang
 			std::cout << indentText << " <Attributes>" << std::endl;
 			for (Attribute& attr : stmt->getAttrbs())
 				debug_attr(attr, indentText);
+			if (stmt->getInit() != nullptr) {
+				std::cout << indentText << " <Initialized Value>" << std::endl;
+				debug(stmt->getInit(), indent + 1);
+			}
 		}
 
 		void debug_funcdecl(std::string& indentText, FunctionDecl* stmt, int indent) {

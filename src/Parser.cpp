@@ -54,9 +54,7 @@ namespace MochaLang
 						block->push_back(parseFunctionDecl(tk, attributeAccumulator));
 					}
 					else {
-						auto [decl, init] = parseVarDecl(tk, true, attributeAccumulator);
-						block->push_back(decl);
-						if (init) block->push_back(init);
+						block->push_back(parseVarDecl(tk, true, attributeAccumulator));
 					}
 
 					attributeAccumulator.clear();
@@ -316,7 +314,7 @@ namespace MochaLang
 			return params;
 		}
 
-		std::pair<VarDecl*, Expr*> Parser::parseVarDecl(TokenStream& tk, bool readEnd, const std::vector<Attribute>& attrbs) {
+		VarDecl* Parser::parseVarDecl(TokenStream& tk, bool readEnd, const std::vector<Attribute>& attrbs) {
 			Token token;
 			tk.accept(token);
 			auto varType = token.tokenValue;
@@ -324,7 +322,6 @@ namespace MochaLang
 			tk.accept(token);
 			auto varName = token.tokenValue;
 
-			auto decl = new VarDecl(varName, varType, attrbs);
 			Expr* expr = nullptr;
 
 			if (tk.match(TokenType::ASSIGN)) {
@@ -333,11 +330,13 @@ namespace MochaLang
 				expr = new BinaryOp(new Identifier(varName), StmtType::OP_ASSIGN, rhs);
 			}
 
+			auto decl = new VarDecl(varName, varType, attrbs, expr);
+			
 			// Expect a ; at the end
 			if (readEnd)
 				tk.ignore();
 
-			return { decl, expr };
+			return decl;
 		}
 
 		FunctionDecl* Parser::parseFunctionDecl(TokenStream& tk, const std::vector<Attribute>& attrbs) {
@@ -352,10 +351,9 @@ namespace MochaLang
 
 			std::vector<VarDecl*> formalParams;
 			while (!tk.eof() && tk.peekType() != TokenType::PAREN_CL) {
-				auto [decl, init] = parseVarDecl(tk, false);
+				auto decl = parseVarDecl(tk, false);
 				formalParams.push_back(decl);
 
-				// TODO: implement default values for params
 				if (tk.peekType() == TokenType::COMMA) {
 					tk.ignore();
 				}
