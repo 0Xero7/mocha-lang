@@ -15,7 +15,7 @@ using namespace std;
 int main()
 {// if (x * (abc + def)) 
 
-	std::ifstream in("C:/Users/smpsm/source/repos/mocha-lang/test/if_test.mocha", std::ios::in);
+	std::ifstream in("C:/Users/smpsm/source/repos/mocha-lang/test/dot_test.mocha", std::ios::in);
 	string fileContents((std::istreambuf_iterator<char>(in)),
 		std::istreambuf_iterator<char>());
 	//std::stringstream buffer;

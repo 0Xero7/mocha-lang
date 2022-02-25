@@ -213,6 +213,7 @@ namespace MochaLang
 				case TokenType::LS:
 				case TokenType::LE:
 				case TokenType::ASSIGN:
+				case TokenType::DOT:
 					insert_binary_op(token, ops, term);
 					break;
 

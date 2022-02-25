@@ -11,6 +11,7 @@ namespace MochaLang
 	{
 		const std::unordered_map<StmtType, int> exprPrecedence = {
 			{ StmtType::PAREN_OPEN, -9999 },
+			{ StmtType::OP_DOT, 10000 },
 
 			{ StmtType::OP_EQ, -1 },
 			{ StmtType::OP_NEQ, -1 },
@@ -40,6 +41,7 @@ namespace MochaLang
 			{ TokenType::GE, StmtType::OP_GE },
 			{ TokenType::LS, StmtType::OP_LS },
 			{ TokenType::LE, StmtType::OP_LE },
+			{ TokenType::DOT, StmtType::OP_DOT },
 		};
 
 		class Parser

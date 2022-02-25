@@ -27,6 +27,7 @@ namespace MochaLang
 		OP_GE,
 		OP_LS,
 		OP_LE,
+		OP_DOT,
 
 		OP_ADD,
 		OP_MINUS,

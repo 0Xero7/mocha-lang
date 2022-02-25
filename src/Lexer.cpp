@@ -30,6 +30,7 @@ namespace MochaLang
 
 		std::unordered_set<std::string> operators = {
 			",",
+			".",
 
 			"(",
 			")",
@@ -58,6 +59,7 @@ namespace MochaLang
 
 		const std::unordered_map<std::string, TokenType> op2tokType = {
 			{ ",", TokenType::COMMA },
+			{ ".", TokenType::DOT },
 
 			{ "+", TokenType::ADD },
 			{ "-", TokenType::MINUS },

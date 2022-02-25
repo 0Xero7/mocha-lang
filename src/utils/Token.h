@@ -15,6 +15,7 @@ namespace MochaLang
 
 		SEMICOLON,
 		COMMA,
+		DOT,
 		IF,
 		ELSE,
 

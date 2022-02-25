@@ -1,0 +1,6 @@
+
+import test.host;
+
+int sum(int a, int b) {
+	return test.host.a + b;
+}
