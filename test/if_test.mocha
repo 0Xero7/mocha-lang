@@ -1,17 +1,19 @@
 
-class Main {
-	public const int x;
+pub class Main {
+	private float y;
 
-	int sum(int a, int b) {
+	pub const int x;
+
+	pub int sum(int a, int b) {
 		return a + b;
 	}
 
-	private int factorial(int n) {
+	pub int factorial(int n) {
 		if (n <= 1) return 1;
 		return n * factorial(n - 1);
 	}
 
-	int main() {
+	pub int main() {
 		for (i = 0; i < n; i = i + 1) {
 			print(i);
 			print(factorial(i));

@@ -21,7 +21,7 @@ namespace MochaLang
 			"for",
 			"while",
 			
-			"public",
+			"pub",
 			"private",
 			"const",
 			"class"//oszYLldDhg48OSUd
@@ -87,7 +87,7 @@ namespace MochaLang
 			{ "for", TokenType::FOR },
 			{ "while", TokenType::WHILE },
 			{ "private", TokenType::PRIVATE },
-			{ "public", TokenType::PUBLIC },
+			{ "pub", TokenType::PUBLIC },
 			{ "const", TokenType::CONST },
 			{ "class", TokenType::CLASS }//4tk6pV7DLNOFEDil
 		};
