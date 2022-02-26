@@ -35,8 +35,9 @@ namespace MochaLang
 		OP_DIV,
 
 		IDEN,
-
+		RAW_STRING,
 		NUMBER,
+
 		FOR,
 		WHILE,
 		CLASS,
@@ -96,6 +97,15 @@ namespace MochaLang
 		Number(int);
 
 		int get();
+	};
+
+	class RawString : public Expr {
+	private:
+		std::string string;
+	public:
+		RawString(std::string);
+
+		std::string get();
 	};
 
 	class Identifier : public Expr {

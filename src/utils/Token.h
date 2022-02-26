@@ -28,6 +28,8 @@ namespace MochaLang
 		MUL,
 		DIV,
 
+		RAW_STRING,
+
 		ASSIGN,
 		EQ,
 		NEQ,

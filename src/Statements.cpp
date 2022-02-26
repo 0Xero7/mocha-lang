@@ -29,6 +29,10 @@ namespace MochaLang
 		Expr(StmtType::IDEN), identifier(identifier) { }
 	std::string Identifier::get() { return identifier; }
 
+	RawString::RawString(std::string string) :
+		Expr(StmtType::RAW_STRING), string(string) { }
+	std::string RawString::get() { return string; }
+
 	FunctionCall::FunctionCall(std::string& functionName) :
 		Expr(StmtType::FUNCTION_CALL), functionName(functionName) { }
 	std::string FunctionCall::getFuncName() { return functionName; }

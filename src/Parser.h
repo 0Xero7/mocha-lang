@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <unordered_set>
 
 #include "utils/TokenStream.h"
 #include "utils/Statements.h"
@@ -52,11 +53,11 @@ namespace MochaLang
 
 			bool ignoreUntilNextStatement(TokenStream&);
 
-			Expr* parseExpr(TokenStream&, bool, bool = false, bool = true, bool = false);
+			Expr* parseExpr(TokenStream&, const std::unordered_set<TokenType>&, bool = false);
 			void insert_binary_op(Token&, std::vector<Expr*>&, std::vector<Expr*>&);
 			void insertUntilParenOpen(std::vector<Expr*>&, std::vector<Expr*>&);
 
-			VarDecl* Parser::parseVarDecl(TokenStream&, bool = true, const std::vector<Attribute> & = {});
+			VarDecl* Parser::parseVarDecl(TokenStream&, bool = true, const std::vector<Attribute> & = {}, const std::unordered_set<TokenType> & = {});
 
 			std::vector<Expr*> parseFunctionCall(TokenStream&);
 

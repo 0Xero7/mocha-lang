@@ -82,6 +82,9 @@ void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSem
 	case StmtType::FUNCTION_CALL:
 		writeFunctionCall((FunctionCall*)expr);
 		break;
+	case StmtType::RAW_STRING:
+		pw.write({ "\"", ((RawString*)expr)->get(), "\""});
+		break;
 
 	case StmtType::OP_ASSIGN:
 	case StmtType::OP_ADD:

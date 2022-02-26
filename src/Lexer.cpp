@@ -111,6 +111,7 @@ namespace MochaLang
 			int i = 0;
 
 #define CURR data[i]
+#define PREV data[i - 1]
 
 			while (i < len) {
 				if (CURR == '\n') {
@@ -161,6 +162,19 @@ namespace MochaLang
 					}
 
 					tokens.push_back(number, TokenType::NUMBER, 0, 0);
+					continue;
+				}
+
+				// Raw String Literals
+				if (CURR == '"') {
+					std::string str;
+					++i;
+					while (!(CURR == '"' && PREV != '\\')) {
+						str.push_back(CURR);
+						++i;
+					}
+					tokens.push_back(str, TokenType::RAW_STRING, 0, 0);
+					++i;
 					continue;
 				}
 

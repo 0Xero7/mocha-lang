@@ -43,7 +43,10 @@ namespace MochaLang
 
 				case TokenType::IDEN:
 				case TokenType::NUMBER:
-					block->push_back(parseExpr(tk, false));
+					block->push_back(parseExpr(tk, { TokenType::SEMICOLON }));
+
+					// Since Exprs dont read the ending token, ignore it
+					tk.ignore();
 					break;
 
 				case TokenType::BRACE_OP:
@@ -57,7 +60,7 @@ namespace MochaLang
 						block->push_back(parseFunctionDecl(tk, attributeAccumulator));
 					}
 					else {
-						block->push_back(parseVarDecl(tk, true, attributeAccumulator));
+						block->push_back(parseVarDecl(tk, true, attributeAccumulator, { TokenType::SEMICOLON }));
 					}
 
 					attributeAccumulator.clear();
@@ -118,8 +121,10 @@ namespace MochaLang
 			tk.accept(token);
 
 			if (tk.match(TokenType::PAREN_OP)) {
+				tk.ignore();
 				// parse the conditional
-				conditional = parseExpr(tk, true);
+				conditional = parseExpr(tk, { TokenType::PAREN_CL });
+				tk.ignore(); // Ignore closing )
 			}
 
 			// TODO: Add error for true block not found
@@ -151,8 +156,9 @@ namespace MochaLang
 			return new IfStmt(conditional, trueBlock, falseBlock);
 		}
 
-		Expr* Parser::parseExpr(TokenStream& tk, bool openClose = false, 
-				bool functionParamMode, bool stopAtSemicolon, bool stopWhenParensInvalid) {
+		Expr* Parser::parseExpr(TokenStream& tk, 
+			const std::unordered_set<TokenType>& terminatingCharacters = { },
+				bool functionParamMode) {
 
 			Number ret(0);
 			std::vector<Expr*> term;
@@ -174,11 +180,15 @@ namespace MochaLang
 			int balance = 0;
 			bool exitFlag = false;
 			while (tk.peek(token) && !exitFlag) {
-				if (balance < 0 && stopWhenParensInvalid) break;
+				if (balance == 0 && terminatingCharacters.count(tk.peekType())) {
+					//tk.ignore();
+					break;
+				}
+				/*if (balance < 0 && stopWhenParensInvalid) break;
 				if (tk.peekType() == TokenType::SEMICOLON && stopAtSemicolon) {
 					tk.ignore();
 					break;
-				}
+				}*/
 
 				tk.accept(token);
 
@@ -193,6 +203,10 @@ namespace MochaLang
 					term.push_back(new Number(stoi(token.tokenValue)));
 					break;
 
+				case TokenType::RAW_STRING:
+					term.push_back(new RawString(token.tokenValue));
+					break;
+
 				case TokenType::PAREN_OP:
 					++balance;
 					ops.push_back(new BinaryOp(nullptr, StmtType::PAREN_OPEN, nullptr));
@@ -205,7 +219,6 @@ namespace MochaLang
 						tk.rewind();
 						exitFlag = true;
 					}
-					if (openClose && balance == 0) exitFlag = true;
 					break;
 
 				case TokenType::ADD:
@@ -305,7 +318,7 @@ namespace MochaLang
 			std::vector<Expr*> params;
 
 			while (!tk.eof()) {
-				auto expr = parseExpr(tk, false, true);
+				auto expr = parseExpr(tk, { TokenType::COMMA, TokenType::PAREN_CL }, true);
 				params.push_back(expr);
 
 				if (tk.peekType() == TokenType::PAREN_CL) break;
@@ -318,7 +331,9 @@ namespace MochaLang
 			return params;
 		}
 
-		VarDecl* Parser::parseVarDecl(TokenStream& tk, bool readEnd, const std::vector<Attribute>& attrbs) {
+		VarDecl* Parser::parseVarDecl(TokenStream& tk, bool readEnd, 
+				const std::vector<Attribute>& attrbs,
+				const std::unordered_set<TokenType>& terminatingTokens) {
 			Token token;
 			tk.accept(token);
 			auto varType = token.tokenValue;
@@ -330,7 +345,8 @@ namespace MochaLang
 
 			if (tk.match(TokenType::ASSIGN)) {
 				tk.ignore();
-				auto rhs = parseExpr(tk, false, false, true);
+				// TODO : COMMA isn't yet implemented
+				auto rhs = parseExpr(tk, terminatingTokens);
 				expr = new BinaryOp(new Identifier(varName), StmtType::OP_ASSIGN, rhs);
 			}
 
@@ -355,7 +371,7 @@ namespace MochaLang
 
 			std::vector<VarDecl*> formalParams;
 			while (!tk.eof() && tk.peekType() != TokenType::PAREN_CL) {
-				auto decl = parseVarDecl(tk, false);
+				auto decl = parseVarDecl(tk, false, {}, { TokenType::COMMA, TokenType::PAREN_CL });
 				formalParams.push_back(decl);
 
 				if (tk.peekType() == TokenType::COMMA) {
@@ -375,7 +391,8 @@ namespace MochaLang
 		ReturnStmt* Parser::parseReturn(TokenStream& tk) {
 			tk.ignore(); // ignore return keyword
 
-			Expr* expr = parseExpr(tk);
+			Expr* expr = parseExpr(tk, { TokenType::SEMICOLON });
+			tk.ignore(); // Ignore the ending ;
 			return new ReturnStmt(expr);
 		}
 				
@@ -383,9 +400,12 @@ namespace MochaLang
 			tk.ignore(); // ignore for keyword
 			tk.ignore(); // ignore (
 
-			VarDecl* init = parseVarDecl(tk, false);
-			Expr* counter = parseExpr(tk);
-			Expr* check = parseExpr(tk, false, false, false, true);
+			VarDecl* init = parseVarDecl(tk, false, {}, { TokenType::SEMICOLON });
+			tk.ignore();
+			Expr* counter = parseExpr(tk, { TokenType::SEMICOLON });
+			tk.ignore();
+			Expr* check = parseExpr(tk, { TokenType::PAREN_CL });
+			tk.ignore();
 
 			if (!tk.match(TokenType::BRACE_OP)) throw "Invalid syntax for For block!";
 
@@ -398,7 +418,8 @@ namespace MochaLang
 			tk.ignore(); // ignore while keyword
 			tk.ignore(); // ignore (
 
-			Expr* check = parseExpr(tk, false, false, false, true);
+			Expr* check = parseExpr(tk, { TokenType::PAREN_CL });
+			tk.ignore(); // ignore )
 
 			if (!tk.match(TokenType::BRACE_OP)) throw "Invalid syntax for While block!";
 
@@ -449,7 +470,7 @@ namespace MochaLang
 				return new ImportStmt(imports);
 			}
 			else {
-				auto imp = parseExpr(tk, false, false, true);
+				auto imp = parseExpr(tk, { TokenType::SEMICOLON });
 				return new ImportStmt({ imp });
 			}
 		}

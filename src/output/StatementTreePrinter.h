@@ -12,6 +12,7 @@ namespace MochaLang
 		const std::unordered_map<StmtType, std::string> stmtDebugStrings = {
 			{ StmtType::NUMBER, "Number" },
 			{ StmtType::IDEN, "Identifier" },
+			{ StmtType::RAW_STRING, "String Literal" },
 			{ StmtType::FUNCTION_CALL, "FunctionCall" },
 			{ StmtType::FUNCTION_DECL, "FunctionDecl" },
 
@@ -108,6 +109,10 @@ namespace MochaLang
 
 			case StmtType::IDEN:
 				std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::IDEN) << "] " << ((Identifier*)stmt)->get() << std::endl;
+				break;
+
+			case StmtType::RAW_STRING:
+				std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::RAW_STRING) << "] " << ((RawString*)stmt)->get() << std::endl;
 				break;
 
 			case StmtType::FUNCTION_CALL:
