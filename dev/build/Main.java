@@ -18,7 +18,7 @@ class TranspileTest {
   }
   public void main() {
     for (int i = 0; i <= 5; i = (i + 1)) {
-      System.out.println("okay ${factorial(i)}");
+      System.out.println(((((("" + (i + 1)) + ". The factorial of ") + i) + " is ") + factorial(i)) + ".");
     }
   }
 }

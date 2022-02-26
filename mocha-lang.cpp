@@ -24,8 +24,8 @@ int main()
 
 	std::string s = fileContents;
 	cout << s << endl << endl;
-	auto lexer = MochaLang::Lexer::Tokenizer();
-	auto tokens = lexer.tokenize(s);
+	auto lexer = MochaLang::Lexer::Tokenizer(s);
+	auto tokens = lexer.tokenize();
 
 	for (auto& v : tokens.get_tokens()) cout << "[" << v.tokenValue << "]" << endl;
 

@@ -12,8 +12,13 @@ namespace MochaLang
 	namespace Lexer 
 	{
 		class Tokenizer {
+		private:
+			std::string data;
+			int i;
+
 		public:
-			TokenStream tokenize(std::string&);
+			Tokenizer(std::string& data) : data(data), i(0) { }
+			TokenStream tokenize(bool = false);
 		};
 
 	}

@@ -103,12 +103,11 @@ namespace MochaLang
 
 
 
-		TokenStream Tokenizer::tokenize(std::string& data) {
+		TokenStream Tokenizer::tokenize(bool parsingInterpolatedString) {
 
 			TokenStream tokens;
 
 			int len = data.size();
-			int i = 0;
 
 #define CURR data[i]
 #define PREV data[i - 1]
@@ -169,11 +168,38 @@ namespace MochaLang
 				if (CURR == '"') {
 					std::string str;
 					++i;
+					bool exprAdded = false;
+					std::string __ADD = "+";
+					std::string __PAREN_OPEN = "(";
+					std::string __PAREN_CLOSE = ")";
 					while (!(CURR == '"' && PREV != '\\')) {
+						if (CURR == '$') {
+							i += 2; // TODO: check if next character is {
+
+							tokens.push_back(str, TokenType::RAW_STRING, 0, 0);
+							tokens.push_back(__ADD, TokenType::ADD, 0, 0);
+
+							auto expr = tokenize(true);
+
+							if (expr.get_tokens().size() > 1) tokens.push_back(__PAREN_OPEN, TokenType::PAREN_OP, 0, 0);
+							for (auto token : expr.get_tokens()) {
+								tokens.push_back(token.tokenValue, token.tokType, token.linenumber, token.charnumber);
+							}
+							if (expr.get_tokens().size() > 1) tokens.push_back(__PAREN_CLOSE, TokenType::PAREN_CL, 0, 0);
+							exprAdded = true;
+							str = "";
+							continue;
+						}
+
+						if (exprAdded) {
+							exprAdded = false;
+							tokens.push_back(__ADD, TokenType::ADD, 0, 0);
+						}
 						str.push_back(CURR);
 						++i;
 					}
-					tokens.push_back(str, TokenType::RAW_STRING, 0, 0);
+					if (!str.empty())
+						tokens.push_back(str, TokenType::RAW_STRING, 0, 0);
 					++i;
 					continue;
 				}
@@ -199,6 +225,8 @@ namespace MochaLang
 
 				// Operators
 				{
+					if (CURR == '}' && parsingInterpolatedString) { ++i; break; }
+
 					std::string op;
 					while (op.empty() || (i < len && operators.count(op))) {
 						op.push_back(CURR);
