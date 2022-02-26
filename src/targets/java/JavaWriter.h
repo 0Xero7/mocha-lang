@@ -17,7 +17,9 @@ namespace MochaLang {
 			private:
 				PrettyWriter pw;
 
-				void writeExpr(Expr*, bool endWithSemiColon = true);
+				void writeStatement(Statement*);
+
+				void writeExpr(Expr*, bool endWithSemiColon = true, bool = true);
 
 				void writeBlock(BlockStmt*, bool = true);
 
@@ -37,6 +39,10 @@ namespace MochaLang {
 
 				void writeAttributes(std::vector<Attribute>&);
 
+				void writeFor(ForStmt*);
+
+				void writeIf(IfStmt*);
+
 				void write(Statement* program) {
 					writeBlock((BlockStmt*)program, false);
 				}
@@ -45,8 +51,21 @@ namespace MochaLang {
 				JavaWriter(std::string indentText) : pw(PrettyWriter(indentText)) { }
 
 				void transpileToJava(std::string outputPath, Statement* program) {
-					write(program);
+					auto className = ((ClassStmt*)(((BlockStmt*)program)->get(0)))->getClassName();
 
+					std::stringstream ss;
+					ss << "package com.company;\n";
+					ss << "\n";
+					ss << "class Main {\n";
+					ss << "  public static void main(String[] args) {\n";
+					ss << "    var userClass = new " << className << "();\n";
+					ss << "    userClass.main();\n";
+					ss << "  }\n";
+					ss << "}\n\n";
+
+					pw.rawWrite(ss.str());
+
+					write(program);
 					std::ofstream file;
 					file.open(outputPath);
 					file << pw.getString();

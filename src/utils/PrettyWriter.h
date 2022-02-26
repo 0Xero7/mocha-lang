@@ -30,6 +30,10 @@ public:
 		indent = "";
 	}
 
+	void rawWrite(std::string& str) {
+		ss << str;
+	}
+
 	void increaseIndent() {
 		if (++indentLevel > 0) indent += indentText;
 	}

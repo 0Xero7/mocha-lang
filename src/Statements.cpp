@@ -63,9 +63,9 @@ namespace MochaLang
 	ReturnStmt::ReturnStmt(Expr* value) : Statement(StmtType::RETURN), value(value) { }
 	Expr* ReturnStmt::getValue() { return value; }
 
-	ForStmt::ForStmt(Expr* init, Expr* check, Expr* counter, BlockStmt* body)
+	ForStmt::ForStmt(VarDecl* init, Expr* check, Expr* counter, BlockStmt* body)
 		: Statement(StmtType::FOR), init(init), check(check), counter(counter), body(body) { }
-	Expr* ForStmt::getInit() { return init; }
+	VarDecl* ForStmt::getInit() { return init; }
 	Expr* ForStmt::getCounter() { return counter; }
 	Expr* ForStmt::getCheck() { return check; }
 	BlockStmt* ForStmt::getBody() { return body; }

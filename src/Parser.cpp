@@ -330,7 +330,7 @@ namespace MochaLang
 
 			if (tk.match(TokenType::ASSIGN)) {
 				tk.ignore();
-				auto rhs = parseExpr(tk, false);
+				auto rhs = parseExpr(tk, false, false, true);
 				expr = new BinaryOp(new Identifier(varName), StmtType::OP_ASSIGN, rhs);
 			}
 
@@ -383,7 +383,7 @@ namespace MochaLang
 			tk.ignore(); // ignore for keyword
 			tk.ignore(); // ignore (
 
-			Expr* init = parseExpr(tk);
+			VarDecl* init = parseVarDecl(tk, false);
 			Expr* counter = parseExpr(tk);
 			Expr* check = parseExpr(tk, false, false, false, true);
 

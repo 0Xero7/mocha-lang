@@ -22,7 +22,56 @@ const std::unordered_map<MochaLang::StmtType, std::string> stmt2debug = {
 			{ MochaLang::StmtType::OP_DOT, "." },//qqeQR5eblCdjCPzv
 };
 
-void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSemiColon) {
+void MochaLang::Targets::Java::JavaWriter::writeStatement(Statement* S) {
+	switch (S->getType()) {
+	case StmtType::NUMBER:
+	case StmtType::IDEN:
+	case StmtType::OP_ASSIGN:
+	case StmtType::OP_ADD:
+	case StmtType::OP_MINUS:
+	case StmtType::OP_MUL:
+	case StmtType::OP_DIV:
+	case StmtType::OP_EQ:
+	case StmtType::OP_NEQ:
+	case StmtType::OP_GR:
+	case StmtType::OP_GE:
+	case StmtType::OP_LS:
+	case StmtType::OP_LE:
+	case StmtType::OP_DOT:
+		writeExpr((Expr*)S, true);
+		break;
+
+	case StmtType::RETURN:
+		writeReturn((ReturnStmt*)S);
+		break;
+
+	case StmtType::FUNCTION_DECL:
+		writeFuncDecl((FunctionDecl*)S);
+		break;
+
+	case StmtType::VARDECL:
+		writeVarDecl((VarDecl*)S);
+		break;
+
+	case StmtType::IMPORT:
+		writeImports((ImportStmt*)S);
+		break;
+
+	case StmtType::CLASS:
+		writeClass((ClassStmt*)S);
+		break;
+
+	case StmtType::FOR:
+		writeFor((ForStmt*)S);
+		break;
+
+	case StmtType::IF:
+		writeIf((IfStmt*)S);
+		break;
+	}
+}
+
+void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSemiColon, bool firstLayer) {
 	switch (expr->getType()) {
 	case StmtType::NUMBER:
 		pw.write({ std::to_string(((Number*)expr)->get()) });
@@ -45,16 +94,16 @@ void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSem
 	case StmtType::OP_GE:
 	case StmtType::OP_LS:
 	case StmtType::OP_LE:
-		pw.write({ "(" });
-		writeExpr(((BinaryOp*)expr)->getLeft(), false);
+		if (!firstLayer) pw.write({ "(" });
+		writeExpr(((BinaryOp*)expr)->getLeft(), false, false);
 		pw.write({ " ", stmt2debug.at(expr->getType()), " " });
-		writeExpr(((BinaryOp*)expr)->getRight(), false);
-		pw.write({ ")" });
+		writeExpr(((BinaryOp*)expr)->getRight(), false, false);
+		if (!firstLayer) pw.write({ ")" });
 		break;
 	case StmtType::OP_DOT:
-		writeExpr(((BinaryOp*)expr)->getLeft(), false);
+		writeExpr(((BinaryOp*)expr)->getLeft(), false, false);
 		pw.write({ stmt2debug.at(expr->getType()) });
-		writeExpr(((BinaryOp*)expr)->getRight(), false);
+		writeExpr(((BinaryOp*)expr)->getRight(), false, false);
 		break;
 	}
 
@@ -109,45 +158,7 @@ void MochaLang::Targets::Java::JavaWriter::writeBlock(BlockStmt* stmt, bool writ
 	pw.increaseIndent();
 
 	for (int i = 0; i < stmt->size(); ++i) {
-		Statement* S = stmt->get(i);
-		switch (S->getType()) {
-		case StmtType::NUMBER:
-		case StmtType::IDEN:
-		case StmtType::OP_ASSIGN:
-		case StmtType::OP_ADD:
-		case StmtType::OP_MINUS:
-		case StmtType::OP_MUL:
-		case StmtType::OP_DIV:
-		case StmtType::OP_EQ:
-		case StmtType::OP_NEQ:
-		case StmtType::OP_GR:
-		case StmtType::OP_GE:
-		case StmtType::OP_LS:
-		case StmtType::OP_LE:
-		case StmtType::OP_DOT:
-			writeExpr((Expr*)S, true);
-			break;
-
-		case StmtType::RETURN:
-			writeReturn((ReturnStmt*)S);
-			break;
-
-		case StmtType::FUNCTION_DECL:
-			writeFuncDecl((FunctionDecl*)S);
-			break;
-
-		case StmtType::VARDECL:
-			writeVarDecl((VarDecl*)S);
-			break;
-
-		case StmtType::IMPORT:
-			writeImports((ImportStmt*)S);
-			break;
-
-		case StmtType::CLASS:
-			writeClass((ClassStmt*)S);
-			break;
-		}
+		writeStatement(stmt->get(i));
 	}
 
 	pw.decreaseIndent();
@@ -180,6 +191,29 @@ void MochaLang::Targets::Java::JavaWriter::writeClass(ClassStmt* cls) {
 	pw.decreaseIndent();
 	pw.write({ "}" });
 	pw.writeNewLine();
+}
+
+void MochaLang::Targets::Java::JavaWriter::writeFor(ForStmt* cls) {
+	pw.write({ "for (" });
+	writeVarDecl(cls->getInit(), false);
+	pw.write({ "; " });
+	writeExpr(cls->getCheck(), false);
+	pw.write({ "; " });
+	writeExpr(cls->getCounter(), false);
+	pw.write({ ") " });
+	writeBlock(cls->getBody());
+}
+
+void MochaLang::Targets::Java::JavaWriter::writeIf(IfStmt* ifs) {
+	pw.write({ "if (" });
+	writeExpr(ifs->getConditional(), false);
+	pw.write({ ") " });
+	writeStatement(ifs->getTrueBlock());
+
+	if (ifs->getFalseBlock() != nullptr) {
+		pw.write({ "else " });
+		writeStatement(ifs->getFalseBlock());
+	}
 }
 
 void MochaLang::Targets::Java::JavaWriter::writeAttributes(std::vector<MochaLang::Attribute>& attrbs) {

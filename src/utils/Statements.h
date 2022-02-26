@@ -187,13 +187,13 @@ namespace MochaLang
 	class ForStmt : public Statement
 	{
 	private:
-			Expr* init;
+			VarDecl* init;
 			Expr* check;
 			Expr* counter;
 			BlockStmt* body;
 	public:
-			ForStmt(Expr*,Expr*,Expr*,BlockStmt*);
-			Expr* getInit();
+			ForStmt(VarDecl*,Expr*,Expr*,BlockStmt*);
+			VarDecl* getInit();
 			Expr* getCheck();
 			Expr* getCounter();
 			BlockStmt* getBody();
