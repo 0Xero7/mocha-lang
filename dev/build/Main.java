@@ -1,5 +1,8 @@
-class Test {
-  public static int sum(int a, int b) {
+class Main {
+  int sum(int a, int b) {
     return (a + b);
+  }
+  public void main() {
+    System.out.println(sum(4, 9));
   }
 }

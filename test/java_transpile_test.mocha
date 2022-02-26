@@ -1,7 +1,11 @@
 
 
-class Test {
-	pub static int sum(int a, int b) {
+class Main {
+	int sum(int a, int b) {
 		return a + b;
+	}
+
+	pub void main() {
+		System.out.println(sum(4, 9));
 	}
 }

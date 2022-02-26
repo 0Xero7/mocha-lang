@@ -7,6 +7,7 @@ namespace MochaLang
 	{
 		NEWLINE,
 
+		VOID,
 		INT,
 		FLOAT,
 		STRING,

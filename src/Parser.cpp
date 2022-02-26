@@ -50,6 +50,7 @@ namespace MochaLang
 					block->push_back(parse(tk, true));
 					break;
 
+				case TokenType::VOID:
 				case TokenType::INT:
 				case TokenType::FLOAT:
 					if (tk.peekType(2) == TokenType::PAREN_OP) {

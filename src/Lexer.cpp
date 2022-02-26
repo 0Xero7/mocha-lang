@@ -15,6 +15,7 @@ namespace MochaLang
 			"return",
 
 			"var",
+			"void",
 			"int",
 			"float",
 			"string",
@@ -86,6 +87,7 @@ namespace MochaLang
 		const std::unordered_map<std::string, TokenType> tok2KeyWType = {
 			{ "if", TokenType::IF },
 			{ "else", TokenType::ELSE },
+			{ "void", TokenType::VOID },
 			{ "int", TokenType::INT },
 			{ "float", TokenType::FLOAT },
 			{ "return", TokenType::RETURN },
