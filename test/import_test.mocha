@@ -1,0 +1,6 @@
+
+class ImportTest {
+	pub static void print() {
+		System.out.println("Okay!");
+	}
+}

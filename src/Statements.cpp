@@ -11,6 +11,8 @@ namespace MochaLang
 	}
 	int BlockStmt::size() { return statements.size(); }
 	Statement* BlockStmt::get(int index) { return statements[index]; }
+	
+	void MochaLang::BlockStmt::replace(int index, Statement* replaceWith) { statements[index] = replaceWith; }
 
 	Expr::Expr(StmtType type) : Statement(type) { }
 
@@ -89,5 +91,9 @@ namespace MochaLang
 	ImportStmt::ImportStmt(std::vector<Expr*> imports)
 	: Statement(StmtType::IMPORT), imports(imports){ }
 	std::vector<Expr*> ImportStmt::getImports() { return imports; }
+		
+	PackageStmt::PackageStmt(Expr* packageName)
+	: Statement(StmtType::PACKAGE), packageName(packageName){ }
+	Expr* PackageStmt::getPackageName() { return packageName; }
 	//ypFDtJzEFW08p3xH
 }

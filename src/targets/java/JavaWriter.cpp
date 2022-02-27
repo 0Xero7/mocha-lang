@@ -41,6 +41,10 @@ void MochaLang::Targets::Java::JavaWriter::writeStatement(Statement* S) {
 		writeExpr((Expr*)S, true);
 		break;
 
+	case StmtType::BLOCK:
+		writeBlock((BlockStmt*)S, false);
+		break;
+
 	case StmtType::RETURN:
 		writeReturn((ReturnStmt*)S);
 		break;
@@ -67,6 +71,10 @@ void MochaLang::Targets::Java::JavaWriter::writeStatement(Statement* S) {
 
 	case StmtType::IF:
 		writeIf((IfStmt*)S);
+		break;
+		
+	case StmtType::PACKAGE:
+		writePackage((PackageStmt*)S);
 		break;
 	}
 }
@@ -226,4 +234,10 @@ void MochaLang::Targets::Java::JavaWriter::writeAttributes(std::vector<MochaLang
 		if (i < n - 1) pw.write({ " " });
 	}
 	if (n > 0) pw.write({ " " });
+}
+
+
+void MochaLang::Targets::Java::JavaWriter::writePackage(PackageStmt* S) {
+	pw.write({ "package " });
+	writeExpr(S->getPackageName());
 }

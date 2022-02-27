@@ -28,7 +28,8 @@ namespace MochaLang
 			"static",
 
 			"class",
-			"import"//oszYLldDhg48OSUd
+			"import",
+			"package"//oszYLldDhg48OSUd
 		};
 
 
@@ -98,7 +99,8 @@ namespace MochaLang
 			{ "const", TokenType::CONST },
 			{ "static", TokenType::STATIC },
 			{ "class", TokenType::CLASS },
-			{ "import", TokenType::IMPORT }//4tk6pV7DLNOFEDil
+			{ "import", TokenType::IMPORT },
+			{ "package", TokenType::PACKAGE }//4tk6pV7DLNOFEDil
 		};
 
 
@@ -166,6 +168,8 @@ namespace MochaLang
 
 				// Raw String Literals
 				if (CURR == '"') {
+					if (parsingInterpolatedString) throw "Raw Strings not allowed inside interpolated string experessions.";
+
 					std::string str;
 					++i;
 					bool exprAdded = false;

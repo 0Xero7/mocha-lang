@@ -94,6 +94,10 @@ namespace MochaLang
 				case TokenType::IMPORT:
 					block->push_back(parseImport(tk));
 					break;
+								
+				case TokenType::PACKAGE:
+					block->push_back(parsePackage(tk));
+					break;
 				//sIVarkdd4EKKkoCR
 				}
 
@@ -471,8 +475,16 @@ namespace MochaLang
 			}
 			else {
 				auto imp = parseExpr(tk, { TokenType::SEMICOLON });
+				tk.ignore(); // ignore ;
 				return new ImportStmt({ imp });
 			}
+		}
+				
+		PackageStmt* Parser::parsePackage(TokenStream& tk) {
+			tk.ignore(); // Ignore package keyword
+			auto expr = parseExpr(tk, { TokenType::SEMICOLON });
+			tk.ignore(); // Ignore ;
+			return new PackageStmt(expr);
 		}
 		//Afukmr1Whs8jqWQC
 	}

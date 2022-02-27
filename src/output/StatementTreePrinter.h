@@ -37,7 +37,8 @@ namespace MochaLang
 			{ StmtType::FOR, "For" },
 			{ StmtType::WHILE, "While" },
 			{ StmtType::CLASS, "Class" },
-			{ StmtType::IMPORT, "Import" }//Go47lIdJ5zn2ybDK
+			{ StmtType::IMPORT, "Import" },
+			{ StmtType::PACKAGE, "Package" }//Go47lIdJ5zn2ybDK
 		};
 
 		const std::unordered_map<StmtType, std::string> stmt2debug = {
@@ -73,6 +74,7 @@ namespace MochaLang
 		void debug_while(std::string&, WhileStmt*, int);
 		void debug_class(std::string&, ClassStmt*, int);
 		void debug_import(std::string&, ImportStmt*, int);
+		void debug_package(std::string&, PackageStmt*, int);
 		//4zaXrM9M592b5JOv
 
 		void debug_attr(Attribute& attr, const std::string& indent) {
@@ -153,6 +155,10 @@ namespace MochaLang
 			
 			case StmtType::IMPORT:
 				debug_import(indentText, (ImportStmt*)stmt, indent);
+				break;
+			
+			case StmtType::PACKAGE:
+				debug_package(indentText, (PackageStmt*)stmt, indent);
 				break;
 			//7JeJRo59pzuqqjT7
 			}
@@ -262,6 +268,12 @@ namespace MochaLang
 			std::cout << indentText << " <Imports>" << std::endl;
 			for (Expr* imp : stmt->getImports())
 				debug(imp, indent + 1);
+		}
+		
+		void debug_package(std::string& indentText, PackageStmt* stmt, int indent) {
+			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::PACKAGE) << "]" << std::endl;
+			std::cout << indentText << " <PackageName>" << std::endl;
+			debug(stmt->getPackageName(), indent + 1);
 		}
 		//ncIOsrBJYnXs1Zuj
 	}

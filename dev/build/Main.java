@@ -1,12 +1,9 @@
 package com.company;
-
-class Main {
-  public static void main(String[] args) {
-    var userClass = new TranspileTest();
-    userClass.main();
+  class ImportTest {
+    public static void print() {
+      System.out.println("Okay!");
+    }
   }
-}
-
 class TranspileTest {
   int sum(int a, int b) {
     int c = a + b;
@@ -17,8 +14,19 @@ class TranspileTest {
     else return n * factorial(n - 1);
   }
   public void main() {
-    for (int i = 0; i <= 5; i = (i + 1)) {
-      System.out.println(((((("" + (i + 1)) + ". The factorial of ") + i) + " is ") + factorial(i)) + ".");
-    }
+    ImportTest.println((("" + (3 + 4)) + " okay ") + (5 + 6));
   }
 }
+class Utils {
+  void println() {
+    ImportTest.println("okay");
+  }
+}
+class Main {
+  public static void main(String[] args) {
+    var userClass = new TranspileTest();
+    userClass.main();
+  }
+}
+
+

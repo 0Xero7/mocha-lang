@@ -10,28 +10,44 @@
 #include "src/Parser.h"
 #include "src/output/StatementTreePrinter.h"
 #include "src/targets/java/JavaWriter.h"
+#include "src/DependencyResolver.h"
 
 using namespace std;
 
 int main()
-{// if (x * (abc + def)) 
+{
+	std::vector<std::string> filesToParse = {
+		"C:/Users/smpsm/source/repos/mocha-lang/test/java_transpile_test.mocha",
+		"C:/Users/smpsm/source/repos/mocha-lang/test/import_test.mocha"
+	};
 
-	std::ifstream in("C:/Users/smpsm/source/repos/mocha-lang/test/java_transpile_test.mocha", std::ios::in);
-	string fileContents((std::istreambuf_iterator<char>(in)),
-		std::istreambuf_iterator<char>());
-	//std::stringstream buffer;
-	//buffer << in.rdbuf();
+	std::string mainFile = "C:/Users/smpsm/source/repos/mocha-lang/test/java_transpile_test.mocha";
 
-	std::string s = fileContents;
-	cout << s << endl << endl;
-	auto lexer = MochaLang::Lexer::Tokenizer(s);
-	auto tokens = lexer.tokenize();
+	std::unordered_map<std::string, MochaLang::Statement*> parseTrees;
 
-	for (auto& v : tokens.get_tokens()) cout << "[" << v.tokenValue << "]" << endl;
+	for (std::string& path : filesToParse) {
+		std::ifstream in(path, std::ios::in);
+		string fileContents((std::istreambuf_iterator<char>(in)),
+			std::istreambuf_iterator<char>());
+		//std::stringstream buffer;
+		//buffer << in.rdbuf();
 
-	auto parser = MochaLang::Parser::Parser();
-	auto tree = parser.parse(tokens, false, true);
+		std::string s = fileContents;
+		cout << s << endl << endl;
+		auto lexer = MochaLang::Lexer::Tokenizer(s);
+		auto tokens = lexer.tokenize();
 
+		for (auto& v : tokens.get_tokens()) cout << "[" << v.tokenValue << "]" << endl;
+
+		auto parser = MochaLang::Parser::Parser();
+		auto tree = parser.parse(tokens, false, true);
+		
+		parseTrees[path] = tree;
+	}
+
+	auto dependencyResolver = MochaLang::Passes::DependencyResolver(parseTrees);
+	dependencyResolver.resolveDependecies(parseTrees.at(mainFile));
+	auto tree = parseTrees.at(mainFile);
 	cout << endl << endl;
 	MochaLang::Debug::debug(tree, 0);
 	//cout << "ok";

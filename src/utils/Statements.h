@@ -41,7 +41,8 @@ namespace MochaLang
 		FOR,
 		WHILE,
 		CLASS,
-		IMPORT//UI5xb4SbtGlYc2W8
+		IMPORT,
+		PACKAGE//UI5xb4SbtGlYc2W8
 	};
 
 
@@ -69,6 +70,7 @@ namespace MochaLang
 		void push_back(Statement*);
 		int size();
 		Statement* get(int);
+		void replace(int, Statement*);
 	};
 
 
@@ -242,6 +244,15 @@ namespace MochaLang
 	public:
 			ImportStmt(std::vector<Expr*>);
 			std::vector<Expr*> getImports();
+	};
+		
+	class PackageStmt : public Statement
+	{
+	private:
+			Expr* packageName;
+	public:
+			PackageStmt(Expr*);
+			Expr* getPackageName();
 	};
 	//I4d7ECHJcvXW1jAh
 }

@@ -54,7 +54,8 @@ namespace MochaLang
 		CONST,
 		STATIC,
 		CLASS,
-		IMPORT//3zvqzoHKduFtbeJy
+		IMPORT,
+		PACKAGE//3zvqzoHKduFtbeJy
 	};
 
 
