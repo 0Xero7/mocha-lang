@@ -43,6 +43,13 @@ namespace MochaLang
 
 				case TokenType::IDEN:
 				case TokenType::NUMBER:
+					// Handle the default constructor declaration
+					if (tk.peekValue() == currentClassName) {
+						block->push_back(parseFunctionDecl(tk, { MochaLangClassConstructorAttr() }, true));
+						break;
+					}
+
+					// Otherwise, its just an expr
 					block->push_back(parseExpr(tk, { TokenType::SEMICOLON }));
 
 					// Since Exprs dont read the ending token, ignore it
@@ -363,10 +370,12 @@ namespace MochaLang
 			return decl;
 		}
 
-		FunctionDecl* Parser::parseFunctionDecl(TokenStream& tk, const std::vector<Attribute>& attrbs) {
+		FunctionDecl* Parser::parseFunctionDecl(TokenStream& tk, const std::vector<Attribute>& attrbs, bool isConstructor) {
 			Token token;
-			tk.accept(token);
-			auto returnType = token.tokenValue;
+
+			if (!isConstructor)
+				tk.accept(token);
+			auto returnType = (isConstructor ? "" : token.tokenValue);
 
 			tk.accept(token);
 			auto functionName = token.tokenValue;
@@ -438,7 +447,13 @@ namespace MochaLang
 			tk.accept(token);
 
 			auto className = token.tokenValue;
+
+			std::string oldClassName = currentClassName;
+			currentClassName = className;
+
 			auto block = (BlockStmt*)parse(tk);
+
+			currentClassName = oldClassName;
 
 			std::vector<FunctionDecl*> fdecl;
 			std::vector<VarDecl*> vdecl;

@@ -61,6 +61,7 @@ namespace MochaLang
 			{ AttrType::PRIVATE, "Private"},
 			{ AttrType::CONST, "Const"},
 			{ AttrType::STATIC, "Static"},
+			{ AttrType::__MOCHA__CLASS_CONTRUCTOR, "<Implied> Construcor"},
 		};
 
 		void debug_bin_op(std::string&, Statement*, int);

@@ -5,6 +5,8 @@ std::unordered_map<MochaLang::AttrType, std::string> attr2java{
 				{ MochaLang::AttrType::PRIVATE, "private" },
 				{ MochaLang::AttrType::CONST, "const" },
 				{ MochaLang::AttrType::STATIC, "static" },
+
+				{ MochaLang::AttrType::__MOCHA__CLASS_CONTRUCTOR, "" },
 };
 
 const std::unordered_map<MochaLang::StmtType, std::string> stmt2debug = {
@@ -51,6 +53,10 @@ void MochaLang::Targets::Java::JavaWriter::writeStatement(Statement* S) {
 
 	case StmtType::FUNCTION_DECL:
 		writeFuncDecl((FunctionDecl*)S);
+		break;
+
+	case StmtType::FUNCTION_CALL:
+		writeExpr((FunctionCall*)S);
 		break;
 
 	case StmtType::VARDECL:
@@ -122,8 +128,13 @@ void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSem
 }
 
 void MochaLang::Targets::Java::JavaWriter::writeFuncDecl(FunctionDecl* decl) {
-	writeAttributes(decl->getAttrbs());
-	pw.write({ decl->getReturnType(), " ", decl->getFunctionName(), "(" });
+	if (!decl->getAttrbs().empty() && decl->getAttrbs()[0].getType() == AttrType::__MOCHA__CLASS_CONTRUCTOR) {
+		pw.write({ decl->getFunctionName(), "(" });
+	}
+	else {
+		writeAttributes(decl->getAttrbs());
+		pw.write({ decl->getReturnType(), " ", decl->getFunctionName(), "(" });
+	}
 	writeStmtCollection(decl->getFormalParams());
 	pw.write({ ") " });
 	writeBlock(decl->getBody());

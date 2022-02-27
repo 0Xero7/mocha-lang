@@ -51,6 +51,14 @@ namespace MochaLang
 		}
 
 
+		std::string peekValue() {
+			if (eof())
+				throw "Seeking value after end of streams.";
+
+			return tokens[i].tokenValue;
+		}
+
+
 		std::vector<Token> get_tokens() { return tokens; }
 
 	};

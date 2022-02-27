@@ -47,8 +47,10 @@ namespace MochaLang
 
 		class Parser
 		{
-		public:
+		private:
+			std::string currentClassName = "";
 
+		public:
 			Statement* parse(TokenStream&, bool, bool);
 
 			bool ignoreUntilNextStatement(TokenStream&);
@@ -63,7 +65,7 @@ namespace MochaLang
 
 			IfStmt* parseIf(TokenStream&);
 
-			FunctionDecl* parseFunctionDecl(TokenStream&, const std::vector<Attribute> & = {});
+			FunctionDecl* parseFunctionDecl(TokenStream&, const std::vector<Attribute> & = {}, bool = false);
 
 			ReturnStmt* parseReturn(TokenStream&);
 			

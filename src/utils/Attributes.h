@@ -9,7 +9,9 @@ namespace MochaLang {
 		PRIVATE,
 		PUBLIC,
 		CONST,
-		STATIC
+		STATIC,
+
+		__MOCHA__CLASS_CONTRUCTOR
 	};
 
 	class Attribute {
@@ -40,5 +42,10 @@ namespace MochaLang {
 	class StaticAttr : public Attribute {
 	public:
 		StaticAttr() : Attribute(AttrType::STATIC) { }
+	};
+
+	class MochaLangClassConstructorAttr : public Attribute {
+	public:
+		MochaLangClassConstructorAttr() : Attribute(AttrType::__MOCHA__CLASS_CONTRUCTOR) { }
 	};
 };

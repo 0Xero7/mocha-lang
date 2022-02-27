@@ -1,6 +1,14 @@
 
 class ImportTest {
-	pub static void print() {
+	int value;
+
+	ImportTest(int value) {
+		this.value = value;
+	}
+
+	ImportTest() { }
+
+	pub static void println() {
 		System.out.println("Okay!");
 	}
 }

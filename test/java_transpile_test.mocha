@@ -4,23 +4,7 @@ package com.company;
 import "C:/Users/smpsm/source/repos/mocha-lang/test/import_test.mocha";
 
 class TranspileTest {
-	int sum(int a, int b) {
-		int c = a + b;
-		return c;
-	}
-
-	int factorial(int n) {
-		if (n <= 0) return 1;
-		else return n * factorial(n - 1);
-	}
-
 	pub void main() {
-		ImportTest.println("${3 + 4} okay ${5 + 6}");
-	}
-}
-
-class Utils {
-	void println() {
-		ImportTest.println("okay");
+		ImportTest(5);
 	}
 }
