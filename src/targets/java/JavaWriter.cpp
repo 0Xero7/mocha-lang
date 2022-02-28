@@ -59,6 +59,10 @@ void MochaLang::Targets::Java::JavaWriter::writeStatement(Statement* S) {
 		writeExpr((FunctionCall*)S);
 		break;
 
+	case StmtType::CONSTRUCTOR_CALL:
+		writeExpr((ConstructorCall*)S);
+		break;
+
 	case StmtType::VARDECL:
 		writeVarDecl((VarDecl*)S);
 		break;
@@ -95,6 +99,9 @@ void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSem
 		break;
 	case StmtType::FUNCTION_CALL:
 		writeFunctionCall((FunctionCall*)expr);
+		break;
+	case StmtType::CONSTRUCTOR_CALL:
+		writeConstructorCall((ConstructorCall*)expr);
 		break;
 	case StmtType::RAW_STRING:
 		pw.write({ "\"", ((RawString*)expr)->get(), "\""});
@@ -171,6 +178,16 @@ void MochaLang::Targets::Java::JavaWriter::writeFunctionCall(FunctionCall* fcall
 		if (i < fcall->parameterSize() - 1) pw.write({ ", " });
 	}
 	pw.write({ ")" });
+}
+
+void MochaLang::Targets::Java::JavaWriter::writeConstructorCall(ConstructorCall* ccall) {
+	auto fcall = ccall->getFunctionCall();
+	pw.write({"(new ",fcall->getFuncName(), "("});
+	for (int i = 0; i < fcall->parameterSize(); ++i) {
+		writeExpr(fcall->getParamAt(i), false);
+		if (i < fcall->parameterSize() - 1) pw.write({ ", " });
+	}
+	pw.write({ "))" });
 }
 
 void MochaLang::Targets::Java::JavaWriter::writeBlock(BlockStmt* stmt, bool writeBraces) {

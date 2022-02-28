@@ -7,12 +7,14 @@ package com.company;
     ImportTest() {
     }
     public static void println() {
-      System.out.println("Okay!");
+    }
+    public int sum(int a, int b) {
+      return a + b;
     }
   }
 class TranspileTest {
   public void main() {
-    ImportTest(5);
+    test = ImportTest();
   }
 }
 class Main {

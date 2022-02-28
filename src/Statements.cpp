@@ -41,6 +41,12 @@ namespace MochaLang
 	int FunctionCall::parameterSize() { return parameters.size(); }
 	void FunctionCall::addParameter(Expr* expr) { parameters.push_back(expr); }
 	Expr* FunctionCall::getParamAt(int index) { return parameters[index]; }
+	void FunctionCall::replaceParamAt(int index, Statement* stmt) { parameters[index] = (Expr*)stmt; }
+
+	ConstructorCall::ConstructorCall(FunctionCall* cnstrCall)
+			: Expr(StmtType::CONSTRUCTOR_CALL), cnstrCall(cnstrCall) { }
+	FunctionCall* MochaLang::ConstructorCall::getFunctionCall() { return cnstrCall; }
+	
 
 	IfStmt::IfStmt() : Statement(StmtType::IF) { }
 	IfStmt::IfStmt(Expr* conditional, Statement* trueBlock, Statement* falseBlock) :

@@ -8,6 +8,7 @@
 #include "mocha-lang.h"
 #include "src/Lexer.h"
 #include "src/Parser.h"
+#include "src/passes/Base.h"
 #include "src/output/StatementTreePrinter.h"
 #include "src/targets/java/JavaWriter.h"
 #include "src/DependencyResolver.h"
@@ -24,6 +25,7 @@ int main()
 	std::string mainFile = "C:/Users/smpsm/source/repos/mocha-lang/test/java_transpile_test.mocha";
 
 	std::unordered_map<std::string, MochaLang::Statement*> parseTrees;
+	std::unordered_set<std::string> classes;
 
 	for (std::string& path : filesToParse) {
 		std::ifstream in(path, std::ios::in);
@@ -41,6 +43,12 @@ int main()
 
 		auto parser = MochaLang::Parser::Parser();
 		auto tree = parser.parse(tokens, false, true);
+
+		auto temp = (MochaLang::BlockStmt*)tree;
+		for (int i = 0; i < temp->size(); ++i) {
+			if (temp->get(i)->getType() == MochaLang::StmtType::CLASS)
+				classes.insert(((MochaLang::ClassStmt*)(temp->get(i)))->getClassName());
+		}
 		
 		parseTrees[path] = tree;
 	}
@@ -48,6 +56,10 @@ int main()
 	auto dependencyResolver = MochaLang::Passes::DependencyResolver(parseTrees);
 	dependencyResolver.resolveDependecies(parseTrees.at(mainFile));
 	auto tree = parseTrees.at(mainFile);
+
+	auto basePass = MochaLang::Passes::BasePass::BasePass(classes);
+	basePass.performBasePass(tree, &tree);
+
 	cout << endl << endl;
 	MochaLang::Debug::debug(tree, 0);
 	//cout << "ok";

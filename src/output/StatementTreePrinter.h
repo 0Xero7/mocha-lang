@@ -38,6 +38,7 @@ namespace MochaLang
 			{ StmtType::WHILE, "While" },
 			{ StmtType::CLASS, "Class" },
 			{ StmtType::IMPORT, "Import" },
+			{ StmtType::CONSTRUCTOR_CALL, "Constructor Call <new>" },
 			{ StmtType::PACKAGE, "Package" }//Go47lIdJ5zn2ybDK
 		};
 
@@ -76,6 +77,7 @@ namespace MochaLang
 		void debug_class(std::string&, ClassStmt*, int);
 		void debug_import(std::string&, ImportStmt*, int);
 		void debug_package(std::string&, PackageStmt*, int);
+		void debug_cnstr_call(std::string& indentText, ConstructorCall* stmt, int indent);
 		//4zaXrM9M592b5JOv
 
 		void debug_attr(Attribute& attr, const std::string& indent) {
@@ -160,6 +162,10 @@ namespace MochaLang
 			
 			case StmtType::PACKAGE:
 				debug_package(indentText, (PackageStmt*)stmt, indent);
+				break;
+
+			case StmtType::CONSTRUCTOR_CALL:
+				debug_cnstr_call(indentText, (ConstructorCall*)stmt, indent);
 				break;
 			//7JeJRo59pzuqqjT7
 			}
@@ -275,6 +281,12 @@ namespace MochaLang
 			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::PACKAGE) << "]" << std::endl;
 			std::cout << indentText << " <PackageName>" << std::endl;
 			debug(stmt->getPackageName(), indent + 1);
+		}
+
+		void debug_cnstr_call(std::string& indentText, ConstructorCall* stmt, int indent) {
+			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::CONSTRUCTOR_CALL) << "]" << std::endl;
+			std::cout << indentText << " <PackageName>" << std::endl;
+			debug(stmt->getFunctionCall(), indent + 1);
 		}
 		//ncIOsrBJYnXs1Zuj
 	}

@@ -11,6 +11,7 @@ namespace MochaLang
 	{
 		BLOCK,
 
+		CONSTRUCTOR_CALL,
 		FUNCTION_CALL,
 		FUNCTION_DECL,
 		VARDECL,
@@ -130,7 +131,17 @@ namespace MochaLang
 		int parameterSize();
 		Expr* getParamAt(int);
 
+		void replaceParamAt(int index, Statement* stmt);
 		void addParameter(Expr*);
+	};
+
+	class ConstructorCall : public Expr {
+	private:
+		FunctionCall* cnstrCall;
+
+	public:
+		ConstructorCall(FunctionCall*);
+		FunctionCall* getFunctionCall();
 	};
 
 	class IfStmt : public Statement 

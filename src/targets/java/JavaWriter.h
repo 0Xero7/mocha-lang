@@ -32,6 +32,8 @@ namespace MochaLang {
 				void writeReturn(ReturnStmt*);
 
 				void writeFunctionCall(FunctionCall*);
+				
+				void writeConstructorCall(ConstructorCall*);
 
 				void writeImports(ImportStmt*);
 

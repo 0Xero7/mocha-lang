@@ -9,6 +9,10 @@ class ImportTest {
 	ImportTest() { }
 
 	pub static void println() {
-		System.out.println("Okay!");
+
+	}
+
+	pub int sum(int a, int b) {
+		return a + b;
 	}
 }
