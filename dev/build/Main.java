@@ -5,7 +5,7 @@ package com.company;
     }
     ImportTest() {
     }
-    public void println(int n) {
+    public void println(String n) {
       System.out.println(n);
     }
     public int sum(int a, int b) {
@@ -15,7 +15,7 @@ package com.company;
 class TranspileTest {
   public void main() {
     ImportTest test = (new ImportTest());
-    test.println(test.sum(4, 5));
+    test.println(Integer.toString(test.sum(4, 5)));
   }
 }
 class Main {

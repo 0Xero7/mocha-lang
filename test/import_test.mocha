@@ -7,7 +7,7 @@ class ImportTest {
 
 	ImportTest() { }
 
-	pub void println(int n) {
+	pub void println(String n) {
 		BREAKPOINT
 		System.out.println(n);
 	}
