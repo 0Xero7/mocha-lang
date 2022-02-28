@@ -51,6 +51,10 @@ int main()
 		}
 		
 		parseTrees[path] = tree;
+
+		std::cout << "DEBUG MODE\n\nPrinting AST for " << path << "\n\n";
+		MochaLang::Debug::debug(tree, 0);
+		std::cout << "####################################################################\n\n";
 	}
 
 	auto dependencyResolver = MochaLang::Passes::DependencyResolver(parseTrees);

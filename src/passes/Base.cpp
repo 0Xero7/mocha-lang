@@ -55,6 +55,7 @@ void MochaLang::Passes::BasePass::BasePass::handleExpr(Statement* _S, Statement*
 	case StmtType::OP_MUL:
 	case StmtType::OP_DIV:
 	case StmtType::OP_DOT:
+	case StmtType::OP_ASSIGN:
 		binaryOps(S);
 		break;
 
@@ -67,8 +68,9 @@ void MochaLang::Passes::BasePass::BasePass::handleExpr(Statement* _S, Statement*
 void MochaLang::Passes::BasePass::BasePass::handleVarDecl(Statement* _S, Statement** source) {
 	auto S = (VarDecl*)_S;
 
-	if (S->getInit() != nullptr)
-		handleExpr(S->getInit(), (Statement**)&S);
+	if (S->getInit() != nullptr) {
+		handleExpr(S->init, (Statement**)&S->init);
+	}
 }
 
 void MochaLang::Passes::BasePass::BasePass::handleClass(Statement* _S, Statement** source) {
@@ -120,6 +122,10 @@ void MochaLang::Passes::BasePass::BasePass::performBasePass(Statement* stmt, Sta
 		handleFunctionDecl(stmt, source);
 		break;
 
+	case StmtType::VARDECL:
+		handleVarDecl(stmt, source);
+		break;
+
 	case StmtType::FUNCTION_CALL:
 		handleFunctionCall(stmt, source);
 		break;
@@ -137,6 +143,7 @@ void MochaLang::Passes::BasePass::BasePass::performBasePass(Statement* stmt, Sta
 	case StmtType::OP_MUL:
 	case StmtType::OP_DIV:
 	case StmtType::OP_DOT:
+	case StmtType::OP_ASSIGN:
 		handleExpr(stmt, source);
 		break;
 

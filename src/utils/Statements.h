@@ -167,9 +167,9 @@ namespace MochaLang
 		std::vector<Attribute> attrbs;
 		std::string varName;
 		std::string varType;
-		Expr* init;
 
 	public:
+		Expr* init;
 		VarDecl(const std::string&, const std::string&, std::vector<Attribute> = {}, Expr* = nullptr);
 
 		std::string get();

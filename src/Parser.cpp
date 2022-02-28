@@ -43,9 +43,22 @@ namespace MochaLang
 
 				case TokenType::IDEN:
 				case TokenType::NUMBER:
+					if (tk.peekValue() == "BREAKPOINT") {
+						int x = 0;
+						tk.ignore();
+						break;
+					}
+
 					// Handle the default constructor declaration
 					if (tk.peekValue() == currentClassName) {
 						block->push_back(parseFunctionDecl(tk, { MochaLangClassConstructorAttr() }, true));
+						break;
+					}
+
+					// Var Decl
+					if (tk.peekType(1) == TokenType::IDEN) {
+						block->push_back(parseVarDecl(tk, true, attributeAccumulator, { TokenType::SEMICOLON }));
+						tk.ignore();
 						break;
 					}
 
@@ -253,6 +266,7 @@ namespace MochaLang
 						auto* fcall = new FunctionCall(funcName);
 
 						auto parameters = parseFunctionCall(tk);
+						tk.ignore(); // Ignore )
 						for (auto param : parameters) {
 							fcall->addParameter(param);
 						}
@@ -329,7 +343,7 @@ namespace MochaLang
 			std::vector<Expr*> params;
 
 			while (!tk.eof()) {
-				auto expr = parseExpr(tk, { TokenType::COMMA, TokenType::PAREN_CL }, true);
+				auto expr = parseExpr(tk, { TokenType::COMMA, TokenType::PAREN_CL });
 				params.push_back(expr);
 
 				if (tk.peekType() == TokenType::PAREN_CL) break;
@@ -337,7 +351,7 @@ namespace MochaLang
 			}
 
 			// consume ending )
-			tk.ignore();
+			//tk.ignore();
 
 			return params;
 		}

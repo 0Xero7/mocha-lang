@@ -2,11 +2,11 @@ package com.company;
   class ImportTest {int value;
 
     ImportTest(int value) {
-      this.value = value;
     }
     ImportTest() {
     }
-    public static void println() {
+    public void println(int n) {
+      System.out.println(n);
     }
     public int sum(int a, int b) {
       return a + b;
@@ -14,7 +14,8 @@ package com.company;
   }
 class TranspileTest {
   public void main() {
-    test = ImportTest();
+    ImportTest test = (new ImportTest());
+    test.println(test.sum(4, 5));
   }
 }
 class Main {

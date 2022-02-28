@@ -3,13 +3,13 @@ class ImportTest {
 	int value;
 
 	ImportTest(int value) {
-		this.value = value;
 	}
 
 	ImportTest() { }
 
-	pub static void println() {
-
+	pub void println(int n) {
+		BREAKPOINT
+		System.out.println(n);
 	}
 
 	pub int sum(int a, int b) {

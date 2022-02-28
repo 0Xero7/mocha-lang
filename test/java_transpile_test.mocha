@@ -6,5 +6,6 @@ import "C:/Users/smpsm/source/repos/mocha-lang/test/import_test.mocha";
 class TranspileTest {
 	pub void main() {
 		ImportTest test = ImportTest();
+		test.println(test.sum(4, 5));
 	}
 }
