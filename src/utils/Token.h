@@ -44,6 +44,8 @@ namespace MochaLang
 		PAREN_CL,
 		BRACE_OP,
 		BRACE_CL,
+		BRACKET_OP,
+		BRACKET_CL,
 
 		INVALID,
 		FOR,

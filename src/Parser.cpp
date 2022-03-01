@@ -188,6 +188,9 @@ namespace MochaLang
 			std::vector<Expr*> term;
 			std::vector<Expr*> ops;
 
+			StmtType lastInserted = StmtType::NOTHING;
+			bool indexable = false;
+
 			auto popBinOp = [&]() {
 				BinaryOp* top = static_cast<BinaryOp*>(ops.back());
 				ops.pop_back();
@@ -198,6 +201,17 @@ namespace MochaLang
 				term.pop_back();
 
 				term.push_back(top);
+				lastInserted = top->getType();
+				indexable = false;
+			};
+
+			auto pushIndex = [&](Expr* index) {
+				auto indexOf = term.back();
+				term.pop_back();
+
+				term.push_back(new BinaryOp(indexOf, StmtType::INDEX, index));
+				lastInserted = StmtType::INDEX;
+				indexable = true;
 			};
 
 			Token token;
@@ -225,25 +239,48 @@ namespace MochaLang
 
 				case TokenType::NUMBER:
 					term.push_back(new Number(stoi(token.tokenValue)));
+					lastInserted = term.back()->getType();
+					indexable = true;
 					break;
 
 				case TokenType::RAW_STRING:
 					term.push_back(new RawString(token.tokenValue));
+					lastInserted = term.back()->getType();
+					indexable = true;
 					break;
 
 				case TokenType::PAREN_OP:
 					++balance;
 					ops.push_back(new BinaryOp(nullptr, StmtType::PAREN_OPEN, nullptr));
+					lastInserted = ops.back()->getType();
+					indexable = !true;
 					break;
 
 				case TokenType::PAREN_CL:
 					insertUntilParenOpen(ops, term);
+					lastInserted = term.back()->getType();
+
 					--balance;
 					if (functionParamMode && balance < 0) {
 						tk.rewind();
 						exitFlag = true;
 					}
+					indexable = true;
 					break;
+
+				case TokenType::BRACKET_OP:
+					if (indexable) {
+						lastInserted = term.back()->getType();
+						pushIndex(parseExpr(tk, { TokenType::BRACKET_CL }));
+					}
+					else {
+						throw "Array initialization with [ ] syntax not yet implemented.";
+					}
+					
+					indexable = true;
+					tk.ignore();
+					break;
+
 
 				case TokenType::ADD:
 				case TokenType::MINUS:
@@ -258,6 +295,8 @@ namespace MochaLang
 				case TokenType::ASSIGN:
 				case TokenType::DOT:
 					insert_binary_op(token, ops, term);
+					lastInserted = ops.back()->getType();
+					indexable = !true;
 					break;
 
 				case TokenType::IDEN:
@@ -276,6 +315,8 @@ namespace MochaLang
 					else {
 						term.push_back(new Identifier(token.tokenValue));
 					}
+					lastInserted = term.back()->getType();
+					indexable = true;
 					break;
 				}
 
@@ -362,6 +403,15 @@ namespace MochaLang
 			Token token;
 			tk.accept(token);
 			auto varType = token.tokenValue;
+
+			// Is it an array?
+			while (tk.match(TokenType::BRACKET_OP)) {
+				tk.ignore();
+				if (!tk.match(TokenType::BRACKET_CL))
+					throw "Invalid syntax for array!";
+				tk.ignore();
+				varType += "[]";
+			}
 
 			tk.accept(token);
 			auto varName = token.tokenValue;

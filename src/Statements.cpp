@@ -35,6 +35,10 @@ namespace MochaLang
 		Expr(StmtType::RAW_STRING), string(string) { }
 	std::string RawString::get() { return string; }
 
+	IndexExpr::IndexExpr(Expr* index) :
+		Expr(StmtType::INDEX), index(index) { }
+	Expr* IndexExpr::get() { return index; }
+
 	FunctionCall::FunctionCall(std::string& functionName) :
 		Expr(StmtType::FUNCTION_CALL), functionName(functionName) { }
 	std::string FunctionCall::getFuncName() { return functionName; }

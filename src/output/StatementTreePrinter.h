@@ -28,6 +28,7 @@ namespace MochaLang
 			{ StmtType::OP_LS, "BinaryOperator::Lesser" },
 			{ StmtType::OP_LE, "BinaryOperator::LessEquals" },
 			{ StmtType::OP_DOT, "BinaryOperator::Dot" },
+			{ StmtType::INDEX, "IndexOf" },
 
 			{ StmtType::IF, "If" },
 			{ StmtType::BLOCK, "Block" },
@@ -54,7 +55,8 @@ namespace MochaLang
 			{ StmtType::OP_GE, ">=" },
 			{ StmtType::OP_LS, "<" },
 			{ StmtType::OP_LE, "<=" },
-			{ StmtType::OP_DOT, "." },//qqeQR5eblCdjCPzv
+			{ StmtType::OP_DOT, "." },
+			{ StmtType::INDEX, "IndexOf" }//qqeQR5eblCdjCPzv
 		};
 
 		std::unordered_map<AttrType, std::string> attrb2str = {
@@ -105,6 +107,7 @@ namespace MochaLang
 			case StmtType::OP_LE:
 			case StmtType::OP_ASSIGN:
 			case StmtType::OP_DOT:
+			case StmtType::INDEX:
 				debug_bin_op(indentText, stmt, indent);
 				break;
 

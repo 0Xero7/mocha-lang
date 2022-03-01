@@ -55,7 +55,7 @@ namespace MochaLang {
 				JavaWriter(std::string indentText) : pw(PrettyWriter(indentText)) { }
 
 				void transpileToJava(std::string outputPath, Statement* program) {
-					auto className = ((ClassStmt*)(((BlockStmt*)program)->get(2)))->getClassName();
+					auto className = ((ClassStmt*)(((BlockStmt*)program)->get(1)))->getClassName();
 
 					write(program);
 

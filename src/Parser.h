@@ -45,6 +45,10 @@ namespace MochaLang
 			{ TokenType::DOT, StmtType::OP_DOT },
 		};
 
+		const std::unordered_set<StmtType> indexableStmtTypes = {
+			StmtType::RAW_STRING, StmtType::IDEN
+		};
+
 		class Parser
 		{
 		private:

@@ -41,6 +41,8 @@ namespace MochaLang
 			")",
 			"{",
 			"}",
+			"[",
+			"]",
 
 			"+",
 			"-",
@@ -74,6 +76,8 @@ namespace MochaLang
 			{ ")", TokenType::PAREN_CL },
 			{ "{", TokenType::BRACE_OP },
 			{ "}", TokenType::BRACE_CL },
+			{ "[", TokenType::BRACKET_OP },
+			{ "]", TokenType::BRACKET_CL },
 
 			{ "=", TokenType::ASSIGN },
 			{ "==", TokenType::EQ },

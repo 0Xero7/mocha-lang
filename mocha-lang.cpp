@@ -19,7 +19,6 @@ int main()
 {
 	std::vector<std::string> filesToParse = {
 		"C:/Users/smpsm/source/repos/mocha-lang/test/java_transpile_test.mocha",
-		"C:/Users/smpsm/source/repos/mocha-lang/test/import_test.mocha"
 	};
 
 	std::string mainFile = "C:/Users/smpsm/source/repos/mocha-lang/test/java_transpile_test.mocha";

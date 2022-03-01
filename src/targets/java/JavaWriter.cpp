@@ -40,6 +40,7 @@ void MochaLang::Targets::Java::JavaWriter::writeStatement(Statement* S) {
 	case StmtType::OP_LS:
 	case StmtType::OP_LE:
 	case StmtType::OP_DOT:
+	case StmtType::INDEX:
 		writeExpr((Expr*)S, true);
 		break;
 
@@ -105,6 +106,12 @@ void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSem
 		break;
 	case StmtType::RAW_STRING:
 		pw.write({ "\"", ((RawString*)expr)->get(), "\""});
+		break;
+	case StmtType::INDEX:
+		writeExpr(((BinaryOp*)expr)->getLeft(), false);
+		pw.write({ "[" });
+		writeExpr(((BinaryOp*)expr)->getRight(), false);
+		pw.write({ "]" });
 		break;
 
 	case StmtType::OP_ASSIGN:

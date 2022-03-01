@@ -1,11 +1,9 @@
 
 package com.company;
 
-import "C:/Users/smpsm/source/repos/mocha-lang/test/import_test.mocha";
-
 class TranspileTest {
 	pub void main() {
-		ImportTest test = ImportTest();
-		test.println(Integer.toString(test.sum(4, 5)));
+		int[] array = (4 + 3) * s[2];
+		println();
 	}
 }

@@ -9,12 +9,16 @@ namespace MochaLang
 
 	enum class StmtType
 	{
+		NOTHING,
+
 		BLOCK,
 
 		CONSTRUCTOR_CALL,
 		FUNCTION_CALL,
 		FUNCTION_DECL,
 		VARDECL,
+
+		INDEX,
 
 		IF,
 		RETURN,
@@ -48,10 +52,10 @@ namespace MochaLang
 
 
 
-	class Statement 
+	class Statement
 	{
 	protected:
-		StmtType type; 
+		StmtType type;
 
 	public:
 		Statement(StmtType);
@@ -118,6 +122,14 @@ namespace MochaLang
 		Identifier(std::string&);
 
 		std::string get();
+	};
+
+	class IndexExpr : public Expr {
+	public:
+		Expr* index;
+
+		IndexExpr(Expr*);
+		Expr* get();
 	};
 
 	class FunctionCall : public Expr {
