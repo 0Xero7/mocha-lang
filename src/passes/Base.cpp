@@ -101,8 +101,7 @@ void MochaLang::Passes::BasePass::BasePass::handleIf(Statement* _S, Statement** 
 
 void MochaLang::Passes::BasePass::BasePass::handleReturn(Statement* _S, Statement** source) {
 	auto S = (ReturnStmt*)_S;
-
-	performBasePass(S->getValue(), (Statement**)&S);
+	performBasePass(S->value, (Statement**)&S->value);
 }
 
 void MochaLang::Passes::BasePass::BasePass::handleWhile(Statement* _S, Statement** source) {

@@ -7,6 +7,7 @@
 #include "../../utils/Statements.h"
 #include "../../utils/Attributes.h"
 #include "../../utils/PrettyWriter.h"
+#include "../../utils/TypeResolver.h"
 #include <type_traits>
 //#include "JavaWriterUtils.h"
 

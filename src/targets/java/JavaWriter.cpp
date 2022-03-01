@@ -41,6 +41,7 @@ void MochaLang::Targets::Java::JavaWriter::writeStatement(Statement* S) {
 	case StmtType::OP_LE:
 	case StmtType::OP_DOT:
 	case StmtType::INDEX:
+	case StmtType::INLINE_ARRAY_INIT:
 		writeExpr((Expr*)S, true);
 		break;
 
@@ -91,6 +92,29 @@ void MochaLang::Targets::Java::JavaWriter::writeStatement(Statement* S) {
 }
 
 void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSemiColon, bool firstLayer) {
+
+	auto handleIndex = [&]() {
+		auto typeResolver = MochaLang::Utils::TypeResolver();
+		auto type = typeResolver.resolve(((InlineArrayInit*)(expr))->values[0]);
+		pw.write({ "new ", type , "{ " });
+		for (Expr* expr : ((InlineArrayInit*)expr)->values) {
+			writeExpr(expr, false);
+			pw.write({ ", " });
+		}
+		pw.write({ "}" });
+	};
+
+	auto handleInlineArrayInit = [&]() {
+		auto typeResolver = MochaLang::Utils::TypeResolver();
+		auto type = typeResolver.resolve(expr);
+		pw.write({ "new ", type , "{ " });
+		for (Expr* expr : ((InlineArrayInit*)expr)->values) {
+			writeExpr(expr, false);
+			pw.write({ ", " });
+		}
+		pw.write({ "}" });
+	};
+
 	switch (expr->getType()) {
 	case StmtType::NUMBER:
 		pw.write({ std::to_string(((Number*)expr)->get()) });
@@ -112,6 +136,9 @@ void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSem
 		pw.write({ "[" });
 		writeExpr(((BinaryOp*)expr)->getRight(), false);
 		pw.write({ "]" });
+		break;
+	case StmtType::INLINE_ARRAY_INIT:
+		handleInlineArrayInit();
 		break;
 
 	case StmtType::OP_ASSIGN:

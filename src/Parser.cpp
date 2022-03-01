@@ -50,8 +50,13 @@ namespace MochaLang
 					}
 
 					// Handle the default constructor declaration
-					if (tk.peekValue() == currentClassName) {
+					if (tk.peekValue() == currentClassName && tk.peekType(1) == TokenType::PAREN_OP) {
 						block->push_back(parseFunctionDecl(tk, { MochaLangClassConstructorAttr() }, true));
+						break;
+					}
+					// Handle function decls with custom typenames
+					if (tk.peekValue() == currentClassName && tk.peekType(1) == TokenType::IDEN && tk.peekType(2) == TokenType::PAREN_OP) {
+						block->push_back(parseFunctionDecl(tk, attributeAccumulator, false));
 						break;
 					}
 
@@ -188,7 +193,6 @@ namespace MochaLang
 			std::vector<Expr*> term;
 			std::vector<Expr*> ops;
 
-			StmtType lastInserted = StmtType::NOTHING;
 			bool indexable = false;
 
 			auto popBinOp = [&]() {
@@ -201,7 +205,6 @@ namespace MochaLang
 				term.pop_back();
 
 				term.push_back(top);
-				lastInserted = top->getType();
 				indexable = false;
 			};
 
@@ -210,7 +213,6 @@ namespace MochaLang
 				term.pop_back();
 
 				term.push_back(new BinaryOp(indexOf, StmtType::INDEX, index));
-				lastInserted = StmtType::INDEX;
 				indexable = true;
 			};
 
@@ -239,26 +241,22 @@ namespace MochaLang
 
 				case TokenType::NUMBER:
 					term.push_back(new Number(stoi(token.tokenValue)));
-					lastInserted = term.back()->getType();
 					indexable = true;
 					break;
 
 				case TokenType::RAW_STRING:
 					term.push_back(new RawString(token.tokenValue));
-					lastInserted = term.back()->getType();
 					indexable = true;
 					break;
 
 				case TokenType::PAREN_OP:
 					++balance;
 					ops.push_back(new BinaryOp(nullptr, StmtType::PAREN_OPEN, nullptr));
-					lastInserted = ops.back()->getType();
 					indexable = !true;
 					break;
 
 				case TokenType::PAREN_CL:
 					insertUntilParenOpen(ops, term);
-					lastInserted = term.back()->getType();
 
 					--balance;
 					if (functionParamMode && balance < 0) {
@@ -270,11 +268,10 @@ namespace MochaLang
 
 				case TokenType::BRACKET_OP:
 					if (indexable) {
-						lastInserted = term.back()->getType();
 						pushIndex(parseExpr(tk, { TokenType::BRACKET_CL }));
 					}
 					else {
-						throw "Array initialization with [ ] syntax not yet implemented.";
+						term.push_back(parseInlineArrayInit(tk));
 					}
 					
 					indexable = true;
@@ -295,7 +292,6 @@ namespace MochaLang
 				case TokenType::ASSIGN:
 				case TokenType::DOT:
 					insert_binary_op(token, ops, term);
-					lastInserted = ops.back()->getType();
 					indexable = !true;
 					break;
 
@@ -315,7 +311,6 @@ namespace MochaLang
 					else {
 						term.push_back(new Identifier(token.tokenValue));
 					}
-					lastInserted = term.back()->getType();
 					indexable = true;
 					break;
 				}
@@ -564,6 +559,19 @@ namespace MochaLang
 			auto expr = parseExpr(tk, { TokenType::SEMICOLON });
 			tk.ignore(); // Ignore ;
 			return new PackageStmt(expr);
+		}
+
+		InlineArrayInit* Parser::parseInlineArrayInit(TokenStream& tk)
+		{
+			//tk.ignore(); // Ignore [
+			std::vector<Expr*> values;
+			while (!tk.match(TokenType::BRACKET_CL)) {
+				values.push_back(parseExpr(tk, { TokenType::COMMA, TokenType::BRACKET_CL }));
+				if (tk.match(TokenType::COMMA)) tk.ignore();
+			}
+			//tk.ignore(); // Ignore ]
+
+			return new InlineArrayInit(values);
 		}
 		//Afukmr1Whs8jqWQC
 	}

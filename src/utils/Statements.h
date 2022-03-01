@@ -43,6 +43,8 @@ namespace MochaLang
 		RAW_STRING,
 		NUMBER,
 
+		INLINE_ARRAY_INIT,
+
 		FOR,
 		WHILE,
 		CLASS,
@@ -122,6 +124,12 @@ namespace MochaLang
 		Identifier(std::string&);
 
 		std::string get();
+	};
+
+	class InlineArrayInit : public Expr {
+	public:
+		std::vector<Expr*> values;
+		InlineArrayInit(std::vector<Expr*>&);
 	};
 
 	class IndexExpr : public Expr {
@@ -212,8 +220,8 @@ namespace MochaLang
 	class ReturnStmt : public Statement 
 	{
 	private:
-		Expr* value;
 	public:
+		Expr* value;
 		ReturnStmt(Expr*);
 
 		Expr* getValue();

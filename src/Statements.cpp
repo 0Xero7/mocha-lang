@@ -35,6 +35,9 @@ namespace MochaLang
 		Expr(StmtType::RAW_STRING), string(string) { }
 	std::string RawString::get() { return string; }
 
+	InlineArrayInit::InlineArrayInit(std::vector<Expr*>& values) 
+		: Expr(StmtType::INLINE_ARRAY_INIT), values(values) { }
+
 	IndexExpr::IndexExpr(Expr* index) :
 		Expr(StmtType::INDEX), index(index) { }
 	Expr* IndexExpr::get() { return index; }

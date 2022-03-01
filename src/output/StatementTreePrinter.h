@@ -14,6 +14,7 @@ namespace MochaLang
 			{ StmtType::IDEN, "Identifier" },
 			{ StmtType::RAW_STRING, "String Literal" },
 			{ StmtType::FUNCTION_CALL, "FunctionCall" },
+			{ StmtType::INLINE_ARRAY_INIT, "Array Initialization" },
 			{ StmtType::FUNCTION_DECL, "FunctionDecl" },
 
 			{ StmtType::OP_ADD, "BinaryOperator::Add" },
@@ -80,6 +81,7 @@ namespace MochaLang
 		void debug_import(std::string&, ImportStmt*, int);
 		void debug_package(std::string&, PackageStmt*, int);
 		void debug_cnstr_call(std::string& indentText, ConstructorCall* stmt, int indent);
+		void debug_inline_array_init(std::string& indentText, InlineArrayInit* stmt, int indent);
 		//4zaXrM9M592b5JOv
 
 		void debug_attr(Attribute& attr, const std::string& indent) {
@@ -169,6 +171,10 @@ namespace MochaLang
 
 			case StmtType::CONSTRUCTOR_CALL:
 				debug_cnstr_call(indentText, (ConstructorCall*)stmt, indent);
+				break;
+
+			case StmtType::INLINE_ARRAY_INIT:
+				debug_inline_array_init(indentText, (InlineArrayInit*)stmt, indent);
 				break;
 			//7JeJRo59pzuqqjT7
 			}
@@ -290,6 +296,13 @@ namespace MochaLang
 			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::CONSTRUCTOR_CALL) << "]" << std::endl;
 			std::cout << indentText << " <PackageName>" << std::endl;
 			debug(stmt->getFunctionCall(), indent + 1);
+		}
+
+		void debug_inline_array_init(std::string& indentText, InlineArrayInit* stmt, int indent) {
+			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::INLINE_ARRAY_INIT) << "]" << std::endl;
+			std::cout << indentText << " <Values>" << std::endl;
+			for (Expr* expr : stmt->values)
+				debug(expr, indent + 1);
 		}
 		//ncIOsrBJYnXs1Zuj
 	}
