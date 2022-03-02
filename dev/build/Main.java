@@ -1,8 +1,8 @@
 package com.company;
 class IntList {
-  int[] values;
-  int length = 0;
-  int capacity = 2;
+  private int[] values;
+  private int length = 0;
+  private int capacity = 2;
 
   IntList() {
     values = new int[capacity];
@@ -31,7 +31,7 @@ class TranspileTest {
 
   void print(IntList list) {
     for (int i = 0; i < list.length(); i = (i + 1)) {
-      System.out.print(list.at(i));
+      System.out.print(("" + list.at(i)) + " ");
     }
     System.out.println();
   }

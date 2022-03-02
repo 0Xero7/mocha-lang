@@ -63,6 +63,8 @@ namespace MochaLang
 			"<",
 			"<=",
 
+			"=>",
+
 			";"//Cpkd10dEaLjNR3z5
 		};
 
@@ -92,6 +94,9 @@ namespace MochaLang
 			{ ">=", TokenType::GE },
 			{ "<", TokenType::LS },
 			{ "<=", TokenType::LE },
+
+			{ "=>", TokenType::ARROW },
+
 			{ ";", TokenType::SEMICOLON }//a92D5oRrnMRVR1d0
 		};
 

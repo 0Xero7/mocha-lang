@@ -41,6 +41,8 @@ namespace MochaLang
 		LS,
 		LE, 
 
+		ARROW, // =>
+
 		PRINTLN,
 
 		PAREN_OP,

@@ -60,7 +60,8 @@ namespace MochaLang
 						break;
 					}
 					// Handle function decls with custom typenames
-					if (tk.peekValue() == currentClassName && tk.peekType(1) == TokenType::IDEN && tk.peekType(2) == TokenType::PAREN_OP) {
+					if (tk.peekValue() == currentClassName && tk.peekType(1) == TokenType::IDEN 
+							&& (tk.peekType(2) == TokenType::PAREN_OP || tk.peekType(2) == TokenType::ARROW)) {
 						block->push_back(parseFunctionDecl(tk, attributeAccumulator, false));
 						break;
 					}
@@ -463,10 +464,18 @@ namespace MochaLang
 			// ignore closing )
 			tk.ignore();
 
+			BlockStmt* block;
 			// now parse the body
-			Statement* block = parse(tk, false);
+			if (tk.match(TokenType::BRACE_OP))
+				block = (BlockStmt*)parse(tk, false);
+			else if (tk.match(TokenType::ARROW)) {
+				auto expr = parseExpr(tk, { TokenType::SEMICOLON });
+				tk.ignore(); // Ignore ending ;
+				block = new BlockStmt();
+				block->push_back(new ReturnStmt(expr));
+			}
 
-			return new FunctionDecl(attrbs, returnType, functionName, formalParams, (BlockStmt*)block);
+			return new FunctionDecl(attrbs, returnType, functionName, formalParams, block);
 		}
 
 		ReturnStmt* Parser::parseReturn(TokenStream& tk) {

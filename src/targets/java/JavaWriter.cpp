@@ -203,6 +203,8 @@ void MochaLang::Targets::Java::JavaWriter::writeFuncDecl(FunctionDecl* decl) {
 }
 
 void MochaLang::Targets::Java::JavaWriter::writeVarDecl(VarDecl* decl, bool endWithSemiColon) {
+	writeAttributes(decl->getAttrbs());
+
 	pw.write({decl->getVarType(), " ", decl->get() });
 	if (decl->getInit() != nullptr) {
 		pw.write({" = " });
