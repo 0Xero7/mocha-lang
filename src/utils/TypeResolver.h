@@ -20,7 +20,7 @@ namespace MochaLang {
 					return ((Identifier*)expr)->get();
 
 				case StmtType::INDEX:
-					return resolve(((IndexExpr*)expr)->index);
+					return resolve(((BinaryOp*)expr)->getLeft());
 
 				case StmtType::INLINE_ARRAY_INIT:
 					return resolve(((InlineArrayInit*)expr)->values[0]) + "[]";

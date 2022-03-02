@@ -44,6 +44,7 @@ namespace MochaLang
 		NUMBER,
 
 		INLINE_ARRAY_INIT,
+		EXPLICIT_ARRAY_INIT,
 
 		FOR,
 		WHILE,
@@ -88,9 +89,8 @@ namespace MochaLang
 
 	class BinaryOp : public Expr {
 	private:
-		Expr* left, * right;
-
 	public:
+		Expr* left, * right;
 		BinaryOp(Expr*, StmtType, Expr*);
 
 		Expr* getLeft();
@@ -132,12 +132,11 @@ namespace MochaLang
 		InlineArrayInit(std::vector<Expr*>&);
 	};
 
-	class IndexExpr : public Expr {
+	class ExplicitArrayInit : public Expr {
 	public:
-		Expr* index;
-
-		IndexExpr(Expr*);
-		Expr* get();
+		std::string arrayType;
+		std::vector<Expr*> values;
+		ExplicitArrayInit(std::string arrayType, std::vector<Expr*>&);
 	};
 
 	class FunctionCall : public Expr {

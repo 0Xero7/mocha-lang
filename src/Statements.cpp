@@ -38,9 +38,8 @@ namespace MochaLang
 	InlineArrayInit::InlineArrayInit(std::vector<Expr*>& values) 
 		: Expr(StmtType::INLINE_ARRAY_INIT), values(values) { }
 
-	IndexExpr::IndexExpr(Expr* index) :
-		Expr(StmtType::INDEX), index(index) { }
-	Expr* IndexExpr::get() { return index; }
+	ExplicitArrayInit::ExplicitArrayInit(std::string arrayType, std::vector<Expr*>& values)
+		: Expr(StmtType::EXPLICIT_ARRAY_INIT), arrayType(arrayType), values(values) { }
 
 	FunctionCall::FunctionCall(std::string& functionName) :
 		Expr(StmtType::FUNCTION_CALL), functionName(functionName) { }

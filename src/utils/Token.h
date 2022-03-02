@@ -7,6 +7,9 @@ namespace MochaLang
 	{
 		NEWLINE,
 
+		MULTILINE_COMMENT_START,
+		MULTILINE_COMMENT_END,
+
 		VOID,
 		INT,
 		FLOAT,

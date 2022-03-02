@@ -39,11 +39,11 @@ void MochaLang::Passes::BasePass::BasePass::handleExpr(Statement* _S, Statement*
 	auto binaryOps = [&](Expr* SS) {
 		auto temp = (BinaryOp*)SS;
 
-		Statement* left = temp->getLeft();
-		performBasePass(left, &left);
+		Statement* left = temp->left;
+		performBasePass(temp->left, (Statement**)&temp->left);
 
-		Statement* right = temp->getRight();
-		performBasePass(right, &right);
+		Statement* right = temp->right;
+		performBasePass(temp->right, (Statement**)&temp->right);
 
 		if (left->getType() == StmtType::CONSTRUCTOR_CALL || right->getType() == StmtType::CONSTRUCTOR_CALL)
 			*source = new BinaryOp((Expr*)left, SS->getType(), (Expr*)right);
@@ -62,6 +62,44 @@ void MochaLang::Passes::BasePass::BasePass::handleExpr(Statement* _S, Statement*
 	case StmtType::FUNCTION_CALL:
 		performBasePass(S, (Statement**)&S);
 		break;
+
+	case StmtType::INDEX:
+		auto left = ((BinaryOp*)S)->left;
+		auto indexedExprName = getIndexVariable(left);
+		if (indexedExprName->getType() == StmtType::IDEN && knownClasses.count(((Identifier*)indexedExprName)->get())) {
+			// It is an explicit array init
+			std::vector<Expr*> collect;
+			getIndexIndices(S, collect);
+
+			*source = new ExplicitArrayInit(((Identifier*)indexedExprName)->get(), collect);
+			break;
+		}
+
+		performBasePass(left, (Statement**)&left);
+
+		auto right = ((BinaryOp*)S)->right;
+		performBasePass(right, (Statement**)&right);
+		break;
+	}
+}
+
+void MochaLang::Passes::BasePass::BasePass::getIndexIndices(Expr* op, std::vector<Expr*>& collect)
+{
+	if (op->getType() != StmtType::INDEX) return;
+
+	auto index = (BinaryOp*)op;
+	getIndexIndices(index->left, collect);
+	collect.push_back(index->right);
+}
+
+MochaLang::Expr* MochaLang::Passes::BasePass::BasePass::getIndexVariable(Expr* op) {
+	// TODO : add other statements which can be lhs of index
+	switch (op->getType()) {
+	case StmtType::IDEN:
+		return ((Identifier*)op);
+
+	case StmtType::INDEX:
+		return getIndexVariable(((BinaryOp*)op)->getLeft());
 	}
 }
 
@@ -110,6 +148,14 @@ void MochaLang::Passes::BasePass::BasePass::handleWhile(Statement* _S, Statement
 	performBasePass(S->getCheck(), (Statement**)&S);
 	performBasePass(S->getBody(), (Statement**)&S);
 }
+//
+//void MochaLang::Passes::BasePass::BasePass::handleIndex(Statement* stmt, Statement** source) {
+//	auto S = (IndexExpr*)stmt;
+//	auto left = S->get();
+//	performBasePass(S->index, (Statement**)&S->index);
+//
+//	if ()
+//}
 
 void MochaLang::Passes::BasePass::BasePass::performBasePass(Statement* stmt, Statement** source) {
 	switch (stmt->getType()) {
@@ -143,6 +189,7 @@ void MochaLang::Passes::BasePass::BasePass::performBasePass(Statement* stmt, Sta
 	case StmtType::OP_DIV:
 	case StmtType::OP_DOT:
 	case StmtType::OP_ASSIGN:
+	case StmtType::INDEX:
 		handleExpr(stmt, source);
 		break;
 

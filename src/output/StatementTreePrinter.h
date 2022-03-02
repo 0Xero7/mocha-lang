@@ -15,6 +15,7 @@ namespace MochaLang
 			{ StmtType::RAW_STRING, "String Literal" },
 			{ StmtType::FUNCTION_CALL, "FunctionCall" },
 			{ StmtType::INLINE_ARRAY_INIT, "Array Initialization" },
+			{ StmtType::EXPLICIT_ARRAY_INIT, "Explicit Array Initialization" },
 			{ StmtType::FUNCTION_DECL, "FunctionDecl" },
 
 			{ StmtType::OP_ADD, "BinaryOperator::Add" },
@@ -82,6 +83,7 @@ namespace MochaLang
 		void debug_package(std::string&, PackageStmt*, int);
 		void debug_cnstr_call(std::string& indentText, ConstructorCall* stmt, int indent);
 		void debug_inline_array_init(std::string& indentText, InlineArrayInit* stmt, int indent);
+		void debug_explicit_array_init(std::string& indentText, ExplicitArrayInit* stmt, int indent);
 		//4zaXrM9M592b5JOv
 
 		void debug_attr(Attribute& attr, const std::string& indent) {
@@ -94,6 +96,11 @@ namespace MochaLang
 			for (int i = 0; i < indent; ++i) {
 				if (i == indent - 1) indentText += "   ";
 				else indentText += "  ";
+			}
+
+			if (stmt == nullptr) {
+				std::cout << indentText << " << NULLPTR >> " << std::endl;
+				return;
 			}
 			
 			switch (stmt->getType()) {
@@ -175,6 +182,10 @@ namespace MochaLang
 
 			case StmtType::INLINE_ARRAY_INIT:
 				debug_inline_array_init(indentText, (InlineArrayInit*)stmt, indent);
+				break;
+
+			case StmtType::EXPLICIT_ARRAY_INIT:
+				debug_explicit_array_init(indentText, (ExplicitArrayInit*)stmt, indent);
 				break;
 			//7JeJRo59pzuqqjT7
 			}
@@ -303,6 +314,15 @@ namespace MochaLang
 			std::cout << indentText << " <Values>" << std::endl;
 			for (Expr* expr : stmt->values)
 				debug(expr, indent + 1);
+		}
+
+		void debug_explicit_array_init(std::string& indentText, ExplicitArrayInit* stmt, int indent) {
+			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::EXPLICIT_ARRAY_INIT) << "]" << std::endl;
+			std::cout << indentText << " <Value> :: " << stmt->arrayType << std::endl;
+			std::cout << indentText << " Dimensions :: " << std::endl;
+			for (Expr* expr : stmt->values) {
+				debug(expr, indent + 1);
+			}
 		}
 		//ncIOsrBJYnXs1Zuj
 	}

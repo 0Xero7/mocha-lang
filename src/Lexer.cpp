@@ -37,6 +37,9 @@ namespace MochaLang
 			",",
 			".",
 
+			"/*",
+			"*/",
+
 			"(",
 			")",
 			"{",
@@ -65,6 +68,9 @@ namespace MochaLang
 
 
 		const std::unordered_map<std::string, TokenType> op2tokType = {
+			{ "/*", TokenType::MULTILINE_COMMENT_START },
+			{ "*/", TokenType::MULTILINE_COMMENT_END },
+
 			{ ",", TokenType::COMMA },
 			{ ".", TokenType::DOT },
 

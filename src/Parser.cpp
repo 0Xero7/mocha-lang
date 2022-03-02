@@ -33,6 +33,11 @@ namespace MochaLang
 
 			while (!tk.eof() && tk.peekType() != TokenType::BRACE_CL) {
 				switch (tk.peekType()) {
+				case TokenType::MULTILINE_COMMENT_START:
+					while (!tk.match(TokenType::MULTILINE_COMMENT_END)) tk.ignore();
+					tk.ignore();
+					break;
+
 				case TokenType::NEWLINE:
 					tk.accept(_token);
 					break;
@@ -92,7 +97,7 @@ namespace MochaLang
 					break;
 
 				case TokenType::RETURN:
-					block->push_back(parseReturn(tk));
+					block->push_back(parseReturn(tk)); 
 					break;
 								
 				case TokenType::FOR:
@@ -295,6 +300,9 @@ namespace MochaLang
 					indexable = !true;
 					break;
 
+				case TokenType::INT:
+				case TokenType::FLOAT:
+				case TokenType::STRING:
 				case TokenType::IDEN:
 					if (tk.peekType() == TokenType::PAREN_OP) { // function call
 						std::string funcName = token.tokenValue;
@@ -322,6 +330,7 @@ namespace MochaLang
 				popBinOp();
 			}
 
+			if (term.empty()) return nullptr;
 			return term.back();
 		}
 

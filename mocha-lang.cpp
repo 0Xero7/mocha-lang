@@ -25,6 +25,7 @@ int main()
 
 	std::unordered_map<std::string, MochaLang::Statement*> parseTrees;
 	std::unordered_set<std::string> classes;
+	classes.insert("int");
 
 	for (std::string& path : filesToParse) {
 		std::ifstream in(path, std::ios::in);

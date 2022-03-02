@@ -14,6 +14,9 @@ namespace BasePass {
 	public:
 		BasePass(std::unordered_set<std::string>& knownClasses) : knownClasses(knownClasses) { }
 
+		Expr* getIndexVariable(Expr* op);
+		void getIndexIndices(Expr* op, std::vector<Expr*>& collect);
+
 		void handleExpr(Statement* S, Statement** source);
 		void handleFunctionCall(Statement* S, Statement** source);
 		void handleFunctionDecl(Statement* S, Statement** source);
@@ -25,6 +28,7 @@ namespace BasePass {
 		void handleWhile(Statement* S, Statement** source);
 		void performBasePass(Statement* stmt, Statement** source);
 		void handleBlock(Statement* stmt, Statement** source);
+		void handleIndex(Statement* stmt, Statement** source);
 
 		
 	};

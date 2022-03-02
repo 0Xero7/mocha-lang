@@ -42,6 +42,7 @@ void MochaLang::Targets::Java::JavaWriter::writeStatement(Statement* S) {
 	case StmtType::OP_DOT:
 	case StmtType::INDEX:
 	case StmtType::INLINE_ARRAY_INIT:
+	case StmtType::EXPLICIT_ARRAY_INIT:
 		writeExpr((Expr*)S, true);
 		break;
 
@@ -97,21 +98,38 @@ void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSem
 		auto typeResolver = MochaLang::Utils::TypeResolver();
 		auto type = typeResolver.resolve(((InlineArrayInit*)(expr))->values[0]);
 		pw.write({ "new ", type , "{ " });
-		for (Expr* expr : ((InlineArrayInit*)expr)->values) {
-			writeExpr(expr, false);
-			pw.write({ ", " });
+		auto values = ((InlineArrayInit*)expr)->values;
+		int n = values.size();
+		for (int i = 0; i < n; ++i) {
+			writeExpr(values[i], false);
+			if (i < n - 1)
+				pw.write({ ", " });
 		}
 		pw.write({ "}" });
+	};
+
+	auto handleExplicitArrayInit = [&]() {
+		auto temp = (ExplicitArrayInit*)expr;
+		pw.write({ "new ", temp->arrayType });
+		for (Expr* expr : temp->values) {
+			pw.write({ "[" });
+			if (expr != nullptr) writeExpr(expr, false);
+			pw.write({ "]" });
+		}
 	};
 
 	auto handleInlineArrayInit = [&]() {
 		auto typeResolver = MochaLang::Utils::TypeResolver();
 		auto type = typeResolver.resolve(expr);
-		pw.write({ "new ", type , "{ " });
-		for (Expr* expr : ((InlineArrayInit*)expr)->values) {
-			writeExpr(expr, false);
-			pw.write({ ", " });
+		pw.write({ "new ", type , " { " });
+		auto values = ((InlineArrayInit*)expr)->values;
+		int n = values.size();
+		for (int i = 0; i < n; ++i) {
+			writeExpr(values[i], false);
+			if (i < n - 1)
+				pw.write({ ", " });
 		}
+		if (n > 0) pw.write({ " " });
 		pw.write({ "}" });
 	};
 
@@ -139,6 +157,9 @@ void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSem
 		break;
 	case StmtType::INLINE_ARRAY_INIT:
 		handleInlineArrayInit();
+		break;
+	case StmtType::EXPLICIT_ARRAY_INIT:
+		handleExplicitArrayInit();
 		break;
 
 	case StmtType::OP_ASSIGN:
@@ -249,6 +270,7 @@ void MochaLang::Targets::Java::JavaWriter::writeClass(ClassStmt* cls) {
 	writeAttributes(cls->getAttrbs());
 
 	pw.write({ "class ", cls->getClassName(), " {" });
+	pw.writeNewLine();
 	pw.increaseIndent();
 
 	for (VarDecl* decl : cls->getMemberVariables()) {
