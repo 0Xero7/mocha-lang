@@ -56,7 +56,8 @@ namespace MochaLang {
 				JavaWriter(std::string indentText) : pw(PrettyWriter(indentText)) { }
 
 				void transpileToJava(std::string outputPath, Statement* program) {
-					auto className = ((ClassStmt*)(((BlockStmt*)program)->get(1)))->getClassName();
+					// TODO : create a dynamic class finder with main() function
+					auto className = "Entrypoint";
 
 					write(program);
 

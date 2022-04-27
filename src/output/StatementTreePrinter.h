@@ -300,7 +300,7 @@ namespace MochaLang
 		void debug_package(std::string& indentText, PackageStmt* stmt, int indent) {
 			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::PACKAGE) << "]" << std::endl;
 			std::cout << indentText << " <PackageName>" << std::endl;
-			debug(stmt->getPackageName(), indent + 1);
+			std::cout << indentText << stmt->getPackageName() << std::endl;
 		}
 
 		void debug_cnstr_call(std::string& indentText, ConstructorCall* stmt, int indent) {

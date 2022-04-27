@@ -325,5 +325,5 @@ void MochaLang::Targets::Java::JavaWriter::writeAttributes(std::vector<MochaLang
 
 void MochaLang::Targets::Java::JavaWriter::writePackage(PackageStmt* S) {
 	pw.write({ "package " });
-	writeExpr(S->getPackageName());
+	pw.write({ S->getPackageName() + ";\n"});
 }

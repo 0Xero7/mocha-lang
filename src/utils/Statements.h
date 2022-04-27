@@ -279,10 +279,10 @@ namespace MochaLang
 	class PackageStmt : public Statement
 	{
 	private:
-			Expr* packageName;
+			std::string packageName;
 	public:
-			PackageStmt(Expr*);
-			Expr* getPackageName();
+			PackageStmt(std::string);
+			std::string getPackageName();
 	};
 	//I4d7ECHJcvXW1jAh
 }

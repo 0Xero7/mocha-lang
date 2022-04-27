@@ -18,10 +18,10 @@ using namespace std;
 int main()
 {
 	std::vector<std::string> filesToParse = {
-		"C:/Users/smpsm/source/repos/mocha-lang/test/java_transpile_test.mocha",
+		"C:\\Projects\\mocha-lang\\test\\java_transpile_test.mocha",
 	};
 
-	std::string mainFile = "C:/Users/smpsm/source/repos/mocha-lang/test/java_transpile_test.mocha";
+	std::string mainFile = "C:\\Projects\\mocha-lang\\test\\java_transpile_test.mocha";
 
 	std::unordered_map<std::string, MochaLang::Statement*> parseTrees;
 	std::unordered_set<std::string> classes;
@@ -69,5 +69,5 @@ int main()
 	//cout << "ok";
 
 	auto jw = MochaLang::Targets::Java::JavaWriter("  ");
-	jw.transpileToJava("C:/Users/smpsm/source/repos/mocha-lang/dev/build/Main.java", tree);
+	jw.transpileToJava("C:/Projects/mocha-lang/dev/build/Main.java", tree);
 }

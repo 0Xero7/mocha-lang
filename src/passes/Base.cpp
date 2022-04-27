@@ -148,6 +148,13 @@ void MochaLang::Passes::BasePass::BasePass::handleWhile(Statement* _S, Statement
 	performBasePass(S->getCheck(), (Statement**)&S);
 	performBasePass(S->getBody(), (Statement**)&S);
 }
+
+void MochaLang::Passes::BasePass::BasePass::handlePackage(Statement* _S, Statement** source) {
+	auto S = (PackageStmt*)_S;
+
+	//context->addContext(S->getPackageName(), S->get);
+}
+
 //
 //void MochaLang::Passes::BasePass::BasePass::handleIndex(Statement* stmt, Statement** source) {
 //	auto S = (IndexExpr*)stmt;
@@ -159,6 +166,10 @@ void MochaLang::Passes::BasePass::BasePass::handleWhile(Statement* _S, Statement
 
 void MochaLang::Passes::BasePass::BasePass::performBasePass(Statement* stmt, Statement** source) {
 	switch (stmt->getType()) {
+	case StmtType::PACKAGE:
+		handlePackage(stmt, source);
+		break;
+
 	case StmtType::BLOCK:
 		handleBlock(stmt, source);
 		break;

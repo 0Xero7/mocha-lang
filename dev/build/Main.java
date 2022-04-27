@@ -27,7 +27,7 @@ class IntList {
     values = newValues;
   }
 }
-class TranspileTest {
+class Entrypoint {
 
   void print(IntList list) {
     for (int i = 0; i < list.length(); i = (i + 1)) {
@@ -45,7 +45,7 @@ class TranspileTest {
 }
 class Main {
   public static void main(String[] args) {
-    var userClass = new IntList();
+    var userClass = new Entrypoint();
     userClass.main();
   }
 }

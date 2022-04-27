@@ -2,6 +2,7 @@
 
 #include <unordered_set>
 #include "../utils/Statements.h"
+#include "../utils/context/ContextModel.h"
 
 namespace MochaLang {
 namespace Passes {
@@ -10,13 +11,17 @@ namespace BasePass {
 	class BasePass {
 	private:
 		std::unordered_set<std::string> knownClasses;
+		MochaLang::Symbols::ContextModel* context;
 
 	public:
-		BasePass(std::unordered_set<std::string>& knownClasses) : knownClasses(knownClasses) { }
+		BasePass(std::unordered_set<std::string>& knownClasses) : knownClasses(knownClasses) { 
+			context = new MochaLang::Symbols::ContextModel("", "", nullptr);
+		}
 
 		Expr* getIndexVariable(Expr* op);
 		void getIndexIndices(Expr* op, std::vector<Expr*>& collect);
 
+		void handlePackage(Statement* S, Statement** source);
 		void handleExpr(Statement* S, Statement** source);
 		void handleFunctionCall(Statement* S, Statement** source);
 		void handleFunctionDecl(Statement* S, Statement** source);

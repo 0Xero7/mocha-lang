@@ -104,8 +104,8 @@ namespace MochaLang
 	: Statement(StmtType::IMPORT), imports(imports){ }
 	std::vector<Expr*> ImportStmt::getImports() { return imports; }
 		
-	PackageStmt::PackageStmt(Expr* packageName)
+	PackageStmt::PackageStmt(std::string packageName)
 	: Statement(StmtType::PACKAGE), packageName(packageName){ }
-	Expr* PackageStmt::getPackageName() { return packageName; }
+	std::string PackageStmt::getPackageName() { return packageName; }
 	//ypFDtJzEFW08p3xH
 }

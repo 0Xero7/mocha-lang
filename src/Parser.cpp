@@ -576,7 +576,7 @@ namespace MochaLang
 			tk.ignore(); // Ignore package keyword
 			auto expr = parseExpr(tk, { TokenType::SEMICOLON });
 			tk.ignore(); // Ignore ;
-			return new PackageStmt(expr);
+			return new PackageStmt("com.company");
 		}
 
 		InlineArrayInit* Parser::parseInlineArrayInit(TokenStream& tk)
