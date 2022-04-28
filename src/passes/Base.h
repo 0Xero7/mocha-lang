@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include "../utils/Statements.h"
 #include "../utils/context/ContextModel.h"
+#include "../utils/DotExprToVecStr.h"
 
 namespace MochaLang {
 namespace Passes {

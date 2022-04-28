@@ -49,7 +49,7 @@ namespace MochaLang {
 				void writePackage(PackageStmt*);
 
 				void write(Statement* program) {
-					writeBlock((BlockStmt*)program, false);
+					writePackage((PackageStmt*)program);
 				}
 
 			public:

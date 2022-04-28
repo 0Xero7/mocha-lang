@@ -325,5 +325,10 @@ void MochaLang::Targets::Java::JavaWriter::writeAttributes(std::vector<MochaLang
 
 void MochaLang::Targets::Java::JavaWriter::writePackage(PackageStmt* S) {
 	pw.write({ "package " });
-	pw.write({ S->getPackageName() + ";\n"});
+	writeExpr(S->getPackageName());
+
+	auto block = (BlockStmt*)S->packageContents;
+
+	for (int i = 0; i < block->size(); ++i)
+		writeStatement(block->get(i));
 }

@@ -20,9 +20,11 @@ namespace Symbols {
 		ContextModel(string shortName, string longName, ContextModel* parent) :
 			shortName(shortName), longName(longName), parent(parent) { }
 
-		void addContext(string shortName) {
+		ContextModel* addContext(string shortName) {
+			if (childContexts.count(shortName)) return childContexts[shortName];
+
 			auto newLongName = (longName == "" ? "" : (longName + ".")) + shortName;
-			childContexts[shortName] = new ContextModel(shortName, longName, this);
+			return childContexts[shortName] = new ContextModel(shortName, longName, this);
 		}
 
 		void popContext(string shortName) {

@@ -31,6 +31,8 @@ namespace MochaLang
 			std::vector<Attribute> attributeAccumulator;
 			BlockStmt* block = new BlockStmt();
 
+			PackageStmt* curPackage;
+
 			while (!tk.eof() && tk.peekType() != TokenType::BRACE_CL) {
 				switch (tk.peekType()) {
 				case TokenType::MULTILINE_COMMENT_START:
@@ -127,7 +129,11 @@ namespace MochaLang
 					break;
 								
 				case TokenType::PACKAGE:
-					block->push_back(parsePackage(tk));
+					if (!topLevel)
+						throw "Package is only allowed at top level";
+					curPackage = parsePackage(tk);
+
+					//block->push_back(parsePackage(tk));
 					break;
 				//sIVarkdd4EKKkoCR
 				}
@@ -138,6 +144,11 @@ namespace MochaLang
 
 			// ignore the closing }
 			if (!without_braces) tk.ignore();
+
+			if (topLevel && curPackage) {
+				curPackage->packageContents = block;
+				return curPackage;
+			}
 
 			if (without_braces) return block->get(0);
 			return block;
@@ -576,7 +587,7 @@ namespace MochaLang
 			tk.ignore(); // Ignore package keyword
 			auto expr = parseExpr(tk, { TokenType::SEMICOLON });
 			tk.ignore(); // Ignore ;
-			return new PackageStmt("com.company");
+			return new PackageStmt(expr);
 		}
 
 		InlineArrayInit* Parser::parseInlineArrayInit(TokenStream& tk)

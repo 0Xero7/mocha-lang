@@ -152,6 +152,11 @@ void MochaLang::Passes::BasePass::BasePass::handleWhile(Statement* _S, Statement
 void MochaLang::Passes::BasePass::BasePass::handlePackage(Statement* _S, Statement** source) {
 	auto S = (PackageStmt*)_S;
 
+	auto packageName = MochaLang::Utils::flattenDotExpr(S->getPackageName());
+	for (auto& part : packageName) {
+		context = context->addContext(part);
+	}
+
 	//context->addContext(S->getPackageName(), S->get);
 }
 

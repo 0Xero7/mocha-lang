@@ -13,6 +13,8 @@
 #include "src/targets/java/JavaWriter.h"
 #include "src/DependencyResolver.h"
 
+//#include "tst/DotExprToVecStrTest.h"
+
 using namespace std;
 
 int main()
@@ -44,7 +46,7 @@ int main()
 		auto parser = MochaLang::Parser::Parser();
 		auto tree = parser.parse(tokens, false, true);
 
-		auto temp = (MochaLang::BlockStmt*)tree;
+		auto temp = (MochaLang::BlockStmt*)(((MochaLang::PackageStmt*)tree)->packageContents);
 		for (int i = 0; i < temp->size(); ++i) {
 			if (temp->get(i)->getType() == MochaLang::StmtType::CLASS)
 				classes.insert(((MochaLang::ClassStmt*)(temp->get(i)))->getClassName());

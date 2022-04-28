@@ -7,13 +7,13 @@ namespace Utils {
 	
 	using namespace std;
 
-	void __flatten__(Expr* expr, vector<string>& collect) {
+	static void __flatten__(Expr* expr, vector<string>& collect) {
 		if (expr->getType() == StmtType::IDEN) {
 			collect.push_back(((Identifier*)expr)->get());
 			return;
 		}
 
-		if (expr->getType() == StmtType::OP_DOT) throw "Ayo something is very wrong";
+		if (expr->getType() != StmtType::OP_DOT) throw "Ayo something is very wrong";
 
 		auto dot = (BinaryOp*)expr;
 
@@ -21,7 +21,7 @@ namespace Utils {
 		__flatten__(dot->getRight(), collect);
 	}
 
-	vector<string> flattenDotExpr(Expr* expr) {
+	static vector<string> flattenDotExpr(Expr* expr) {
 		vector<string> collect;
 		__flatten__(expr, collect);
 		return collect;
