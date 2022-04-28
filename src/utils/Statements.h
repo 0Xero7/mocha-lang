@@ -260,7 +260,8 @@ namespace MochaLang
 			std::vector<Attribute> attrbs;
 			std::string className;
 	public:
-			ClassStmt(std::vector<FunctionDecl*>,std::vector<VarDecl*>,std::vector<Attribute>,std::string);
+			std::vector<ClassStmt*> nestedClasses;
+			ClassStmt(std::vector<FunctionDecl*>,std::vector<VarDecl*>,std::vector<ClassStmt*>,std::vector<Attribute>,std::string);
 			std::vector<FunctionDecl*> getMemberFunctions();
 			std::vector<VarDecl*> getMemberVariables();
 			std::vector<Attribute> getAttrbs();

@@ -1,0 +1,12 @@
+
+package com.company;
+
+class A {
+	class B {
+	}
+}
+
+class Entrypoint {
+	pub void main() {
+	}
+}

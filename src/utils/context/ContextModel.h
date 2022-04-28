@@ -24,7 +24,7 @@ namespace Symbols {
 			if (childContexts.count(shortName)) return childContexts[shortName];
 
 			auto newLongName = (longName == "" ? "" : (longName + ".")) + shortName;
-			return childContexts[shortName] = new ContextModel(shortName, longName, this);
+			return childContexts[shortName] = new ContextModel(shortName, newLongName, this);
 		}
 
 		void popContext(string shortName) {

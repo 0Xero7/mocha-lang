@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Statements.h"
 #include <vector>
 #include <string>

@@ -12,6 +12,7 @@
 #include "src/output/StatementTreePrinter.h"
 #include "src/targets/java/JavaWriter.h"
 #include "src/DependencyResolver.h"
+#include "src/passes/ContextPass.h"
 
 //#include "tst/DotExprToVecStrTest.h"
 
@@ -20,10 +21,10 @@ using namespace std;
 int main()
 {
 	std::vector<std::string> filesToParse = {
-		"C:\\Projects\\mocha-lang\\test\\java_transpile_test.mocha",
+		"C:\\Projects\\mocha-lang\\test\\context_generation_test.mocha",
 	};
 
-	std::string mainFile = "C:\\Projects\\mocha-lang\\test\\java_transpile_test.mocha";
+	std::string mainFile = "C:\\Projects\\mocha-lang\\test\\context_generation_test.mocha";
 
 	std::unordered_map<std::string, MochaLang::Statement*> parseTrees;
 	std::unordered_set<std::string> classes;
@@ -62,6 +63,9 @@ int main()
 	auto dependencyResolver = MochaLang::Passes::DependencyResolver(parseTrees);
 	dependencyResolver.resolveDependecies(parseTrees.at(mainFile));
 	auto tree = parseTrees.at(mainFile);
+
+	auto context = MochaLang::Passes::ContextPass::generateContext(tree);
+
 
 	auto basePass = MochaLang::Passes::BasePass::BasePass(classes);
 	basePass.performBasePass(tree, &tree);

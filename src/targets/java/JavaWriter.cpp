@@ -281,6 +281,11 @@ void MochaLang::Targets::Java::JavaWriter::writeClass(ClassStmt* cls) {
 
 	pw.writeNewLine();
 
+	for (ClassStmt* stmt : cls->nestedClasses) {
+		writeClass(stmt);
+	}
+	pw.writeNewLine();
+
 	for (FunctionDecl* decl : cls->getMemberFunctions()) {
 		writeFuncDecl(decl);
 	}

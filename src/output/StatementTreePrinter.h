@@ -288,6 +288,9 @@ namespace MochaLang
 			std::cout << indentText << " <Member Variables>" << std::endl;
 			for (VarDecl* decl : stmt->getMemberVariables())
 				debug(decl, indent + 1);
+			std::cout << indentText << " <Nested Classes>" << std::endl;
+			for (auto* decl : stmt->nestedClasses)
+				debug(decl, indent + 1);
 		}
 		
 		void debug_import(std::string& indentText, ImportStmt* stmt, int indent) {

@@ -545,6 +545,7 @@ namespace MochaLang
 
 			std::vector<FunctionDecl*> fdecl;
 			std::vector<VarDecl*> vdecl;
+			std::vector<ClassStmt*> nestedClasses;
 
 			for (int i = 0; i < block->size(); ++i) {
 				Statement* stmt = block->get(i);
@@ -555,10 +556,13 @@ namespace MochaLang
 				case StmtType::VARDECL:
 					vdecl.push_back((VarDecl*)stmt);
 					break;
+				case StmtType::CLASS:
+					nestedClasses.push_back((ClassStmt*)stmt);
+					break;
 				}
 			}
 
-			return new ClassStmt(fdecl, vdecl, attrbs, className);
+			return new ClassStmt(fdecl, vdecl, nestedClasses, attrbs, className);
 		}
 				
 		ImportStmt* Parser::parseImport(TokenStream& tk) {
