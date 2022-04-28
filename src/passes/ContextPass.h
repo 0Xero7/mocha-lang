@@ -13,6 +13,12 @@ namespace ContextPass {
 		auto* S = (ClassStmt*)_S;
 		context = context->addContext(S->getClassName());
 
+		auto* head = context;
+
+		for (auto* cls : S->nestedClasses) {
+			context = head;
+			handleClass(cls, context);
+		}
 	}
 
 	static void handlePackage(Statement* _S, MochaLang::Symbols::ContextModel* context) {

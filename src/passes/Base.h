@@ -15,9 +15,8 @@ namespace BasePass {
 		MochaLang::Symbols::ContextModel* context;
 
 	public:
-		BasePass(std::unordered_set<std::string>& knownClasses) : knownClasses(knownClasses) { 
-			context = new MochaLang::Symbols::ContextModel("", "", nullptr);
-		}
+		BasePass(std::unordered_set<std::string>& knownClasses,
+			MochaLang::Symbols::ContextModel* context) : knownClasses(knownClasses), context(context) { }
 
 		Expr* getIndexVariable(Expr* op);
 		void getIndexIndices(Expr* op, std::vector<Expr*>& collect);

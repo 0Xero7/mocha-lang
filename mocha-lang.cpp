@@ -66,8 +66,7 @@ int main()
 
 	auto context = MochaLang::Passes::ContextPass::generateContext(tree);
 
-
-	auto basePass = MochaLang::Passes::BasePass::BasePass(classes);
+	auto basePass = MochaLang::Passes::BasePass::BasePass(classes, context);
 	basePass.performBasePass(tree, &tree);
 
 	cout << endl << endl;

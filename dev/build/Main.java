@@ -11,6 +11,7 @@ class Entrypoint {
 
 
 public void main() {
+  B.test = A.B();
 }
 }
 class Main {
