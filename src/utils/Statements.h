@@ -119,9 +119,11 @@ namespace MochaLang
 
 	class Identifier : public Expr {
 	private:
-		std::string identifier;
+		//std::string identifier;
+		std::vector<std::string> identifier;
 	public:
-		Identifier(std::string&);
+		//Identifier(std::string&);
+		Identifier(std::vector<std::string>&);
 
 		std::string get();
 	};

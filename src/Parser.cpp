@@ -48,30 +48,60 @@ namespace MochaLang
 					block->push_back(parseIf(tk));
 					break;
 
-				case TokenType::IDEN:
 				case TokenType::NUMBER:
+					block->push_back(parseExpr(tk, { TokenType::SEMICOLON }));
+					tk.ignore();
+					break;
+
+				case TokenType::IDEN:
+				{
 					if (tk.peekValue() == "BREAKPOINT") {
 						int x = 0;
 						tk.ignore();
 						break;
 					}
 
+					// Since identifier can be like X.Y.Z we need to calculate how much to look ahead by
+					int lookAheadOffset = 0;
+					while (true) {
+						if (tk.peekType(lookAheadOffset) != TokenType::IDEN)
+							throw "Expected identifier, found " + tk.peekValue(lookAheadOffset);
+
+						++lookAheadOffset;
+						if (tk.peekType(lookAheadOffset) == TokenType::DOT) ++lookAheadOffset;
+						else break;
+					}
+
+					while (tk.peekType(lookAheadOffset) == TokenType::BRACKET_OP) {
+						++lookAheadOffset;
+						if (!(tk.peekType(lookAheadOffset) == TokenType::BRACKET_CL || tk.peekType(lookAheadOffset + 1) == TokenType::BRACKET_CL))
+							throw "Expected ], found " + tk.peekValue(lookAheadOffset);
+
+						if (tk.peekType(lookAheadOffset) == TokenType::BRACKET_CL)
+							++lookAheadOffset;
+						else
+							lookAheadOffset += 2;
+					}
+
 					// Handle the default constructor declaration
-					if (tk.peekValue() == currentClassName && tk.peekType(1) == TokenType::PAREN_OP) {
+					if (tk.peekValue() == currentClassName && tk.peekType(lookAheadOffset) == TokenType::PAREN_OP) {
 						block->push_back(parseFunctionDecl(tk, { MochaLangClassConstructorAttr() }, true));
+						attributeAccumulator.clear();
 						break;
 					}
 					// Handle function decls with custom typenames
-					if (tk.peekValue() == currentClassName && tk.peekType(1) == TokenType::IDEN 
-							&& (tk.peekType(2) == TokenType::PAREN_OP || tk.peekType(2) == TokenType::ARROW)) {
+					if (tk.peekType(lookAheadOffset) == TokenType::IDEN
+						&& (tk.peekType(lookAheadOffset + 1) == TokenType::PAREN_OP || tk.peekType(lookAheadOffset + 1) == TokenType::ARROW)) {
 						block->push_back(parseFunctionDecl(tk, attributeAccumulator, false));
+						attributeAccumulator.clear();
 						break;
 					}
 
 					// Var Decl
-					if (tk.peekType(1) == TokenType::IDEN) {
+					if (tk.peekType(lookAheadOffset) == TokenType::IDEN) {
 						block->push_back(parseVarDecl(tk, true, attributeAccumulator, { TokenType::SEMICOLON }));
 						tk.ignore();
+						attributeAccumulator.clear();
 						break;
 					}
 
@@ -81,6 +111,7 @@ namespace MochaLang
 					// Since Exprs dont read the ending token, ignore it
 					tk.ignore();
 					break;
+				}
 
 				case TokenType::BRACE_OP:
 					block->push_back(parse(tk, true));
@@ -202,6 +233,23 @@ namespace MochaLang
 			return new IfStmt(conditional, trueBlock, falseBlock);
 		}
 
+		Identifier* Parser::parseIdentifier(TokenStream& tk)
+		{
+			std::vector<std::string> iden;
+			while (true) {
+				if (tk.peekType() != TokenType::IDEN)
+					throw "Expected identifier, found " + tk.peekValue();
+
+				iden.push_back(tk.peekValue());
+				tk.ignore();
+
+				if (tk.peekType() == TokenType::DOT) tk.ignore();
+				else break;
+			}
+
+			return new Identifier(iden);
+		}
+
 		Expr* Parser::parseExpr(TokenStream& tk, 
 			const std::unordered_set<TokenType>& terminatingCharacters = { },
 				bool functionParamMode) {
@@ -312,12 +360,15 @@ namespace MochaLang
 					indexable = !true;
 					break;
 
-				case TokenType::INT:
-				case TokenType::FLOAT:
-				case TokenType::STRING:
+				//case TokenType::INT:
+				//case TokenType::FLOAT:
+				//case TokenType::STRING:
 				case TokenType::IDEN:
+					tk.rewind();
+					auto identifier = parseIdentifier(tk);
+
 					if (tk.peekType() == TokenType::PAREN_OP) { // function call
-						std::string funcName = token.tokenValue;
+						std::string funcName = identifier->get();
 						auto* fcall = new FunctionCall(funcName);
 
 						auto parameters = parseFunctionCall(tk);
@@ -329,7 +380,7 @@ namespace MochaLang
 						term.push_back(fcall);
 					}
 					else {
-						term.push_back(new Identifier(token.tokenValue));
+						term.push_back(identifier);
 					}
 					indexable = true;
 					break;
@@ -416,9 +467,9 @@ namespace MochaLang
 		VarDecl* Parser::parseVarDecl(TokenStream& tk, bool readEnd, 
 				const std::vector<Attribute>& attrbs,
 				const std::unordered_set<TokenType>& terminatingTokens) {
-			Token token;
-			tk.accept(token);
-			auto varType = token.tokenValue;
+			/*Token token;
+			tk.accept(token);*/
+			auto varType = parseIdentifier(tk)->get();
 
 			// Is it an array?
 			while (tk.match(TokenType::BRACKET_OP)) {
@@ -429,8 +480,8 @@ namespace MochaLang
 				varType += "[]";
 			}
 
-			tk.accept(token);
-			auto varName = token.tokenValue;
+			//tk.accept(token);
+			auto varName = parseIdentifier(tk);
 
 			Expr* expr = nullptr;
 
@@ -438,10 +489,10 @@ namespace MochaLang
 				tk.ignore();
 				// TODO : COMMA isn't yet implemented
 				auto rhs = parseExpr(tk, terminatingTokens);
-				expr = new BinaryOp(new Identifier(varName), StmtType::OP_ASSIGN, rhs);
+				expr = new BinaryOp(varName, StmtType::OP_ASSIGN, rhs);
 			}
 
-			auto decl = new VarDecl(varName, varType, attrbs, expr);
+			auto decl = new VarDecl(varName->get(), varType, attrbs, expr);
 			
 			// Expect a ; at the end
 			if (readEnd)

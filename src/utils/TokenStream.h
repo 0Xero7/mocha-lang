@@ -51,11 +51,13 @@ namespace MochaLang
 		}
 
 
-		std::string peekValue() {
+		std::string peekValue(int lookForwardBy = 0) {
+			if (i + lookForwardBy >= (int)tokens.size()) return "$INVALID";
+
 			if (eof())
 				throw "Seeking value after end of streams.";
 
-			return tokens[i].tokenValue;
+			return tokens[i + lookForwardBy].tokenValue;
 		}
 
 

@@ -84,6 +84,8 @@ namespace MochaLang
 			PackageStmt* parsePackage(TokenStream&);
 
 			InlineArrayInit* parseInlineArrayInit(TokenStream& tk);
+
+			Identifier* parseIdentifier(TokenStream& tk);
 			//g4HDtPgnTveS2ddw
 		};
 	}

@@ -21,10 +21,10 @@ using namespace std;
 int main()
 {
 	std::vector<std::string> filesToParse = {
-		"C:\\Projects\\mocha-lang\\test\\context_generation_test.mocha",
+		"C:\\Projects\\mocha-lang\\test\\java_transpile_test.mocha",
 	};
 
-	std::string mainFile = "C:\\Projects\\mocha-lang\\test\\context_generation_test.mocha";
+	std::string mainFile = "C:\\Projects\\mocha-lang\\test\\java_transpile_test.mocha";
 
 	std::unordered_map<std::string, MochaLang::Statement*> parseTrees;
 	std::unordered_set<std::string> classes;

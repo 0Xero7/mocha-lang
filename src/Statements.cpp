@@ -27,9 +27,15 @@ namespace MochaLang
 		Expr(StmtType::NUMBER), number(number) { }
 	int Number::get() { return number; }
 
-	Identifier::Identifier(std::string& identifier) :
+	Identifier::Identifier(std::vector<std::string>& identifier) :
 		Expr(StmtType::IDEN), identifier(identifier) { }
-	std::string Identifier::get() { return identifier; }
+	std::string Identifier::get() {
+		std::string ret;
+		for (auto& s : identifier)
+			ret += s + ".";
+		ret.pop_back();
+		return ret; 
+	}
 
 	RawString::RawString(std::string string) :
 		Expr(StmtType::RAW_STRING), string(string) { }

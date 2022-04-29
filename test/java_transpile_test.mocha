@@ -9,7 +9,8 @@ class IntList {
 	IntList() {
 		values = int[capacity];
 	}
-
+	
+	BREAKPOINT
 	pub int length() => length;
 	pub int at(int index) => values[index];
 

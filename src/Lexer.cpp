@@ -14,11 +14,11 @@ namespace MochaLang
 			"elif",
 			"return",
 
-			"var",
+			/*"var",
 			"void",
 			"int",
 			"float",
-			"string",
+			"string",*/
 			"for",
 			"while",
 			
@@ -103,9 +103,9 @@ namespace MochaLang
 		const std::unordered_map<std::string, TokenType> tok2KeyWType = {
 			{ "if", TokenType::IF },
 			{ "else", TokenType::ELSE },
-			{ "void", TokenType::VOID },
+			/*{ "void", TokenType::VOID },
 			{ "int", TokenType::INT },
-			{ "float", TokenType::FLOAT },
+			{ "float", TokenType::FLOAT },*/
 			{ "return", TokenType::RETURN },
 			{ "for", TokenType::FOR },
 			{ "while", TokenType::WHILE },
