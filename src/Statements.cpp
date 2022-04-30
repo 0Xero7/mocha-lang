@@ -36,6 +36,7 @@ namespace MochaLang
 		ret.pop_back();
 		return ret; 
 	}
+	std::vector<std::string> Identifier::get_raw() { return identifier; }
 
 	RawString::RawString(std::string string) :
 		Expr(StmtType::RAW_STRING), string(string) { }
@@ -47,9 +48,10 @@ namespace MochaLang
 	ExplicitArrayInit::ExplicitArrayInit(std::string arrayType, std::vector<Expr*>& values)
 		: Expr(StmtType::EXPLICIT_ARRAY_INIT), arrayType(arrayType), values(values) { }
 
-	FunctionCall::FunctionCall(std::string& functionName) :
+	FunctionCall::FunctionCall(Identifier* functionName) :
 		Expr(StmtType::FUNCTION_CALL), functionName(functionName) { }
-	std::string FunctionCall::getFuncName() { return functionName; }
+	Identifier* FunctionCall::getFuncName() { return functionName; }
+	std::string FunctionCall::getFuncNameStr() { return functionName->get(); }
 	int FunctionCall::parameterSize() { return parameters.size(); }
 	void FunctionCall::addParameter(Expr* expr) { parameters.push_back(expr); }
 	Expr* FunctionCall::getParamAt(int index) { return parameters[index]; }

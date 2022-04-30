@@ -126,6 +126,7 @@ namespace MochaLang
 		Identifier(std::vector<std::string>&);
 
 		std::string get();
+		std::vector<std::string> get_raw();
 	};
 
 	class InlineArrayInit : public Expr {
@@ -143,12 +144,13 @@ namespace MochaLang
 
 	class FunctionCall : public Expr {
 	private:
-		std::string functionName;
+		Identifier* functionName;
 		std::vector<Expr*> parameters;
 	public:
-		FunctionCall(std::string& functionName);
+		FunctionCall(Identifier* functionName);
 
-		std::string getFuncName();
+		std::string getFuncNameStr();
+		Identifier* getFuncName();
 		int parameterSize();
 		Expr* getParamAt(int);
 

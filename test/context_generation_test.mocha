@@ -8,7 +8,8 @@ class A {
 
 class Entrypoint {
 	pub void main() {
-		BREAKPOINT
-		A.B test = A.B();
+		A.B test = com.company.A.B();
+
+		A.B[] test2 = A.B[30];
 	}
 }

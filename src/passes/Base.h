@@ -4,6 +4,7 @@
 #include "../utils/Statements.h"
 #include "../utils/context/ContextModel.h"
 #include "../utils/DotExprToVecStr.h"
+#include "../utils/context/ContextFinder.h"
 
 namespace MochaLang {
 namespace Passes {

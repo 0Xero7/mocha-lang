@@ -14,7 +14,9 @@ void MochaLang::Passes::BasePass::BasePass::handleFunctionCall(Statement* _S, St
 	}
 
 
-	if (knownClasses.count(fname)) {
+	//if (knownClasses.count(fname)) {
+	//auto* ptr = context;
+	if (MochaLang::Utils::findContext(fname->get_raw(), context) != nullptr) {
 		auto fcall = new FunctionCall(fname);
 
 		for (int i = 0; i < stmt->parameterSize(); ++i) {
@@ -66,7 +68,8 @@ void MochaLang::Passes::BasePass::BasePass::handleExpr(Statement* _S, Statement*
 	case StmtType::INDEX:
 		auto left = ((BinaryOp*)S)->left;
 		auto indexedExprName = getIndexVariable(left);
-		if (indexedExprName->getType() == StmtType::IDEN && knownClasses.count(((Identifier*)indexedExprName)->get())) {
+		//if (indexedExprName->getType() == StmtType::IDEN && knownClasses.count(((Identifier*)indexedExprName)->get())) {
+		if (indexedExprName->getType() == StmtType::IDEN && MochaLang::Utils::findContext(((Identifier*)indexedExprName)->get_raw(), context)) {
 			// It is an explicit array init
 			std::vector<Expr*> collect;
 			getIndexIndices(S, collect);
@@ -114,8 +117,12 @@ void MochaLang::Passes::BasePass::BasePass::handleVarDecl(Statement* _S, Stateme
 void MochaLang::Passes::BasePass::BasePass::handleClass(Statement* _S, Statement** source) {
 	auto S = (ClassStmt*)_S;
 
+	context = context->addContext(S->getClassName());
+
 	for (auto v : S->getMemberFunctions()) handleFunctionDecl(v, (Statement**)&S);
 	for (auto v : S->getMemberVariables()) handleVarDecl(v, (Statement**)&S);
+
+	context = context->parent;
 }
 
 void MochaLang::Passes::BasePass::BasePass::handleFor(Statement* _S, Statement** source) {
@@ -152,13 +159,14 @@ void MochaLang::Passes::BasePass::BasePass::handleWhile(Statement* _S, Statement
 void MochaLang::Passes::BasePass::BasePass::handlePackage(Statement* _S, Statement** source) {
 	auto S = (PackageStmt*)_S;
 
-	auto packageName = MochaLang::Utils::flattenDotExpr(S->getPackageName());
+	auto* orig = context;
+	auto packageName = ((Identifier*)S->getPackageName())->get_raw();// MochaLang::Utils::flattenDotExpr(S->getPackageName());
 	for (auto& part : packageName) {
 		context = context->addContext(part);
-		handleBlock(S->packageContents, (Statement**)&S);
-		context = context->parent;
 	}
 
+	handleBlock(S->packageContents, (Statement**)&S);
+	context = orig;
 	//context->addContext(S->getPackageName(), S->get);
 }
 

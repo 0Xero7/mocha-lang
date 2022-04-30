@@ -368,7 +368,7 @@ namespace MochaLang
 					auto identifier = parseIdentifier(tk);
 
 					if (tk.peekType() == TokenType::PAREN_OP) { // function call
-						std::string funcName = identifier->get();
+						auto funcName = identifier;
 						auto* fcall = new FunctionCall(funcName);
 
 						auto parameters = parseFunctionCall(tk);

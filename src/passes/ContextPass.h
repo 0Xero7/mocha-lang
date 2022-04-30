@@ -23,7 +23,7 @@ namespace ContextPass {
 
 	static void handlePackage(Statement* _S, MochaLang::Symbols::ContextModel* context) {
 		auto* S = (PackageStmt*)_S;
-		auto pkgName = MochaLang::Utils::flattenDotExpr(S->getPackageName());
+		auto pkgName = ((Identifier*)S->getPackageName())->get_raw();
 
 		for (std::string& s : pkgName) {
 			context = context->addContext(s);

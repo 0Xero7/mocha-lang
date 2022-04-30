@@ -21,10 +21,10 @@ using namespace std;
 int main()
 {
 	std::vector<std::string> filesToParse = {
-		"C:\\Projects\\mocha-lang\\test\\java_transpile_test.mocha",
+		"C:\\Projects\\mocha-lang\\test\\person_builder.mocha",
 	};
 
-	std::string mainFile = "C:\\Projects\\mocha-lang\\test\\java_transpile_test.mocha";
+	std::string mainFile = "C:\\Projects\\mocha-lang\\test\\person_builder.mocha";
 
 	std::unordered_map<std::string, MochaLang::Statement*> parseTrees;
 	std::unordered_set<std::string> classes;
@@ -65,6 +65,9 @@ int main()
 	auto tree = parseTrees.at(mainFile);
 
 	auto context = MochaLang::Passes::ContextPass::generateContext(tree);
+
+	// Inject primitives
+	context->addContext("int");
 
 	auto basePass = MochaLang::Passes::BasePass::BasePass(classes, context);
 	basePass.performBasePass(tree, &tree);

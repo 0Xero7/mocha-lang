@@ -1,48 +1,37 @@
 package com.company;
-class IntList {
-private int[] values;
-private int length = 0;
-private int capacity = 2;
+class PersonBuilder {
+int age;
+String name;
 
 
-IntList() {
-  values = new int[capacity];
+public PersonBuilder setAge(int age) {
+  this.age = age;
+  return this;
 }
-public int length() {
-  return length;
+public PersonBuilder setName(String name) {
+  this.name = name;
+  return this;
 }
-public int at(int index) {
-  return values[index];
+public Person build() {
+  return (new Person(age, name));
 }
-public void add(int n) {
-  if (length == capacity) increaseCapacity();
-  values[length] = n;
-  length = (length + 1);
 }
-private void increaseCapacity() {
-  capacity = (capacity * 2);
-  int[] newValues = new int[capacity];
-  for (int i = 0; i < length; i = (i + 1)) {
-    newValues[i] = values[i];
-  }
-  values = newValues;
+class Person {
+int age;
+String name;
+
+
+Person(int age, String name) {
+  this.age = age;
+  this.name = name;
 }
 }
 class Entrypoint {
 
 
-void print(IntList list) {
-  for (int i = 0; i < list.length(); i = (i + 1)) {
-    System.out.print(("" + list.at(i)) + " ");
-  }
-  System.out.println();
-}
 public void main() {
-  IntList list = (new IntList());
-  for (int i = 1; i < 10; i = (i + 1)) {
-    list.add(i);
-    print(list);
-  }
+  Person person = (new PersonBuilder()).setAge(23).setName("Soumya").build();
+  System.out.println(((("" + person.name) + " is ") + person.age) + " years old.");
 }
 }
 class Main {

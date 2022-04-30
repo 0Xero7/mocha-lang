@@ -229,7 +229,7 @@ void MochaLang::Targets::Java::JavaWriter::writeReturn(ReturnStmt* ret) {
 }
 
 void MochaLang::Targets::Java::JavaWriter::writeFunctionCall(FunctionCall* fcall) {
-	pw.write({fcall->getFuncName(), "(" });
+	pw.write({fcall->getFuncNameStr(), "(" });
 	for (int i = 0; i < fcall->parameterSize(); ++i) {
 		writeExpr(fcall->getParamAt(i), false);
 		if (i < fcall->parameterSize() - 1) pw.write({ ", " });
@@ -239,7 +239,7 @@ void MochaLang::Targets::Java::JavaWriter::writeFunctionCall(FunctionCall* fcall
 
 void MochaLang::Targets::Java::JavaWriter::writeConstructorCall(ConstructorCall* ccall) {
 	auto fcall = ccall->getFunctionCall();
-	pw.write({"(new ",fcall->getFuncName(), "("});
+	pw.write({"(new ",fcall->getFuncNameStr(), "("});
 	for (int i = 0; i < fcall->parameterSize(); ++i) {
 		writeExpr(fcall->getParamAt(i), false);
 		if (i < fcall->parameterSize() - 1) pw.write({ ", " });
