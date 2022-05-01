@@ -191,6 +191,7 @@ void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSem
 
 void MochaLang::Targets::Java::JavaWriter::writeFuncDecl(FunctionDecl* decl) {
 	if (!decl->getAttrbs().empty() && decl->getAttrbs()[0].getType() == AttrType::__MOCHA__CLASS_CONTRUCTOR) {
+		writeAttributes(decl->getAttrbs());
 		pw.write({ decl->getFunctionName(), "(" });
 	}
 	else {
@@ -321,6 +322,8 @@ void MochaLang::Targets::Java::JavaWriter::writeIf(IfStmt* ifs) {
 void MochaLang::Targets::Java::JavaWriter::writeAttributes(std::vector<MochaLang::Attribute>& attrbs) {
 	int n = attrbs.size();
 	for (int i = 0; i < n; ++i) {
+		if (attrbs[i].getType() == AttrType::__MOCHA__CLASS_CONTRUCTOR) continue;
+
 		pw.write({ attr2java.at(attrbs[i].getType()) });
 		if (i < n - 1) pw.write({ " " });
 	}

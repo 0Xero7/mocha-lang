@@ -85,7 +85,9 @@ namespace MochaLang
 
 					// Handle the default constructor declaration
 					if (tk.peekValue() == currentClassName && tk.peekType(lookAheadOffset) == TokenType::PAREN_OP) {
-						block->push_back(parseFunctionDecl(tk, { MochaLangClassConstructorAttr() }, true));
+						std::vector<Attribute> cnstrAttrbs = { MochaLangClassConstructorAttr() };
+						cnstrAttrbs.insert(cnstrAttrbs.end(), attributeAccumulator.begin(), attributeAccumulator.end());
+						block->push_back(parseFunctionDecl(tk, cnstrAttrbs, true));
 						attributeAccumulator.clear();
 						break;
 					}
