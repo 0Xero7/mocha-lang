@@ -1,16 +1,4 @@
 package com.company;
-class Person {
-int age;
-String name;
-int yearOfBirth;
-
-
-Person(int age, String name, int yearOfBirth) {
-  this.age = age;
-  this.name = name;
-  this.yearOfBirth = yearOfBirth;
-}
-}
 class PersonBuilder {
 int age;
 String name;
@@ -30,7 +18,7 @@ public PersonBuilder setYearOfBirth(int yearOfBirth) {
   return this;
 }
 public Person build() {
-  return (new Person(age, name, yearOfBirth));
+  return Person(age, name, yearOfBirth);
 }
 }
 class Entrypoint {
@@ -41,11 +29,3 @@ void main() {
   System.out.println(((((("" + person.name) + " is ") + person.age) + " years old. He was born in ") + person.yearOfBirth) + ".");
 }
 }
-class Main {
-  public static void main(String[] args) {
-    var userClass = new Entrypoint();
-    userClass.main();
-  }
-}
-
-

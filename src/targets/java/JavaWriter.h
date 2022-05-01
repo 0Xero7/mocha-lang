@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <fstream>
+#include <filesystem>
 #include "../../utils/Statements.h"
 #include "../../utils/Attributes.h"
 #include "../../utils/PrettyWriter.h"
@@ -16,7 +17,10 @@ namespace MochaLang {
 		namespace Java {
 			class JavaWriter {
 			private:
+				std::string indentText;
 				PrettyWriter pw;
+
+				std::filesystem::path currentOutputDirectory;
 
 				void writeStatement(Statement*);
 
@@ -50,22 +54,56 @@ namespace MochaLang {
 
 				void write(Statement* program) {
 					auto* prog = (Program*)program;
-					for (auto [pkgName, pkg] : prog->packages)
+					for (auto [pkgName, pkg] : prog->packages) {
+						auto pkgNameRaw = ((Identifier*)pkg->getPackageName())->get_raw();
+
+						auto temp = currentOutputDirectory;
+
+						for (auto& pkgPart : pkgNameRaw) {
+							currentOutputDirectory = currentOutputDirectory.append(pkgPart);
+							std::filesystem::create_directory(currentOutputDirectory);
+						}
+
+						//pw = PrettyWriter(indentText);
 						writePackage(pkg);
+
+						currentOutputDirectory = temp;
+
+
+						
+						
+
+						/*std::ofstream file;
+						file.open(outputPath + "\\compiled.java");
+						file << pw.getString();
+						file.close();*/
+					}
+				}
+
+				void flushToFile(std::string filename) {
+					auto path = currentOutputDirectory.append(filename);
+					std::ofstream file;
+					file.open(path);
+					file << pw.getString();
+					file.close();
+					currentOutputDirectory = currentOutputDirectory.parent_path();
 				}
 
 			public:
-				JavaWriter(std::string indentText) : pw(PrettyWriter(indentText)) { }
+				JavaWriter(std::string indentText) : pw(PrettyWriter(indentText)), indentText(indentText) { }
 
 				void transpileToJava(std::string outputPath, Statement* program) {
 					// TODO : create a dynamic class finder with main() function
 					auto className = "Entrypoint";
 
+					currentOutputDirectory = std::filesystem::path(outputPath);
+
 					write(program);
 
-					//std::cout << pw.getString() << std::endl;
+					pw = PrettyWriter(indentText);
 
 					std::stringstream ss;
+					ss << "package com.company;\n";
 					ss << "class Main {\n";
 					ss << "  public static void main(String[] args) {\n";
 					ss << "    var userClass = new " << className << "();\n";
@@ -76,7 +114,7 @@ namespace MochaLang {
 					pw.writeNewLine();
 
 					std::ofstream file;
-					file.open(outputPath);
+					file.open(outputPath + "\\com\\company\\" + ((Program*)program)->programName + ".java");
 					file << pw.getString();
 					file.close();
 				}

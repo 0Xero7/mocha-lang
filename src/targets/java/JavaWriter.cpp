@@ -329,11 +329,22 @@ void MochaLang::Targets::Java::JavaWriter::writeAttributes(std::vector<MochaLang
 
 
 void MochaLang::Targets::Java::JavaWriter::writePackage(PackageStmt* S) {
-	pw.write({ "package " });
-	writeExpr(S->getPackageName());
+	/*pw.write({ "package " });
+	writeExpr(S->getPackageName());*/
 
 	auto block = (BlockStmt*)S->packageContents;
 
-	for (int i = 0; i < block->size(); ++i)
-		writeStatement(block->get(i));
+	for (int i = 0; i < block->size(); ++i) {
+		if (block->get(i)->getType() == StmtType::CLASS) {
+			pw = PrettyWriter(indentText);
+			pw.write({ "package " });
+			writeExpr(S->getPackageName());
+
+			writeStatement(block->get(i));
+
+			flushToFile(((ClassStmt*)block->get(i))->getClassName() + ".java");
+		}
+		else
+			throw "Java output generator not yet implemented.";
+	}
 }

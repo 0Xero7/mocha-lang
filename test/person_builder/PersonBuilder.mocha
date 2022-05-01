@@ -1,9 +1,9 @@
 package com.company;
 
-class PersonBuilder {
-	int age;
-	String name;
-	int yearOfBirth;
+pub class PersonBuilder {
+	pub int age;
+	pub String name;
+	pub int yearOfBirth;
 	
 	pub PersonBuilder setAge(int age) {
 		this.age = age;
@@ -21,6 +21,6 @@ class PersonBuilder {
 	}
 
 	pub Person build() {
-		return Person(age, name, yearOfBirth);
+		return com.company.Models.Person(age, name, yearOfBirth);
 	}
 }

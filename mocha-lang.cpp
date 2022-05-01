@@ -52,7 +52,7 @@ int main()
 {
 	std::string sourceDir = "C:\\Projects\\mocha-lang\\test\\person_builder";
 
-	auto* program = new MochaLang::Program("PersonBuilder");
+	auto* program = new MochaLang::Program("PersonBuilderTest");
 
 	auto start = std::chrono::high_resolution_clock::now();
 
@@ -73,7 +73,10 @@ int main()
 	//cout << "ok";
 
 	auto jw = MochaLang::Targets::Java::JavaWriter("  ");
-	jw.transpileToJava("C:/Projects/mocha-lang/dev/build/Main.java", program);
+	auto outputPath = R"(C:\Users\Soumya Pattanayak\IdeaProjects\MochaLangRuns\src)";
+	std::filesystem::remove_all(outputPath);
+	std::filesystem::create_directory(outputPath);
+	jw.transpileToJava(outputPath, program);
 
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
