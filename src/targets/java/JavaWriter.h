@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <fstream>
 #include <filesystem>
+#include <queue>
 #include "../../utils/Statements.h"
 #include "../../utils/Attributes.h"
 #include "../../utils/PrettyWriter.h"

@@ -1,5 +1,7 @@
 package com.company;
 
+import com.company.Models.Person;
+
 pub class PersonBuilder {
 	pub int age;
 	pub String name;

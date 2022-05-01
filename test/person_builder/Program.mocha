@@ -1,5 +1,7 @@
 package com.company;
 
+import com.company.Models.Person;
+
 class Entrypoint {
 	void main() {
 		Person person = PersonBuilder().setName("Soumya").setAge(23).setYearOfBirth(1998).build();

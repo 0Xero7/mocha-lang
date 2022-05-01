@@ -333,6 +333,7 @@ void MochaLang::Targets::Java::JavaWriter::writePackage(PackageStmt* S) {
 	writeExpr(S->getPackageName());*/
 
 	auto block = (BlockStmt*)S->packageContents;
+	std::queue<Statement*> imports;
 
 	for (int i = 0; i < block->size(); ++i) {
 		if (block->get(i)->getType() == StmtType::CLASS) {
@@ -340,11 +341,20 @@ void MochaLang::Targets::Java::JavaWriter::writePackage(PackageStmt* S) {
 			pw.write({ "package " });
 			writeExpr(S->getPackageName());
 
+			while (!imports.empty()) {
+				writeImports((ImportStmt*)imports.front());
+				imports.pop();
+			}
+
 			writeStatement(block->get(i));
 
 			flushToFile(((ClassStmt*)block->get(i))->getClassName() + ".java");
 		}
-		else
+		else if (block->get(i)->getType() == StmtType::IMPORT) {
+			imports.push(block->get(i));
+		}
+		else {
 			throw "Java output generator not yet implemented.";
+		}
 	}
 }
