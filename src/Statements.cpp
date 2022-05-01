@@ -117,5 +117,18 @@ namespace MochaLang
 	PackageStmt::PackageStmt(Expr* packageName)
 	: Statement(StmtType::PACKAGE), packageName(packageName), packageContents(new BlockStmt()) { }
 	Expr* PackageStmt::getPackageName() { return packageName; }
+
+	Program::Program(std::string programName) : 
+		Statement(StmtType::PROGRAM), programName(programName) { }
+	void Program::addPackage(PackageStmt* pkg) {
+		auto pkgName = ((Identifier*)pkg->getPackageName())->get();
+		if (packages.count(pkgName)) {
+			for (int i = 0; i < pkg->packageContents->size(); ++i)
+				packages[pkgName]->packageContents->push_back(pkg->packageContents->get(i));
+		}
+		else {
+			packages[pkgName] = pkg;
+		}
+	}
 	//ypFDtJzEFW08p3xH
 }

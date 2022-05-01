@@ -44,13 +44,12 @@ namespace ContextPass {
 		MochaLang::Symbols::ContextModel* context = new MochaLang::Symbols::ContextModel("", "", nullptr);
 		auto* head = context;
 
-		handlePackage(stmt, context);
+		//handlePackage(stmt, context);
 
-		/*auto* program = (BlockStmt*)stmt;
-		for (int i = 0; i < program->size(); ++i) {
-			context = head;
-			handlePackage(program->get(i), context);
-		}*/
+		auto* program = (Program*)stmt;
+		for (auto [pkgName, pkg] : program->packages) {
+			handlePackage(pkg, context);
+		}
 
 		return head;
 	}

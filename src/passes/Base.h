@@ -12,16 +12,15 @@ namespace BasePass {
 
 	class BasePass {
 	private:
-		std::unordered_set<std::string> knownClasses;
 		MochaLang::Symbols::ContextModel* context;
 
 	public:
-		BasePass(std::unordered_set<std::string>& knownClasses,
-			MochaLang::Symbols::ContextModel* context) : knownClasses(knownClasses), context(context) { }
+		BasePass(MochaLang::Symbols::ContextModel* context) : context(context) { }
 
 		Expr* getIndexVariable(Expr* op);
 		void getIndexIndices(Expr* op, std::vector<Expr*>& collect);
 
+		void handleProgram(Statement* S, Statement** source);
 		void handlePackage(Statement* S, Statement** source);
 		void handleExpr(Statement* S, Statement** source);
 		void handleFunctionCall(Statement* S, Statement** source);

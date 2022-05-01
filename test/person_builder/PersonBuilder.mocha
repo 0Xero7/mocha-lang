@@ -1,0 +1,26 @@
+package com.company;
+
+class PersonBuilder {
+	int age;
+	String name;
+	int yearOfBirth;
+	
+	pub PersonBuilder setAge(int age) {
+		this.age = age;
+		return this;
+	}
+	
+	pub PersonBuilder setName(String name) {
+		this.name = name;
+		return this;
+	}
+	
+	pub PersonBuilder setYearOfBirth(int yearOfBirth) {
+		this.yearOfBirth = yearOfBirth;
+		return this;
+	}
+
+	pub Person build() {
+		return Person(age, name, yearOfBirth);
+	}
+}

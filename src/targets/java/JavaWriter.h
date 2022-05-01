@@ -49,7 +49,9 @@ namespace MochaLang {
 				void writePackage(PackageStmt*);
 
 				void write(Statement* program) {
-					writePackage((PackageStmt*)program);
+					auto* prog = (Program*)program;
+					for (auto [pkgName, pkg] : prog->packages)
+						writePackage(pkg);
 				}
 
 			public:
@@ -61,7 +63,7 @@ namespace MochaLang {
 
 					write(program);
 
-					std::cout << pw.getString() << std::endl;
+					//std::cout << pw.getString() << std::endl;
 
 					std::stringstream ss;
 					ss << "class Main {\n";

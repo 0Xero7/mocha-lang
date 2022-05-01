@@ -170,6 +170,17 @@ void MochaLang::Passes::BasePass::BasePass::handlePackage(Statement* _S, Stateme
 	//context->addContext(S->getPackageName(), S->get);
 }
 
+void MochaLang::Passes::BasePass::BasePass::handleProgram(Statement* _S, Statement** source) {
+	auto S = (Program*)_S;
+
+	auto* orig = context;
+	for (auto [pkgName, pkg] : S->packages) {
+		context = orig;
+		handlePackage(pkg, (Statement**)&pkg);
+	}
+	//context->addContext(S->getPackageName(), S->get);
+}
+
 //
 //void MochaLang::Passes::BasePass::BasePass::handleIndex(Statement* stmt, Statement** source) {
 //	auto S = (IndexExpr*)stmt;
@@ -229,6 +240,10 @@ void MochaLang::Passes::BasePass::BasePass::performBasePass(Statement* stmt, Sta
 
 	case StmtType::RETURN:
 		handleReturn(stmt, source);
+		break;
+
+	case StmtType::PROGRAM:
+		handleProgram(stmt, source);
 		break;
 	}
 }

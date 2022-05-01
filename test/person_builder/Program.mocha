@@ -1,0 +1,8 @@
+package com.company;
+
+class Entrypoint {
+	void main() {
+		Person person = PersonBuilder().setName("Soumya").setAge(23).setYearOfBirth(1998).build();
+		System.out.println("${person.name} is ${person.age} years old. He was born in ${person.yearOfBirth}.");
+	}
+}

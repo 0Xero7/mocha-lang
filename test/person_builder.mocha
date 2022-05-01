@@ -1,4 +1,3 @@
-
 package com.company;
 
 class PersonBuilder {
@@ -30,9 +29,7 @@ class Person {
 	}
 }
 
-class Entrypoint {
-	pub void main() {
-		Person person = PersonBuilder().setAge(23).setName("Soumya").build();
-		System.out.println("${person.name} is ${person.age} years old.");
-	}
+pub void main() {
+	Person person = PersonBuilder().setAge(23).setName("Soumya").build();
+	System.out.println("${person.name} is ${person.age} years old.");
 }

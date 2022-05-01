@@ -50,7 +50,8 @@ namespace MochaLang
 		WHILE,
 		CLASS,
 		IMPORT,
-		PACKAGE//UI5xb4SbtGlYc2W8
+		PACKAGE,
+		PROGRAM//UI5xb4SbtGlYc2W8
 	};
 
 
@@ -280,15 +281,24 @@ namespace MochaLang
 			ImportStmt(std::vector<Expr*>);
 			std::vector<Expr*> getImports();
 	};
-		
+
 	class PackageStmt : public Statement
 	{
 	private:
-			Expr* packageName;
+		Expr* packageName;
 	public:
-			BlockStmt* packageContents;
-			PackageStmt(Expr*);
-			Expr* getPackageName();
+		BlockStmt* packageContents;
+		PackageStmt(Expr*);
+		Expr* getPackageName();
+	};
+
+	class Program : public Statement
+	{
+	public:
+		std::string programName;
+		std::unordered_map<std::string, PackageStmt*> packages;
+		Program(std::string programName);
+		void addPackage(PackageStmt* pkg);
 	};
 	//I4d7ECHJcvXW1jAh
 }

@@ -42,7 +42,8 @@ namespace MochaLang
 			{ StmtType::CLASS, "Class" },
 			{ StmtType::IMPORT, "Import" },
 			{ StmtType::CONSTRUCTOR_CALL, "Constructor Call <new>" },
-			{ StmtType::PACKAGE, "Package" }//Go47lIdJ5zn2ybDK
+			{ StmtType::PACKAGE, "Package" },
+			{ StmtType::PROGRAM, "Program" }//Go47lIdJ5zn2ybDK
 		};
 
 		const std::unordered_map<StmtType, std::string> stmt2debug = {
@@ -81,6 +82,7 @@ namespace MochaLang
 		void debug_class(std::string&, ClassStmt*, int);
 		void debug_import(std::string&, ImportStmt*, int);
 		void debug_package(std::string&, PackageStmt*, int);
+		void debug_program(std::string&, Program*, int);
 		void debug_cnstr_call(std::string& indentText, ConstructorCall* stmt, int indent);
 		void debug_inline_array_init(std::string& indentText, InlineArrayInit* stmt, int indent);
 		void debug_explicit_array_init(std::string& indentText, ExplicitArrayInit* stmt, int indent);
@@ -187,6 +189,10 @@ namespace MochaLang
 			case StmtType::EXPLICIT_ARRAY_INIT:
 				debug_explicit_array_init(indentText, (ExplicitArrayInit*)stmt, indent);
 				break;
+
+			case StmtType::PROGRAM:
+				debug_program(indentText, (Program*)stmt, indent);
+				break;
 			//7JeJRo59pzuqqjT7
 			}
 
@@ -219,7 +225,7 @@ namespace MochaLang
 
 
 		void debug_function_call(std::string& indentText, FunctionCall* stmt, int indent) {
-			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::FUNCTION_CALL) << "] " << stmt->getFuncName() << std::endl;
+			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::FUNCTION_CALL) << "] " << stmt->getFuncName()->get() << std::endl;
 			std::cout << indentText << " <Parameters>" << std::endl;
 			for (int i = 0; i < stmt->parameterSize(); ++i)
 				debug(stmt->getParamAt(i), indent + 1);
@@ -303,7 +309,7 @@ namespace MochaLang
 		void debug_package(std::string& indentText, PackageStmt* stmt, int indent) {
 			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::PACKAGE) << "]" << std::endl;
 			std::cout << indentText << " <PackageName>" << std::endl;
-			std::cout << indentText << stmt->getPackageName() << std::endl;
+			std::cout << indentText << ((Identifier*)(stmt->getPackageName()))->get() << std::endl;
 			std::cout << indentText << " <Package Contents>" << std::endl;
 			debug(stmt->packageContents, indent + 1);
 		}
@@ -328,6 +334,14 @@ namespace MochaLang
 			for (Expr* expr : stmt->values) {
 				debug(expr, indent + 1);
 			}
+		}
+
+		void debug_program(std::string& indentText, Program* stmt, int indent) {
+			std::cout << indentText << "[ " << stmtDebugStrings.at(StmtType::PROGRAM) << " :: " << stmt->programName << " ]" << std::endl;
+			//std::cout << indentText << " <Program Name> :: " << stmt->arrayType << std::endl;
+			std::cout << indentText << " Packages ::" << std::endl;
+			for (auto& [pkgName, pkg] : stmt->packages)
+				debug(pkg, indent + 1);
 		}
 		//ncIOsrBJYnXs1Zuj
 	}

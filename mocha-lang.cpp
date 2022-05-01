@@ -4,6 +4,8 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
+#include <chrono>
 
 #include "mocha-lang.h"
 #include "src/Lexer.h"
@@ -18,64 +20,63 @@
 
 using namespace std;
 
-int main()
-{
-	std::vector<std::string> filesToParse = {
-		"C:\\Projects\\mocha-lang\\test\\person_builder.mocha",
-	};
+void recursively_parse(std::string& path, MochaLang::Program* program) {
+	for (const auto& entry : std::filesystem::directory_iterator(path)) {
+		if (entry.is_directory()) {
+			recursively_parse(entry.path().generic_u8string(), program);
+			continue;
+		}
 
-	std::string mainFile = "C:\\Projects\\mocha-lang\\test\\person_builder.mocha";
+		auto path = entry.path();
 
-	std::unordered_map<std::string, MochaLang::Statement*> parseTrees;
-	std::unordered_set<std::string> classes;
-	classes.insert("int");
-
-	for (std::string& path : filesToParse) {
 		std::ifstream in(path, std::ios::in);
 		string fileContents((std::istreambuf_iterator<char>(in)),
 			std::istreambuf_iterator<char>());
-		//std::stringstream buffer;
-		//buffer << in.rdbuf();
 
 		std::string s = fileContents;
-		cout << s << endl << endl;
+		//cout << s << endl << endl;
 		auto lexer = MochaLang::Lexer::Tokenizer(s);
 		auto tokens = lexer.tokenize();
 
-		for (auto& v : tokens.get_tokens()) cout << "[" << v.tokenValue << "]" << endl;
+		//for (auto& v : tokens.get_tokens()) cout << "[" << v.tokenValue << "]" << endl;
 
 		auto parser = MochaLang::Parser::Parser();
-		auto tree = parser.parse(tokens, false, true);
+		auto tree = parser.parse(tokens, true, true);
 
-		auto temp = (MochaLang::BlockStmt*)(((MochaLang::PackageStmt*)tree)->packageContents);
-		for (int i = 0; i < temp->size(); ++i) {
-			if (temp->get(i)->getType() == MochaLang::StmtType::CLASS)
-				classes.insert(((MochaLang::ClassStmt*)(temp->get(i)))->getClassName());
-		}
-		
-		parseTrees[path] = tree;
-
-		std::cout << "DEBUG MODE\n\nPrinting AST for " << path << "\n\n";
-		MochaLang::Debug::debug(tree, 0);
-		std::cout << "####################################################################\n\n";
+		auto pkg = (MochaLang::PackageStmt*)tree;
+		program->addPackage(pkg);
 	}
+}
 
-	auto dependencyResolver = MochaLang::Passes::DependencyResolver(parseTrees);
-	dependencyResolver.resolveDependecies(parseTrees.at(mainFile));
-	auto tree = parseTrees.at(mainFile);
+int main()
+{
+	std::string sourceDir = "C:\\Projects\\mocha-lang\\test\\person_builder";
 
-	auto context = MochaLang::Passes::ContextPass::generateContext(tree);
+	auto* program = new MochaLang::Program("PersonBuilder");
+
+	auto start = std::chrono::high_resolution_clock::now();
+
+	recursively_parse(sourceDir, program);
+
+	//MochaLang::Debug::debug(program, 0);
+
+	auto context = MochaLang::Passes::ContextPass::generateContext(program);
 
 	// Inject primitives
 	context->addContext("int");
 
-	auto basePass = MochaLang::Passes::BasePass::BasePass(classes, context);
-	basePass.performBasePass(tree, &tree);
+	auto basePass = MochaLang::Passes::BasePass::BasePass(context);
+	basePass.performBasePass(program, (MochaLang::Statement**)&program);
 
-	cout << endl << endl;
-	MochaLang::Debug::debug(tree, 0);
+	//cout << endl << endl;
+	//MochaLang::Debug::debug(program, 0);
 	//cout << "ok";
 
 	auto jw = MochaLang::Targets::Java::JavaWriter("  ");
-	jw.transpileToJava("C:/Projects/mocha-lang/dev/build/Main.java", tree);
+	jw.transpileToJava("C:/Projects/mocha-lang/dev/build/Main.java", program);
+
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+	std::cout << "Compiled in " << duration << "ms\n";
 }
