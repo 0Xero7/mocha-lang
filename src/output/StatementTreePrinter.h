@@ -288,6 +288,9 @@ namespace MochaLang
 				<< " :: " << stmt->getClassName() << "]" << std::endl;
 			for (Attribute& attr : stmt->getAttrbs())
 				debug_attr(attr, indentText);
+			std::cout << indentText << " <Generic Templates>" << std::endl;
+			for (auto* tmp : stmt->genericTemplates)
+				debug(tmp, indent + 1);
 			std::cout << indentText << " <Member Functions>" << std::endl;
 			for (FunctionDecl* decl : stmt->getMemberFunctions())
 				debug(decl, indent + 1);

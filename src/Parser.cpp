@@ -592,6 +592,28 @@ namespace MochaLang
 			std::string oldClassName = currentClassName;
 			currentClassName = className;
 
+			std::vector<Identifier*> genericTemplates;
+			if (tk.peekType() == TokenType::LS) {
+				tk.ignore();
+				if (tk.peekType() == TokenType::GR)
+					throw "Generic template cannot be empty.";
+
+				while (true) {
+					auto* argument = parseIdentifier(tk);
+					genericTemplates.push_back(argument);
+					if (tk.peekType() == TokenType::COMMA) {
+						tk.ignore();
+						continue;
+					}
+					if (tk.peekType() == TokenType::GR) {
+						tk.ignore();
+						break;
+					}
+
+					throw "Syntax error parsing generic template arguments";
+				}
+			}
+
 			auto block = (BlockStmt*)parse(tk);
 
 			currentClassName = oldClassName;
@@ -615,7 +637,7 @@ namespace MochaLang
 				}
 			}
 
-			return new ClassStmt(fdecl, vdecl, nestedClasses, attrbs, className);
+			return new ClassStmt(fdecl, vdecl, nestedClasses, attrbs, className, genericTemplates);
 		}
 				
 		ImportStmt* Parser::parseImport(TokenStream& tk) {

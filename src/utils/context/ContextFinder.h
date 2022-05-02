@@ -5,7 +5,7 @@
 namespace MochaLang {
 namespace Utils {
 
-	static MochaLang::Symbols::ContextModel* findContext(std::vector<string> path, MochaLang::Symbols::ContextModel* ctx) {
+	static MochaLang::Symbols::ContextModel* findContext(std::vector<std::string> path, MochaLang::Symbols::ContextModel* ctx) {
 		MochaLang::Symbols::ContextModel* ptr = ctx;
 
 		while (ptr && !ptr->childContexts.count(path.front())) {

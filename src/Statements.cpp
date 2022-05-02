@@ -102,9 +102,9 @@ namespace MochaLang
 	BlockStmt* WhileStmt::getBody() { return body; }
 
 	ClassStmt::ClassStmt(std::vector<FunctionDecl*> memberFunctions, std::vector<VarDecl*> memberVariables, 
-		std::vector<ClassStmt*> nestedClasses, std::vector<Attribute> attrbs, std::string className)
+		std::vector<ClassStmt*> nestedClasses, std::vector<Attribute> attrbs, std::string className, std::vector<Identifier*> genericTemplates)
 		: Statement(StmtType::CLASS), memberFunctions(memberFunctions), memberVariables(memberVariables), 
-		nestedClasses(nestedClasses), attrbs(attrbs), className(className) { }
+		nestedClasses(nestedClasses), attrbs(attrbs), className(className), genericTemplates(genericTemplates) { }
 	std::vector<FunctionDecl*> ClassStmt::getMemberFunctions() { return memberFunctions; }
 	std::vector<VarDecl*> ClassStmt::getMemberVariables() { return memberVariables; }
 	std::vector<Attribute> ClassStmt::getAttrbs() { return attrbs; }

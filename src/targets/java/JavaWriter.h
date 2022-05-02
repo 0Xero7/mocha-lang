@@ -6,10 +6,13 @@
 #include <fstream>
 #include <filesystem>
 #include <queue>
+#include <sstream>
 #include "../../utils/Statements.h"
 #include "../../utils/Attributes.h"
 #include "../../utils/PrettyWriter.h"
 #include "../../utils/TypeResolver.h"
+#include "../../utils/context/ContextModel.h"
+#include "../../utils/context/ContextFinder.h"
 #include <type_traits>
 //#include "JavaWriterUtils.h"
 
@@ -18,8 +21,10 @@ namespace MochaLang {
 		namespace Java {
 			class JavaWriter {
 			private:
+				std::string currentReturnType = "";
 				std::string indentText;
 				PrettyWriter pw;
+				MochaLang::Symbols::ContextModel* context;
 
 				std::filesystem::path currentOutputDirectory;
 
@@ -59,25 +64,18 @@ namespace MochaLang {
 						auto pkgNameRaw = ((Identifier*)pkg->getPackageName())->get_raw();
 
 						auto temp = currentOutputDirectory;
+						auto* orig = context;
 
 						for (auto& pkgPart : pkgNameRaw) {
 							currentOutputDirectory = currentOutputDirectory.append(pkgPart);
 							std::filesystem::create_directory(currentOutputDirectory);
+							context = context->addContext(pkgPart);
 						}
 
-						//pw = PrettyWriter(indentText);
 						writePackage(pkg);
 
 						currentOutputDirectory = temp;
-
-
-						
-						
-
-						/*std::ofstream file;
-						file.open(outputPath + "\\compiled.java");
-						file << pw.getString();
-						file.close();*/
+						context = orig;
 					}
 				}
 
@@ -91,7 +89,8 @@ namespace MochaLang {
 				}
 
 			public:
-				JavaWriter(std::string indentText) : pw(PrettyWriter(indentText)), indentText(indentText) { }
+				JavaWriter(std::string indentText, MochaLang::Symbols::ContextModel* context) 
+					: pw(PrettyWriter(indentText)), indentText(indentText), context(context) { }
 
 				void transpileToJava(std::string outputPath, Statement* program) {
 					// TODO : create a dynamic class finder with main() function

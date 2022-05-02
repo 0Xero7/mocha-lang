@@ -110,7 +110,13 @@ void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSem
 
 	auto handleExplicitArrayInit = [&]() {
 		auto temp = (ExplicitArrayInit*)expr;
-		pw.write({ "new ", temp->arrayType });
+
+		auto typeName = temp->arrayType;
+		auto* ctx = MochaLang::Utils::findContext({ typeName }, context);
+		if (ctx && ctx->genericType)
+			typeName = "Object";
+
+		pw.write({ "new ", typeName });
 		for (Expr* expr : temp->values) {
 			pw.write({ "[" });
 			if (expr != nullptr) writeExpr(expr, false);
@@ -138,8 +144,17 @@ void MochaLang::Targets::Java::JavaWriter::writeExpr(Expr* expr, bool endWithSem
 		pw.write({ std::to_string(((Number*)expr)->get()) });
 		break;
 	case StmtType::IDEN:
-		pw.write({((Identifier*)expr)->get() });
+	{
+		auto iden_name = ((Identifier*)expr)->get();
+		auto* model = (MochaLang::Utils::findContext({ iden_name }, context));
+		if (model && model->genericType) {
+			pw.write({ "Object" });
+		}
+		else {
+			pw.write({ ((Identifier*)expr)->get() });
+		}
 		break;
+	}
 	case StmtType::FUNCTION_CALL:
 		writeFunctionCall((FunctionCall*)expr);
 		break;
@@ -206,7 +221,25 @@ void MochaLang::Targets::Java::JavaWriter::writeFuncDecl(FunctionDecl* decl) {
 void MochaLang::Targets::Java::JavaWriter::writeVarDecl(VarDecl* decl, bool endWithSemiColon) {
 	writeAttributes(decl->getAttrbs());
 
-	pw.write({decl->getVarType(), " ", decl->get() });
+	auto typeName = decl->getVarType();
+	std::string actualTypeName = "";
+
+	while (!typeName.empty() && (typeName.back() == ']' || typeName.back() == '[')) {
+		actualTypeName = typeName.back() + actualTypeName;
+		typeName.pop_back();
+	}
+
+	std::stringstream ss(typeName);
+	std::string segment;
+	std::vector<std::string> split;
+	while (std::getline(ss, segment, '.'))
+		split.push_back(segment);
+
+	auto* ctxFind = MochaLang::Utils::findContext(split, context);
+	if (ctxFind && ctxFind->genericType)
+		typeName = "Object";
+
+	pw.write({ typeName, actualTypeName, " ", decl->get() });
 	if (decl->getInit() != nullptr) {
 		pw.write({" = " });
 		writeExpr(((BinaryOp*)decl->getInit())->getRight(), false);
@@ -223,9 +256,9 @@ void MochaLang::Targets::Java::JavaWriter::writeStmtCollection(std::vector<VarDe
 }
 
 void MochaLang::Targets::Java::JavaWriter::writeReturn(ReturnStmt* ret) {
-	pw.write({"return " });
+	pw.write({ "return (", currentReturnType, ")(" });
 	writeExpr(ret->getValue(), false);
-	pw.write({";" });
+	pw.write({");" });
 	pw.writeNewLine();
 }
 
@@ -272,7 +305,29 @@ void MochaLang::Targets::Java::JavaWriter::writeImports(ImportStmt* ret) {
 void MochaLang::Targets::Java::JavaWriter::writeClass(ClassStmt* cls) {
 	writeAttributes(cls->getAttrbs());
 
-	pw.write({ "class ", cls->getClassName(), " {" });
+	auto* orig = context;
+
+	pw.write({ "class ", cls->getClassName() });
+	context = context->addContext(cls->getClassName());
+
+	// If generic type T is found, omit it and use "Object" in place of T
+	if (!cls->genericTemplates.empty()) {
+		std::vector<std::string> genTemps;
+		pw.write({ "<" });
+
+		for (auto* tmp : cls->genericTemplates) {
+			genTemps.push_back(tmp->get());
+			genTemps.push_back(", ");
+			context->addContext(tmp->get(), true);
+		}
+		
+		genTemps.pop_back();
+		pw.write(genTemps);
+
+		pw.write({ ">" });
+	}
+
+	pw.write({ " {" });
 	pw.writeNewLine();
 	pw.increaseIndent();
 
@@ -288,12 +343,16 @@ void MochaLang::Targets::Java::JavaWriter::writeClass(ClassStmt* cls) {
 	pw.writeNewLine();
 
 	for (FunctionDecl* decl : cls->getMemberFunctions()) {
+		currentReturnType = decl->getReturnType();
 		writeFuncDecl(decl);
+		currentReturnType = "";
 	}
 
 	pw.decreaseIndent();
 	pw.write({ "}" });
 	pw.writeNewLine();
+
+	context = orig;
 }
 
 void MochaLang::Targets::Java::JavaWriter::writeFor(ForStmt* cls) {

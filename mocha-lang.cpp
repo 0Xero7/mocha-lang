@@ -38,7 +38,7 @@ void recursively_parse(std::string& path, MochaLang::Program* program) {
 		auto lexer = MochaLang::Lexer::Tokenizer(s);
 		auto tokens = lexer.tokenize();
 
-		//for (auto& v : tokens.get_tokens()) cout << "[" << v.tokenValue << "]" << endl;
+		for (auto& v : tokens.get_tokens()) cout << "[" << v.tokenValue << "]" << endl;
 
 		auto parser = MochaLang::Parser::Parser();
 		auto tree = parser.parse(tokens, true, true);
@@ -50,9 +50,9 @@ void recursively_parse(std::string& path, MochaLang::Program* program) {
 
 int main()
 {
-	std::string sourceDir = "C:\\Projects\\mocha-lang\\test\\person_builder";
+	std::string sourceDir = "C:\\Projects\\mocha-lang\\test\\list";
 
-	auto* program = new MochaLang::Program("PersonBuilderTest");
+	auto* program = new MochaLang::Program("ListTest");
 
 	auto start = std::chrono::high_resolution_clock::now();
 
@@ -64,15 +64,16 @@ int main()
 
 	// Inject primitives
 	context->addContext("int");
+	context->addContext("String");
 
 	auto basePass = MochaLang::Passes::BasePass::BasePass(context);
 	basePass.performBasePass(program, (MochaLang::Statement**)&program);
 
 	//cout << endl << endl;
-	//MochaLang::Debug::debug(program, 0);
+	MochaLang::Debug::debug(program, 0);
 	//cout << "ok";
 
-	auto jw = MochaLang::Targets::Java::JavaWriter("  ");
+	auto jw = MochaLang::Targets::Java::JavaWriter("  ", context);
 	auto outputPath = R"(C:\Users\Soumya Pattanayak\IdeaProjects\MochaLangRuns\src)";
 	std::filesystem::remove_all(outputPath);
 	std::filesystem::create_directory(outputPath);

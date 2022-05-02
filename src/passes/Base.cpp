@@ -119,6 +119,10 @@ void MochaLang::Passes::BasePass::BasePass::handleClass(Statement* _S, Statement
 
 	context = context->addContext(S->getClassName());
 
+	for (auto* tmp : S->genericTemplates) {
+		context->addContext(tmp->get(), true);
+	}
+
 	for (auto v : S->getMemberFunctions()) handleFunctionDecl(v, (Statement**)&S);
 	for (auto v : S->getMemberVariables()) handleVarDecl(v, (Statement**)&S);
 

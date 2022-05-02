@@ -11,20 +11,21 @@ namespace Symbols {
 	public:
 		string shortName;
 		string longName;
+		bool genericType;
 
 		// string type;
 
 		ContextModel* parent;
 		unordered_map<string, ContextModel*> childContexts;
 
-		ContextModel(string shortName, string longName, ContextModel* parent) :
-			shortName(shortName), longName(longName), parent(parent) { }
+		ContextModel(string shortName, string longName, ContextModel* parent, bool genericType = false) :
+			shortName(shortName), longName(longName), parent(parent), genericType(genericType) { }
 
-		ContextModel* addContext(string shortName) {
+		ContextModel* addContext(string shortName, bool genericType = false) {
 			if (childContexts.count(shortName)) return childContexts[shortName];
 
 			auto newLongName = (longName == "" ? "" : (longName + ".")) + shortName;
-			return childContexts[shortName] = new ContextModel(shortName, newLongName, this);
+			return childContexts[shortName] = new ContextModel(shortName, newLongName, this, genericType);
 		}
 
 		void popContext(string shortName) {

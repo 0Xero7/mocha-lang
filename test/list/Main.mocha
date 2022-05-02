@@ -1,0 +1,9 @@
+package com.company;
+
+import mocha.std.List;
+
+class Entrypoint {
+	void main() {
+
+	}
+}
