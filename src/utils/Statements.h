@@ -51,7 +51,9 @@ namespace MochaLang
 		CLASS,
 		IMPORT,
 		PACKAGE,
-		PROGRAM//UI5xb4SbtGlYc2W8
+		PROGRAM,
+		
+		TYPE//UI5xb4SbtGlYc2W8
 	};
 
 
@@ -189,15 +191,15 @@ namespace MochaLang
 	{
 	private:
 		std::vector<Attribute> attrbs;
-		std::string varName;
-		std::string varType;
+		Identifier* varName;
+		Identifier* varType;
 
 	public:
 		Expr* init;
-		VarDecl(const std::string&, const std::string&, std::vector<Attribute> = {}, Expr* = nullptr);
+		VarDecl(Identifier*, Identifier*, std::vector<Attribute> = {}, Expr* = nullptr);
 
-		std::string get();
-		std::string getVarType();
+		Identifier* get();
+		Identifier* getVarType();
 		std::vector<Attribute> getAttrbs();
 		Expr* getInit();
 	};
@@ -300,6 +302,15 @@ namespace MochaLang
 		std::unordered_map<std::string, PackageStmt*> packages;
 		Program(std::string programName);
 		void addPackage(PackageStmt* pkg);
+	};
+
+	class Type : public Statement 
+	{
+	public:
+		int arrayDims;
+		std::vector<std::string> type;
+		std::vector<Type*> genericArgs;
+		Type(std::vector<std::string> type, std::vector<Type*> genericArgs, int arrayDims);
 	};
 	//I4d7ECHJcvXW1jAh
 }

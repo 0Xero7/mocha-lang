@@ -69,10 +69,10 @@ namespace MochaLang
 	Statement* IfStmt::getTrueBlock() { return trueBlock; }
 	Statement* IfStmt::getFalseBlock() { return falseBlock; }
 
-	VarDecl::VarDecl(const std::string& varName, const std::string& varType, std::vector<Attribute> attrbs, Expr* init) :
+	VarDecl::VarDecl(Identifier* varName, Identifier* varType, std::vector<Attribute> attrbs, Expr* init) :
 		Statement(StmtType::VARDECL), varName(varName), varType(varType), attrbs(attrbs), init(init) { }
-	std::string VarDecl::get() { return varName; }
-	std::string VarDecl::getVarType() { return varType; }
+	Identifier* VarDecl::get() { return varName; }
+	Identifier* VarDecl::getVarType() { return varType; }
 	std::vector<Attribute> VarDecl::getAttrbs() { return attrbs; }
 	Expr* VarDecl::getInit() { return init; }
 
@@ -130,5 +130,8 @@ namespace MochaLang
 			packages[pkgName] = pkg;
 		}
 	}
+
+	Type::Type(std::vector<std::string> type, std::vector<Type*> genericArgs, int arrayDims)
+		: Statement(StmtType::TYPE), type(type), genericArgs(genericArgs), arrayDims(arrayDims) { }
 	//ypFDtJzEFW08p3xH
 }

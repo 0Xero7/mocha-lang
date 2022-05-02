@@ -1,6 +1,7 @@
 package mocha.std;
 
 pub class List<T> {
+	Array<Arra<int>> h;
 	T[] array;
 	int size;
 	int capacity;

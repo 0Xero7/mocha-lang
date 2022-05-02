@@ -224,7 +224,7 @@ void MochaLang::Targets::Java::JavaWriter::writeVarDecl(VarDecl* decl, bool endW
 	auto typeName = decl->getVarType();
 	std::string actualTypeName = "";
 
-	while (!typeName.empty() && (typeName.back() == ']' || typeName.back() == '[')) {
+	/*while (!typeName.empty() && (typeName.back() == ']' || typeName.back() == '[')) {
 		actualTypeName = typeName.back() + actualTypeName;
 		typeName.pop_back();
 	}
@@ -239,7 +239,7 @@ void MochaLang::Targets::Java::JavaWriter::writeVarDecl(VarDecl* decl, bool endW
 	if (ctxFind && ctxFind->genericType)
 		typeName = "Object";
 
-	pw.write({ typeName, actualTypeName, " ", decl->get() });
+	pw.write({ typeName, actualTypeName, " ", decl->get() });*/
 	if (decl->getInit() != nullptr) {
 		pw.write({" = " });
 		writeExpr(((BinaryOp*)decl->getInit())->getRight(), false);

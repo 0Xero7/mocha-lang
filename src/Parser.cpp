@@ -72,6 +72,24 @@ namespace MochaLang
 						else break;
 					}
 
+					if (tk.peekType(lookAheadOffset) == TokenType::LS) {
+						++lookAheadOffset;
+						int hack = 1;
+
+						while (hack > 0) {
+							/*if (tk.peekType(lookAheadOffset) != TokenType::IDEN)
+								throw "Invalid generic template";
+
+							++lookAheadOffset;
+
+							if (tk.peekType(lookAheadOffset) == TokenType::COMMA) { ++lookAheadOffset; continue; }
+							if (tk.peekType(lookAheadOffset) == TokenType::GR) { ++lookAheadOffset; break; }*/
+							if (tk.peekType(lookAheadOffset) == TokenType::LS) { ++hack; }
+							else if (tk.peekType(lookAheadOffset) == TokenType::GR) { --hack; }
+							++lookAheadOffset;
+						}
+					}
+
 					while (tk.peekType(lookAheadOffset) == TokenType::BRACKET_OP) {
 						++lookAheadOffset;
 						if (!(tk.peekType(lookAheadOffset) == TokenType::BRACKET_CL || tk.peekType(lookAheadOffset + 1) == TokenType::BRACKET_CL))
@@ -443,6 +461,56 @@ namespace MochaLang
 			ops.push_back(new BinaryOp(nullptr, opType, nullptr));
 		}
 
+		Type* Parser::parseType(TokenStream& tk) {
+			std::vector<std::string> types;
+			while (true) {
+				if (tk.peekType() != TokenType::IDEN) {
+					throw "Expected identifier, found " + tk.peekValue() + ".";
+				}
+
+				Token token;
+				tk.accept(token);
+
+				types.push_back(token.tokenValue);
+				if (tk.peekType() == TokenType::DOT)  { tk.ignore(); continue; }
+				break;
+			}
+
+			std::vector<Type*> genericArgs;
+			// Parse generic arguments
+			if (tk.peekType() == TokenType::LS) {
+				tk.ignore();
+				while (true) {
+					if (tk.peekType() != TokenType::IDEN)
+						throw "Invalid generic identifier!";
+
+					/*genericArgs.push_back(tk.peekValue());
+					tk.ignore();*/
+					genericArgs.push_back(parseType(tk));
+
+					if (tk.match(TokenType::COMMA)) { tk.ignore(); continue; }
+					if (tk.match(TokenType::GR)) { tk.ignore(); break; }
+				}
+			}
+
+			int arrayDims = 0;
+			if (tk.match(TokenType::BRACKET_OP)) {
+				while (true) {
+					++arrayDims;
+					tk.ignore();
+
+					if (!tk.match(TokenType::BRACKET_CL))
+						throw "Invalid generic identifier!";
+					else
+						tk.ignore();
+
+					if (!tk.match(TokenType::BRACKET_OP)) break;
+				}
+			}
+
+			return new Type(types, genericArgs, arrayDims);
+		}
+
 
 		std::vector<Expr*> Parser::parseFunctionCall(TokenStream& tk) {
 			// current token is a (
@@ -471,7 +539,10 @@ namespace MochaLang
 				const std::unordered_set<TokenType>& terminatingTokens) {
 			/*Token token;
 			tk.accept(token);*/
-			auto varType = parseIdentifier(tk)->get();
+			std::vector<std::string> x = { "a" };
+			auto* varType = new Identifier(x); // parseIdentifier(tk);
+
+			auto type = parseType(tk);
 
 			// Is it an array?
 			while (tk.match(TokenType::BRACKET_OP)) {
@@ -479,7 +550,8 @@ namespace MochaLang
 				if (!tk.match(TokenType::BRACKET_CL))
 					throw "Invalid syntax for array!";
 				tk.ignore();
-				varType += "[]";
+
+				//varType += "[]";
 			}
 
 			//tk.accept(token);
@@ -494,7 +566,7 @@ namespace MochaLang
 				expr = new BinaryOp(varName, StmtType::OP_ASSIGN, rhs);
 			}
 
-			auto decl = new VarDecl(varName->get(), varType, attrbs, expr);
+			auto decl = new VarDecl(varName, varType, attrbs, expr);
 			
 			// Expect a ; at the end
 			if (readEnd)
