@@ -45,7 +45,8 @@ namespace MochaLang
 			{ StmtType::IMPORT, "Import" },
 			{ StmtType::CONSTRUCTOR_CALL, "Constructor Call <new>" },
 			{ StmtType::PACKAGE, "Package" },
-			{ StmtType::PROGRAM, "Program" }//Go47lIdJ5zn2ybDK
+			{ StmtType::PROGRAM, "Program" },
+			{ StmtType::OPERATOR_OVERLOAD, "Operator Overload" }//Go47lIdJ5zn2ybDK
 		};
 
 		const std::unordered_map<StmtType, std::string> stmt2debug = {
@@ -89,6 +90,7 @@ namespace MochaLang
 		void debug_inline_array_init(std::string& indentText, InlineArrayInit* stmt, int indent);
 		void debug_explicit_array_init(std::string& indentText, ExplicitArrayInit* stmt, int indent);
 		void debug_type(std::string& indentText, Type* stmt, int indent);
+		void debug_operator_overload(std::string& indentText, OperatorOverload* stmt, int indent);
 		//4zaXrM9M592b5JOv
 
 		void debug_attr(Attribute& attr, const std::string& indent) {
@@ -196,6 +198,10 @@ namespace MochaLang
 			case StmtType::PROGRAM:
 				debug_program(indentText, (Program*)stmt, indent);
 				break;
+
+			case StmtType::OPERATOR_OVERLOAD:
+				debug_operator_overload(indentText, (OperatorOverload*)stmt, indent);
+				break;
 			//7JeJRo59pzuqqjT7
 			}
 
@@ -250,7 +256,7 @@ namespace MochaLang
 
 		void debug_funcdecl(std::string& indentText, FunctionDecl* stmt, int indent) {
 			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::FUNCTION_DECL) << "] " 
-				<< stmt->getFunctionName() << " :: " << stmt->getReturnType() << std::endl;
+				<< stmt->getFunctionName() << " :: " << MochaLang::Utils::TypeHelper::getTypeString(stmt->getReturnType()) << std::endl;
 			std::cout << indentText << " <Attributes>" << std::endl;
 			for (Attribute& attr : stmt->getAttrbs())
 				debug_attr(attr, indentText);
@@ -305,6 +311,9 @@ namespace MochaLang
 			std::cout << indentText << " <Nested Classes>" << std::endl;
 			for (auto* decl : stmt->nestedClasses)
 				debug(decl, indent + 1);
+			std::cout << indentText << " <Operator Overloads>" << std::endl;
+			for (auto* decl : stmt->opOverloads)
+				debug(decl, indent + 1);
 		}
 		
 		void debug_import(std::string& indentText, ImportStmt* stmt, int indent) {
@@ -355,6 +364,21 @@ namespace MochaLang
 		void debug_type(std::string& indentText, Type* stmt, int indent) {
 			std::cout << indentText << "[ " << stmtDebugStrings.at(StmtType::TYPE) << " :: " 
 				<< MochaLang::Utils::TypeHelper::getTypeString(stmt) << " ]" << std::endl;
+		}
+
+		void MochaLang::Debug::debug_operator_overload(std::string& indentText, OperatorOverload* stmt, int indent) {
+			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::OPERATOR_OVERLOAD) << "]" << std::endl;
+			std::cout << indentText << " <Attributes>" << std::endl;
+			for (Attribute& attr : stmt->attrbs)
+				debug_attr(attr, indentText);
+			std::cout << indentText << " <Operator> :: " << stmt->operatorStr << std::endl;
+			std::cout << indentText << " <Return Type> :: " << MochaLang::Utils::TypeHelper::getTypeString(stmt->returnType) << std::endl;
+			std::cout << indentText << " <Parameters> :: " << std::endl;
+			std::cout << indentText << " <Formal Parameters>" << std::endl;
+			for (VarDecl* decl : stmt->parameters)
+				debug(decl, indent + 1);
+			std::cout << indentText << " <Body>" << std::endl;
+			debug(stmt->block, indent + 1);
 		}
 		//ncIOsrBJYnXs1Zuj
 	}

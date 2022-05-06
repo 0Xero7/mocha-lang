@@ -67,6 +67,25 @@ namespace MochaLang
 			}
 		};
 
+		std::vector<VarDecl*> Parser::parseFormalParameters(TokenStream& tk) {
+			tk.ignore(); // (
+
+			std::vector<VarDecl*> formalParams;
+			while (!tk.eof() && tk.peekType() != TokenType::PAREN_CL) {
+				auto decl = parseVarDecl(tk, false, {}, { TokenType::COMMA, TokenType::PAREN_CL });
+				formalParams.push_back(decl);
+
+				if (tk.peekType() == TokenType::COMMA) {
+					tk.ignore();
+				}
+			}
+
+			// ignore closing )
+			tk.ignore();
+
+			return formalParams;
+		}
+
 		Statement* Parser::parse(TokenStream& tk, bool without_braces = false, bool topLevel = false) {
 			Token _token;
 			if (!without_braces) tk.accept(_token); // ignore the first { of a block
@@ -142,6 +161,14 @@ namespace MochaLang
 							++lookAheadOffset;
 						else
 							lookAheadOffset += 2;
+					}
+
+					// Handle operator overloads
+					if (tk.peekType(lookAheadOffset) == TokenType::OPERATOR) {
+						auto overload = parseOperatorOverload(tk, attributeAccumulator);
+						block->push_back(overload);
+						attributeAccumulator.clear();
+						break;
 					}
 
 					// Handle the default constructor declaration
@@ -652,31 +679,8 @@ namespace MochaLang
 			tk.accept(token);
 			auto functionName = token.tokenValue;
 
-			tk.ignore(); // (
-
-			std::vector<VarDecl*> formalParams;
-			while (!tk.eof() && tk.peekType() != TokenType::PAREN_CL) {
-				auto decl = parseVarDecl(tk, false, {}, { TokenType::COMMA, TokenType::PAREN_CL });
-				formalParams.push_back(decl);
-
-				if (tk.peekType() == TokenType::COMMA) {
-					tk.ignore();
-				}
-			}
-
-			// ignore closing )
-			tk.ignore();
-
-			BlockStmt* block;
-			// now parse the body
-			if (tk.match(TokenType::BRACE_OP))
-				block = (BlockStmt*)parse(tk, false);
-			else if (tk.match(TokenType::ARROW)) {
-				auto expr = parseExpr(tk, { TokenType::SEMICOLON });
-				tk.ignore(); // Ignore ending ;
-				block = new BlockStmt();
-				block->push_back(new ReturnStmt(expr));
-			}
+			auto formalParams = parseFormalParameters(tk);
+			BlockStmt* block = parseFunctionBlockOrArrow(tk);
 
 			return new FunctionDecl(attrbs, returnType, functionName, formalParams, block);
 		}
@@ -761,6 +765,7 @@ namespace MochaLang
 			std::vector<FunctionDecl*> fdecl;
 			std::vector<VarDecl*> vdecl;
 			std::vector<ClassStmt*> nestedClasses;
+			std::vector<OperatorOverload*> opOverloads;
 
 			for (int i = 0; i < block->size(); ++i) {
 				Statement* stmt = block->get(i);
@@ -774,10 +779,13 @@ namespace MochaLang
 				case StmtType::CLASS:
 					nestedClasses.push_back((ClassStmt*)stmt);
 					break;
+				case StmtType::OPERATOR_OVERLOAD:
+					opOverloads.push_back((OperatorOverload*)stmt);
+					break;
 				}
 			}
 
-			return new ClassStmt(fdecl, vdecl, nestedClasses, attrbs, className, classType->genericArgs);
+			return new ClassStmt(fdecl, vdecl, nestedClasses, opOverloads, attrbs, className, classType->genericArgs);
 		}
 				
 		ImportStmt* Parser::parseImport(TokenStream& tk) {
@@ -820,6 +828,48 @@ namespace MochaLang
 			//tk.ignore(); // Ignore ]
 
 			return new InlineArrayInit(values);
+		}
+
+		BlockStmt* Parser::parseFunctionBlockOrArrow(TokenStream& tk) {
+			BlockStmt* block;
+
+			// now a function body, which can be in two formats
+			// { ... statements ... }
+			// or
+			// => statement;
+			if (tk.match(TokenType::BRACE_OP))
+				block = (BlockStmt*)parse(tk, false);
+			else if (tk.match(TokenType::ARROW)) {
+				auto expr = parseExpr(tk, { TokenType::SEMICOLON });
+				tk.ignore(); // Ignore ending ;
+				block = new BlockStmt();
+				block->push_back(new ReturnStmt(expr));
+			}
+			else
+				throw "Expected '{' or '=>', found " + tk.peekValue();
+
+			return block;
+		}
+
+		OperatorOverload* Parser::parseOperatorOverload(TokenStream& tk, std::vector<Attribute>& attributeAccumulator) {
+			Type* returnType = parseType(tk);
+
+			tk.ignore(); // Ignore operator keyword
+
+			auto overloadedOperator = tk.peekValue();
+			if (tk.match(TokenType::BRACKET_OP)) {
+				if (tk.peekType(1) != TokenType::BRACKET_CL)
+					throw "Invalid operator being overloaded. Expected [], found [" + tk.peekValue();
+				else overloadedOperator = "[]";
+				tk.ignore(); // required so that both [ and ] get passed
+			}
+			tk.ignore();
+
+			// TODO: add further logic here to limit operator overloads
+			auto operatorParams = parseFormalParameters(tk);
+			auto operatorBody = parseFunctionBlockOrArrow(tk);
+
+			return new OperatorOverload(attributeAccumulator,overloadedOperator, returnType, operatorParams, operatorBody);
 		}
 		//Afukmr1Whs8jqWQC
 	}

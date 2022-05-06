@@ -62,7 +62,9 @@ namespace MochaLang
 		STATIC,
 		CLASS,
 		IMPORT,
-		PACKAGE//3zvqzoHKduFtbeJy
+		PACKAGE,
+		
+		OPERATOR//3zvqzoHKduFtbeJy
 	};
 
 

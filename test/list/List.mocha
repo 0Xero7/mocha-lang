@@ -42,4 +42,8 @@ pub class List<T> {
 		}
 		return result;
 	}
+
+	pub int operator [] (int k) {
+		return k + 1;
+	}
 }

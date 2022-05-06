@@ -19,6 +19,7 @@ namespace MochaLang
 			"int",
 			"float",
 			"string",*/
+			"operator",
 			"for",
 			"while",
 			
@@ -115,7 +116,8 @@ namespace MochaLang
 			{ "static", TokenType::STATIC },
 			{ "class", TokenType::CLASS },
 			{ "import", TokenType::IMPORT },
-			{ "package", TokenType::PACKAGE }//4tk6pV7DLNOFEDil
+			{ "package", TokenType::PACKAGE },
+			{ "operator", TokenType::OPERATOR }//4tk6pV7DLNOFEDil
 		};
 
 

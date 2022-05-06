@@ -18,6 +18,8 @@ namespace MochaLang
 		FUNCTION_DECL,
 		VARDECL,
 
+		OPERATOR_OVERLOAD,
+
 		INDEX,
 
 		IF,
@@ -266,6 +268,19 @@ namespace MochaLang
 			Expr* getCheck();
 			BlockStmt* getBody();
 	};
+
+	class OperatorOverload : public Statement
+	{
+	public:
+		std::vector<Attribute> attrbs;
+		std::string operatorStr;
+		std::vector<VarDecl*> parameters;
+		Type* returnType;
+		BlockStmt* block;
+
+		OperatorOverload(std::vector<Attribute> attrbs, std::string& operatorStr, Type* returnType,
+			std::vector<VarDecl*>& parameters, BlockStmt* block);
+	};
 		
 	class ClassStmt : public Statement
 	{
@@ -277,7 +292,10 @@ namespace MochaLang
 	public:
 			std::vector<Type*> genericTemplates;
 			std::vector<ClassStmt*> nestedClasses;
-			ClassStmt(std::vector<FunctionDecl*>,std::vector<VarDecl*>,std::vector<ClassStmt*>,std::vector<Attribute>,std::string, std::vector<Type*>);
+			std::vector<OperatorOverload*> opOverloads;
+			ClassStmt::ClassStmt(std::vector<FunctionDecl*> memberFunctions, std::vector<VarDecl*> memberVariables,
+				std::vector<ClassStmt*> nestedClasses, std::vector<OperatorOverload*> opOverloads, std::vector<Attribute> attrbs, std::string className,
+				std::vector<Type*> genericTemplates);
 			std::vector<FunctionDecl*> getMemberFunctions();
 			std::vector<VarDecl*> getMemberVariables();
 			std::vector<Attribute> getAttrbs();

@@ -55,6 +55,10 @@ namespace MochaLang
 		private:
 			std::string currentClassName = "";
 
+			BlockStmt* parseFunctionBlockOrArrow(TokenStream& tk);
+
+			std::vector<VarDecl*> parseFormalParameters(TokenStream& tk);
+
 		public:
 			Statement* parse(TokenStream&, bool, bool);
 
@@ -93,6 +97,8 @@ namespace MochaLang
 			Identifier* parseIdentifier(TokenStream& tk);
 
 			Type* parseType(TokenStream& tk);
+
+			OperatorOverload* parseOperatorOverload(TokenStream& tk, std::vector<Attribute>& attributeAccumulator);
 			//g4HDtPgnTveS2ddw
 		};
 	}

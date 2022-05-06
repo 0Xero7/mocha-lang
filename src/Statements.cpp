@@ -100,16 +100,6 @@ namespace MochaLang
 		: Statement(StmtType::WHILE), check(check), body(body) { }
 	Expr* WhileStmt::getCheck() { return check; }
 	BlockStmt* WhileStmt::getBody() { return body; }
-
-	ClassStmt::ClassStmt(std::vector<FunctionDecl*> memberFunctions, std::vector<VarDecl*> memberVariables, 
-		std::vector<ClassStmt*> nestedClasses, std::vector<Attribute> attrbs, std::string className, 
-		std::vector<Type*> genericTemplates)
-		: Statement(StmtType::CLASS), memberFunctions(memberFunctions), memberVariables(memberVariables), 
-		nestedClasses(nestedClasses), attrbs(attrbs), className(className), genericTemplates(genericTemplates) { }
-	std::vector<FunctionDecl*> ClassStmt::getMemberFunctions() { return memberFunctions; }
-	std::vector<VarDecl*> ClassStmt::getMemberVariables() { return memberVariables; }
-	std::vector<Attribute> ClassStmt::getAttrbs() { return attrbs; }
-	std::string ClassStmt::getClassName() { return className; }
 		
 	ImportStmt::ImportStmt(std::vector<Expr*> imports)
 	: Statement(StmtType::IMPORT), imports(imports){ }
@@ -134,5 +124,20 @@ namespace MochaLang
 
 	Type::Type(std::vector<std::string> type, std::vector<Type*> genericArgs, int arrayDims)
 		: Statement(StmtType::TYPE), type(type), genericArgs(genericArgs), arrayDims(arrayDims) { }
+
+	OperatorOverload::OperatorOverload(std::vector<Attribute> attrbs, std::string& operatorStr, Type* returnType,
+		std::vector<VarDecl*>& parameters, BlockStmt* block)
+		: Statement(StmtType::OPERATOR_OVERLOAD), attrbs(attrbs), operatorStr(operatorStr), parameters(parameters), 
+			returnType(returnType), block(block) { }
+
+	ClassStmt::ClassStmt(std::vector<FunctionDecl*> memberFunctions, std::vector<VarDecl*> memberVariables,
+		std::vector<ClassStmt*> nestedClasses, std::vector<OperatorOverload*> opOverloads, std::vector<Attribute> attrbs, std::string className,
+		std::vector<Type*> genericTemplates)
+		: Statement(StmtType::CLASS), memberFunctions(memberFunctions), memberVariables(memberVariables),
+		nestedClasses(nestedClasses), opOverloads(opOverloads), attrbs(attrbs), className(className), genericTemplates(genericTemplates) { }
+	std::vector<FunctionDecl*> ClassStmt::getMemberFunctions() { return memberFunctions; }
+	std::vector<VarDecl*> ClassStmt::getMemberVariables() { return memberVariables; }
+	std::vector<Attribute> ClassStmt::getAttrbs() { return attrbs; }
+	std::string ClassStmt::getClassName() { return className; }
 	//ypFDtJzEFW08p3xH
 }
