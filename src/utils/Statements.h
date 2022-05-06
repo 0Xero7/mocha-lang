@@ -67,9 +67,16 @@ namespace MochaLang
 		Statement(StmtType);
 
 		StmtType getType();
-		//virtual void debug();
 	};
 
+	class Type : public Statement
+	{
+	public:
+		int arrayDims;
+		std::vector<std::string> type;
+		std::vector<Type*> genericArgs;
+		Type(std::vector<std::string> type, std::vector<Type*> genericArgs, int arrayDims);
+	};
 
 	class BlockStmt : public Statement {
 	private:
@@ -152,6 +159,7 @@ namespace MochaLang
 	public:
 		FunctionCall(Identifier* functionName);
 
+		std::vector<Type*> specializedTypes;
 		std::string getFuncNameStr();
 		Identifier* getFuncName();
 		int parameterSize();
@@ -192,14 +200,14 @@ namespace MochaLang
 	private:
 		std::vector<Attribute> attrbs;
 		Identifier* varName;
-		Identifier* varType;
+		Type* varType;
 
 	public:
 		Expr* init;
-		VarDecl(Identifier*, Identifier*, std::vector<Attribute> = {}, Expr* = nullptr);
+		VarDecl(Identifier*, Type*, std::vector<Attribute> = {}, Expr* = nullptr);
 
 		Identifier* get();
-		Identifier* getVarType();
+		Type* getVarType();
 		std::vector<Attribute> getAttrbs();
 		Expr* getInit();
 	};
@@ -208,16 +216,16 @@ namespace MochaLang
 	{
 	private:
 		std::vector<Attribute> attrbs;
-		std::string returnType;
+		Type* returnType;
 		std::string functionName;
 		std::vector<VarDecl*> formalParams;
 		BlockStmt *body;
 		
 	public:
-		FunctionDecl(std::vector<Attribute>, const std::string&, const std::string&, std::vector<VarDecl*>, BlockStmt*);
+		FunctionDecl(std::vector<Attribute>, Type*, const std::string&, std::vector<VarDecl*>, BlockStmt*);
 		
 		std::string getFunctionName();
-		std::string getReturnType();
+		Type* getReturnType();
 		std::vector<VarDecl*> getFormalParams();
 		BlockStmt* getBody();
 		std::vector<Attribute> getAttrbs();
@@ -267,9 +275,9 @@ namespace MochaLang
 			std::vector<Attribute> attrbs;
 			std::string className;
 	public:
-			std::vector<Identifier*> genericTemplates;
+			std::vector<Type*> genericTemplates;
 			std::vector<ClassStmt*> nestedClasses;
-			ClassStmt(std::vector<FunctionDecl*>,std::vector<VarDecl*>,std::vector<ClassStmt*>,std::vector<Attribute>,std::string, std::vector<Identifier*>);
+			ClassStmt(std::vector<FunctionDecl*>,std::vector<VarDecl*>,std::vector<ClassStmt*>,std::vector<Attribute>,std::string, std::vector<Type*>);
 			std::vector<FunctionDecl*> getMemberFunctions();
 			std::vector<VarDecl*> getMemberVariables();
 			std::vector<Attribute> getAttrbs();
@@ -302,15 +310,6 @@ namespace MochaLang
 		std::unordered_map<std::string, PackageStmt*> packages;
 		Program(std::string programName);
 		void addPackage(PackageStmt* pkg);
-	};
-
-	class Type : public Statement 
-	{
-	public:
-		int arrayDims;
-		std::vector<std::string> type;
-		std::vector<Type*> genericArgs;
-		Type(std::vector<std::string> type, std::vector<Type*> genericArgs, int arrayDims);
 	};
 	//I4d7ECHJcvXW1jAh
 }

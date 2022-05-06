@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "../utils/Statements.h"
 #include "../utils/Attributes.h"
+#include "../utils/TypeHelper.h"
 
 namespace MochaLang
 {
@@ -31,6 +32,7 @@ namespace MochaLang
 			{ StmtType::OP_LE, "BinaryOperator::LessEquals" },
 			{ StmtType::OP_DOT, "BinaryOperator::Dot" },
 			{ StmtType::INDEX, "IndexOf" },
+			{ StmtType::TYPE, "Type" },
 
 			{ StmtType::IF, "If" },
 			{ StmtType::BLOCK, "Block" },
@@ -86,6 +88,7 @@ namespace MochaLang
 		void debug_cnstr_call(std::string& indentText, ConstructorCall* stmt, int indent);
 		void debug_inline_array_init(std::string& indentText, InlineArrayInit* stmt, int indent);
 		void debug_explicit_array_init(std::string& indentText, ExplicitArrayInit* stmt, int indent);
+		void debug_type(std::string& indentText, Type* stmt, int indent);
 		//4zaXrM9M592b5JOv
 
 		void debug_attr(Attribute& attr, const std::string& indent) {
@@ -226,6 +229,8 @@ namespace MochaLang
 
 		void debug_function_call(std::string& indentText, FunctionCall* stmt, int indent) {
 			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::FUNCTION_CALL) << "] " << stmt->getFuncName()->get() << std::endl;
+			std::cout << indentText << " <Specialized Generic Arguments>" << std::endl;
+			for (Type* i : stmt->specializedTypes) debug(i, indent + 1);
 			std::cout << indentText << " <Parameters>" << std::endl;
 			for (int i = 0; i < stmt->parameterSize(); ++i)
 				debug(stmt->getParamAt(i), indent + 1);
@@ -233,7 +238,7 @@ namespace MochaLang
 
 		void debug_vardecl(std::string& indentText, VarDecl* stmt, int indent) {
 			std::cout << indentText << "[" << stmtDebugStrings.at(StmtType::VARDECL) << "] " 
-				<< stmt->get() << " :: " << stmt->getVarType() << std::endl;
+				<< stmt->get()->get() << " :: " << MochaLang::Utils::TypeHelper::getTypeString(stmt->getVarType()) << std::endl;
 			std::cout << indentText << " <Attributes>" << std::endl;
 			for (Attribute& attr : stmt->getAttrbs())
 				debug_attr(attr, indentText);
@@ -345,6 +350,11 @@ namespace MochaLang
 			std::cout << indentText << " Packages ::" << std::endl;
 			for (auto& [pkgName, pkg] : stmt->packages)
 				debug(pkg, indent + 1);
+		}
+
+		void debug_type(std::string& indentText, Type* stmt, int indent) {
+			std::cout << indentText << "[ " << stmtDebugStrings.at(StmtType::TYPE) << " :: " 
+				<< MochaLang::Utils::TypeHelper::getTypeString(stmt) << " ]" << std::endl;
 		}
 		//ncIOsrBJYnXs1Zuj
 	}

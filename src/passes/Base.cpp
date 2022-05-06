@@ -13,19 +13,25 @@ void MochaLang::Passes::BasePass::BasePass::handleFunctionCall(Statement* _S, St
 		stmt->replaceParamAt(i, temp);
 	}
 
+	auto contextSearch = MochaLang::Utils::findContext(fname->get_raw(), context);
+	if (!contextSearch) {
+		for (auto model : importContexts) {
+			contextSearch = MochaLang::Utils::findContext(fname->get_raw(), model);
+			if (contextSearch)
+				break;
+		}
+	}
 
-	//if (knownClasses.count(fname)) {
-	//auto* ptr = context;
-	if (MochaLang::Utils::findContext(fname->get_raw(), context) != nullptr) {
-		auto fcall = new FunctionCall(fname);
+	if (contextSearch != nullptr) {
+		/*auto fcall = new FunctionCall(fname);
 
 		for (int i = 0; i < stmt->parameterSize(); ++i) {
 			Statement* temp = stmt->getParamAt(i);
 			performBasePass(temp, &temp);
 			fcall->addParameter((Expr*)temp);
-		}
+		}*/
 
-		*source = (new ConstructorCall(fcall));
+		*source = (new ConstructorCall(stmt));
 	}
 }
 
@@ -120,7 +126,7 @@ void MochaLang::Passes::BasePass::BasePass::handleClass(Statement* _S, Statement
 	context = context->addContext(S->getClassName());
 
 	for (auto* tmp : S->genericTemplates) {
-		context->addContext(tmp->get(), true);
+		context->addContext(MochaLang::Utils::TypeHelper::getTypeString(tmp), true);
 	}
 
 	for (auto v : S->getMemberFunctions()) handleFunctionDecl(v, (Statement**)&S);
@@ -162,6 +168,7 @@ void MochaLang::Passes::BasePass::BasePass::handleWhile(Statement* _S, Statement
 
 void MochaLang::Passes::BasePass::BasePass::handlePackage(Statement* _S, Statement** source) {
 	auto S = (PackageStmt*)_S;
+	importContexts.clear();
 
 	auto* orig = context;
 	auto packageName = ((Identifier*)S->getPackageName())->get_raw();// MochaLang::Utils::flattenDotExpr(S->getPackageName());
@@ -249,6 +256,19 @@ void MochaLang::Passes::BasePass::BasePass::performBasePass(Statement* stmt, Sta
 	case StmtType::PROGRAM:
 		handleProgram(stmt, source);
 		break;
+
+	case StmtType::IMPORT:
+		handleImports(stmt, source);
+		break;
+	}
+}
+
+void MochaLang::Passes::BasePass::BasePass::handleImports(Statement* _S, Statement** source) {
+	auto S = (ImportStmt*)_S;
+
+	for (Expr* _id : S->getImports()) {
+		Identifier* id = (Identifier*)_id;
+		importContexts.push_back(MochaLang::Utils::findContext(id->get_raw(), context));
 	}
 }
 

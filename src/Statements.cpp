@@ -69,19 +69,19 @@ namespace MochaLang
 	Statement* IfStmt::getTrueBlock() { return trueBlock; }
 	Statement* IfStmt::getFalseBlock() { return falseBlock; }
 
-	VarDecl::VarDecl(Identifier* varName, Identifier* varType, std::vector<Attribute> attrbs, Expr* init) :
+	VarDecl::VarDecl(Identifier* varName, Type* varType, std::vector<Attribute> attrbs, Expr* init) :
 		Statement(StmtType::VARDECL), varName(varName), varType(varType), attrbs(attrbs), init(init) { }
 	Identifier* VarDecl::get() { return varName; }
-	Identifier* VarDecl::getVarType() { return varType; }
+	Type* VarDecl::getVarType() { return varType; }
 	std::vector<Attribute> VarDecl::getAttrbs() { return attrbs; }
 	Expr* VarDecl::getInit() { return init; }
 
-	FunctionDecl::FunctionDecl(std::vector<Attribute> attrbs, const std::string& returnType, const std::string& functionName,
+	FunctionDecl::FunctionDecl(std::vector<Attribute> attrbs, Type* returnType, const std::string& functionName,
 		std::vector<VarDecl*> formalParams, BlockStmt* body) :
 		Statement(StmtType::FUNCTION_DECL), attrbs(attrbs), returnType(returnType),
 		formalParams(formalParams), functionName(functionName), body(body) { }
 	std::string FunctionDecl::getFunctionName() { return functionName; }
-	std::string FunctionDecl::getReturnType() { return returnType; }
+	Type* FunctionDecl::getReturnType() { return returnType; }
 	std::vector<VarDecl*> FunctionDecl::getFormalParams() { return formalParams; }
 	BlockStmt* FunctionDecl::getBody() { return body; }
 	std::vector<Attribute> FunctionDecl::getAttrbs() { return attrbs; }
@@ -102,7 +102,8 @@ namespace MochaLang
 	BlockStmt* WhileStmt::getBody() { return body; }
 
 	ClassStmt::ClassStmt(std::vector<FunctionDecl*> memberFunctions, std::vector<VarDecl*> memberVariables, 
-		std::vector<ClassStmt*> nestedClasses, std::vector<Attribute> attrbs, std::string className, std::vector<Identifier*> genericTemplates)
+		std::vector<ClassStmt*> nestedClasses, std::vector<Attribute> attrbs, std::string className, 
+		std::vector<Type*> genericTemplates)
 		: Statement(StmtType::CLASS), memberFunctions(memberFunctions), memberVariables(memberVariables), 
 		nestedClasses(nestedClasses), attrbs(attrbs), className(className), genericTemplates(genericTemplates) { }
 	std::vector<FunctionDecl*> ClassStmt::getMemberFunctions() { return memberFunctions; }

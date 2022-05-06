@@ -11,6 +11,7 @@
 #include "../../utils/Attributes.h"
 #include "../../utils/PrettyWriter.h"
 #include "../../utils/TypeResolver.h"
+#include "../../utils/TypeHelper.h"
 #include "../../utils/context/ContextModel.h"
 #include "../../utils/context/ContextFinder.h"
 #include <type_traits>

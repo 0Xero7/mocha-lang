@@ -11,6 +11,49 @@ namespace MochaLang
 			return tk.eof();
 		}
 
+		int Parser::tryParseAndSkipSpecializedArguments(TokenStream& tk) {
+			int i = tk.get_current_position();
+			int skipBy = 0;
+
+			if (!tk.match(TokenType::LS))
+				return 0;
+
+			try {
+				parseSpecializedTypes(tk);
+				skipBy = tk.get_current_position() - i;
+			}
+			catch (std::string error) {
+				skipBy = 0;
+			}
+			tk.rewindTo(i);
+
+			return skipBy;
+		}
+
+		std::vector<Type*> Parser::parseSpecializedTypes(TokenStream& tk) {
+			// Skip <
+			tk.ignore();
+
+			std::vector<Type*> specTypes;
+			bool errored = false;
+			
+			while (tk.match(TokenType::IDEN)) {
+				try {
+					specTypes.push_back(parseType(tk));
+				}
+				catch (std::string e) {
+					throw e;
+				}
+
+				if (tk.match(TokenType::COMMA)) { tk.ignore(); continue; }
+				if (tk.match(TokenType::GR)) { tk.ignore(); break; }
+
+				throw std::string("Invalid symbol while parsing generic types");
+			}
+			
+			return specTypes;
+		}
+
 		Attribute generateAttrbForTokenType(TokenType type) {
 			switch (type) {
 			case TokenType::PRIVATE:
@@ -385,11 +428,34 @@ namespace MochaLang
 				//case TokenType::STRING:
 				case TokenType::IDEN:
 					tk.rewind();
+
+					/*int lookFwd = 0;
+					while (tk.peekType(lookFwd) == TokenType::IDEN) {
+						++lookFwd;
+						if (tk.match(TokenType::DOT)) { lookFwd++; continue; }
+					}
+
+					int genericBalance = (tk.match(TokenType::LS));
+					while (genericBalance > 0)
+					{
+						if ()
+					}*/
+
+					// Parses A.B.C but not generic args
 					auto identifier = parseIdentifier(tk);
 
-					if (tk.peekType() == TokenType::PAREN_OP) { // function call
+					int genArgsSkip = tryParseAndSkipSpecializedArguments(tk);
+					bool hasSpecializedArgs = (genArgsSkip > 0);
+
+					if (tk.peekType(genArgsSkip) == TokenType::PAREN_OP) { // function call
+						std::vector<Type*> specializedTypes;
+						if (hasSpecializedArgs) {
+							specializedTypes = parseSpecializedTypes(tk);
+						}
+
 						auto funcName = identifier;
 						auto* fcall = new FunctionCall(funcName);
+						fcall->specializedTypes = specializedTypes;
 
 						auto parameters = parseFunctionCall(tk);
 						tk.ignore(); // Ignore )
@@ -500,7 +566,7 @@ namespace MochaLang
 					tk.ignore();
 
 					if (!tk.match(TokenType::BRACKET_CL))
-						throw "Invalid generic identifier!";
+						throw std::string("Invalid generic identifier!");
 					else
 						tk.ignore();
 
@@ -540,19 +606,21 @@ namespace MochaLang
 			/*Token token;
 			tk.accept(token);*/
 			std::vector<std::string> x = { "a" };
-			auto* varType = new Identifier(x); // parseIdentifier(tk);
+			//auto* varType = new Identifier(x); // parseIdentifier(tk);
 
-			auto type = parseType(tk);
 
-			// Is it an array?
-			while (tk.match(TokenType::BRACKET_OP)) {
-				tk.ignore();
-				if (!tk.match(TokenType::BRACKET_CL))
-					throw "Invalid syntax for array!";
-				tk.ignore();
+			auto varType = parseType(tk);
+			//auto type = parseType(tk);
 
-				//varType += "[]";
-			}
+			//// Is it an array?
+			//while (tk.match(TokenType::BRACKET_OP)) {
+			//	tk.ignore();
+			//	if (!tk.match(TokenType::BRACKET_CL))
+			//		throw "Invalid syntax for array!";
+			//	tk.ignore();
+
+			//	//varType += "[]";
+			//}
 
 			//tk.accept(token);
 			auto varName = parseIdentifier(tk);
@@ -576,12 +644,11 @@ namespace MochaLang
 		}
 
 		FunctionDecl* Parser::parseFunctionDecl(TokenStream& tk, const std::vector<Attribute>& attrbs, bool isConstructor) {
-			Token token;
-
+			Type* returnType = nullptr;
 			if (!isConstructor)
-				tk.accept(token);
-			auto returnType = (isConstructor ? "" : token.tokenValue);
+				returnType = parseType(tk);
 
+			Token token;
 			tk.accept(token);
 			auto functionName = token.tokenValue;
 
@@ -657,14 +724,15 @@ namespace MochaLang
 		ClassStmt* Parser::parseClass(TokenStream& tk, std::vector<Attribute> attrbs) {
 			tk.ignore(); // ignore class keyword
 			Token token;
-			tk.accept(token);
+			//tk.accept(token);
 
-			auto className = token.tokenValue;
+			auto classType = parseType(tk);
+			auto className = MochaLang::Utils::TypeHelper::getConcreteType(classType); // token.tokenValue;
 
 			std::string oldClassName = currentClassName;
-			currentClassName = className;
+			currentClassName = MochaLang::Utils::TypeHelper::getConcreteType(classType);
 
-			std::vector<Identifier*> genericTemplates;
+			/*std::vector<Identifier*> genericTemplates;
 			if (tk.peekType() == TokenType::LS) {
 				tk.ignore();
 				if (tk.peekType() == TokenType::GR)
@@ -684,7 +752,7 @@ namespace MochaLang
 
 					throw "Syntax error parsing generic template arguments";
 				}
-			}
+			}*/
 
 			auto block = (BlockStmt*)parse(tk);
 
@@ -709,7 +777,7 @@ namespace MochaLang
 				}
 			}
 
-			return new ClassStmt(fdecl, vdecl, nestedClasses, attrbs, className, genericTemplates);
+			return new ClassStmt(fdecl, vdecl, nestedClasses, attrbs, className, classType->genericArgs);
 		}
 				
 		ImportStmt* Parser::parseImport(TokenStream& tk) {
@@ -736,7 +804,7 @@ namespace MochaLang
 				
 		PackageStmt* Parser::parsePackage(TokenStream& tk) {
 			tk.ignore(); // Ignore package keyword
-			auto expr = parseExpr(tk, { TokenType::SEMICOLON });
+			auto expr = parseIdentifier(tk);
 			tk.ignore(); // Ignore ;
 			return new PackageStmt(expr);
 		}

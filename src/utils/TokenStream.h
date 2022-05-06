@@ -39,6 +39,14 @@ namespace MochaLang
 			i = (i - 1 < 0 ? 0 : i - 1);
 		}
 
+		void rewindTo(int iValue) {
+			i = iValue;
+		}
+
+		int get_current_position() {
+			return i;
+		}
+
 		bool peek(Token& token) {
 			if (eof()) return false;
 			token = tokens[i];

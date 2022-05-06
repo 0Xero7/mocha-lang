@@ -5,6 +5,7 @@
 #include "../utils/context/ContextModel.h"
 #include "../utils/DotExprToVecStr.h"
 #include "../utils/context/ContextFinder.h"
+#include "../utils/TypeHelper.h"
 
 namespace MochaLang {
 namespace Passes {
@@ -13,6 +14,8 @@ namespace BasePass {
 	class BasePass {
 	private:
 		MochaLang::Symbols::ContextModel* context;
+
+		std::vector<MochaLang::Symbols::ContextModel*> importContexts;
 
 	public:
 		BasePass(MochaLang::Symbols::ContextModel* context) : context(context) { }
@@ -33,6 +36,7 @@ namespace BasePass {
 		void handleWhile(Statement* S, Statement** source);
 		void performBasePass(Statement* stmt, Statement** source);
 		void handleBlock(Statement* stmt, Statement** source);
+		void handleImports(Statement* stmt, Statement** source);
 		void handleIndex(Statement* stmt, Statement** source);
 
 		

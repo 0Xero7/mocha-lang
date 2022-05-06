@@ -1,11 +1,10 @@
 package mocha.std;
 
 pub class List<T> {
-	Array<Arra<int>> h;
 	T[] array;
 	int size;
 	int capacity;
-
+	
 	pub List() {
 		size = 0;
 		capacity = 10;
@@ -15,22 +14,21 @@ pub class List<T> {
 	void extend() {
 		capacity = 2 * capacity;
 		T[] temp = T[capacity];
-
+		
 		for (int i = 0; i < size; i = i + 1) {
 			temp[i] = array[i];
 		}
 
 		array = temp;
 	}
-
+	
 	pub void add(T item) {
-		if (size >= capacity)
-			extend();
+		if (size >= capacity) extend();
 
 		array[size] = item;
 		size = size + 1;
 	}
-
+	
 	pub T at(int index) => array[index];
 
 	pub int size() => size;

@@ -4,6 +4,7 @@
 #include <unordered_set>
 
 #include "utils/TokenStream.h"
+#include "utils/TypeHelper.h"
 #include "utils/Statements.h"
 
 namespace MochaLang
@@ -58,6 +59,10 @@ namespace MochaLang
 			Statement* parse(TokenStream&, bool, bool);
 
 			bool ignoreUntilNextStatement(TokenStream&);
+
+			int tryParseAndSkipSpecializedArguments(TokenStream&);
+
+			std::vector<Type*> parseSpecializedTypes(TokenStream&);
 
 			Expr* parseExpr(TokenStream&, const std::unordered_set<TokenType>&, bool = false);
 			void insert_binary_op(Token&, std::vector<Expr*>&, std::vector<Expr*>&);

@@ -211,7 +211,7 @@ void MochaLang::Targets::Java::JavaWriter::writeFuncDecl(FunctionDecl* decl) {
 	}
 	else {
 		writeAttributes(decl->getAttrbs());
-		pw.write({ decl->getReturnType(), " ", decl->getFunctionName(), "(" });
+		pw.write({ MochaLang::Utils::TypeHelper::getTypeString(decl->getReturnType()), " ", decl->getFunctionName(), "(" });
 	}
 	writeStmtCollection(decl->getFormalParams());
 	pw.write({ ") " });
@@ -221,8 +221,12 @@ void MochaLang::Targets::Java::JavaWriter::writeFuncDecl(FunctionDecl* decl) {
 void MochaLang::Targets::Java::JavaWriter::writeVarDecl(VarDecl* decl, bool endWithSemiColon) {
 	writeAttributes(decl->getAttrbs());
 
-	auto typeName = decl->getVarType();
-	std::string actualTypeName = "";
+	auto type = decl->getVarType();
+	std::string typeName = MochaLang::Utils::TypeHelper::getTypeString(type);
+
+	auto* ctxFind = MochaLang::Utils::findContext(type->type, context);
+	if (ctxFind && ctxFind->genericType)
+		typeName = "Object" + MochaLang::Utils::TypeHelper::getArrayNotation(type);
 
 	/*while (!typeName.empty() && (typeName.back() == ']' || typeName.back() == '[')) {
 		actualTypeName = typeName.back() + actualTypeName;
@@ -235,11 +239,12 @@ void MochaLang::Targets::Java::JavaWriter::writeVarDecl(VarDecl* decl, bool endW
 	while (std::getline(ss, segment, '.'))
 		split.push_back(segment);
 
-	auto* ctxFind = MochaLang::Utils::findContext(split, context);
-	if (ctxFind && ctxFind->genericType)
-		typeName = "Object";
+	
 
 	pw.write({ typeName, actualTypeName, " ", decl->get() });*/
+
+	pw.write({ typeName, " ", decl->get()->get() });
+
 	if (decl->getInit() != nullptr) {
 		pw.write({" = " });
 		writeExpr(((BinaryOp*)decl->getInit())->getRight(), false);
@@ -263,7 +268,22 @@ void MochaLang::Targets::Java::JavaWriter::writeReturn(ReturnStmt* ret) {
 }
 
 void MochaLang::Targets::Java::JavaWriter::writeFunctionCall(FunctionCall* fcall) {
-	pw.write({fcall->getFuncNameStr(), "(" });
+	pw.write({fcall->getFuncNameStr() });
+	if (!fcall->specializedTypes.empty()) {
+		pw.write({ "<" });
+		std::vector<std::string> specArgs;
+
+		for (Type* i : fcall->specializedTypes) {
+			specArgs.push_back(MochaLang::Utils::TypeHelper::getTypeString(i));
+			specArgs.push_back(",");
+		}
+
+		specArgs.pop_back();
+		pw.write(specArgs);
+		pw.write({ ">" });
+	}
+
+	pw.write({ "(" });
 	for (int i = 0; i < fcall->parameterSize(); ++i) {
 		writeExpr(fcall->getParamAt(i), false);
 		if (i < fcall->parameterSize() - 1) pw.write({ ", " });
@@ -273,12 +293,9 @@ void MochaLang::Targets::Java::JavaWriter::writeFunctionCall(FunctionCall* fcall
 
 void MochaLang::Targets::Java::JavaWriter::writeConstructorCall(ConstructorCall* ccall) {
 	auto fcall = ccall->getFunctionCall();
-	pw.write({"(new ",fcall->getFuncNameStr(), "("});
-	for (int i = 0; i < fcall->parameterSize(); ++i) {
-		writeExpr(fcall->getParamAt(i), false);
-		if (i < fcall->parameterSize() - 1) pw.write({ ", " });
-	}
-	pw.write({ "))" });
+	pw.write({ "(new " });
+	writeFunctionCall(fcall);
+	pw.write({ ")" });
 }
 
 void MochaLang::Targets::Java::JavaWriter::writeBlock(BlockStmt* stmt, bool writeBraces) {
@@ -316,9 +333,9 @@ void MochaLang::Targets::Java::JavaWriter::writeClass(ClassStmt* cls) {
 		pw.write({ "<" });
 
 		for (auto* tmp : cls->genericTemplates) {
-			genTemps.push_back(tmp->get());
+			genTemps.push_back(MochaLang::Utils::TypeHelper::getTypeString(tmp));
 			genTemps.push_back(", ");
-			context->addContext(tmp->get(), true);
+			context->addContext(MochaLang::Utils::TypeHelper::getTypeString(tmp), true);
 		}
 		
 		genTemps.pop_back();
@@ -343,7 +360,7 @@ void MochaLang::Targets::Java::JavaWriter::writeClass(ClassStmt* cls) {
 	pw.writeNewLine();
 
 	for (FunctionDecl* decl : cls->getMemberFunctions()) {
-		currentReturnType = decl->getReturnType();
+		currentReturnType = MochaLang::Utils::TypeHelper::getTypeString(decl->getReturnType());
 		writeFuncDecl(decl);
 		currentReturnType = "";
 	}
