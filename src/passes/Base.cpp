@@ -123,10 +123,10 @@ void MochaLang::Passes::BasePass::BasePass::handleVarDecl(Statement* _S, Stateme
 void MochaLang::Passes::BasePass::BasePass::handleClass(Statement* _S, Statement** source) {
 	auto S = (ClassStmt*)_S;
 
-	context = context->addContext(S->getClassName());
+	context = context->addContext(S->getClassName(), MochaLang::Symbols::ContextModelType::CLASS);
 
 	for (auto* tmp : S->genericTemplates) {
-		context->addContext(MochaLang::Utils::TypeHelper::getTypeString(tmp), true);
+		context->addContext(MochaLang::Utils::TypeHelper::getTypeString(tmp), MochaLang::Symbols::ContextModelType::CLASS, true);
 	}
 
 	for (auto v : S->getMemberFunctions()) handleFunctionDecl(v, (Statement**)&S);
@@ -173,7 +173,7 @@ void MochaLang::Passes::BasePass::BasePass::handlePackage(Statement* _S, Stateme
 	auto* orig = context;
 	auto packageName = ((Identifier*)S->getPackageName())->get_raw();// MochaLang::Utils::flattenDotExpr(S->getPackageName());
 	for (auto& part : packageName) {
-		context = context->addContext(part);
+		context = context->addContext(part, MochaLang::Symbols::ContextModelType::PACKAGE);
 	}
 
 	handleBlock(S->packageContents, (Statement**)&S);

@@ -13,7 +13,11 @@ namespace BasePass {
 
 	class BasePass {
 	private:
+		// For static context tree
 		MochaLang::Symbols::ContextModel* context;
+
+		// In a function? Use this
+		MochaLang::Symbols::ContextModel* activeContext;
 
 		std::vector<MochaLang::Symbols::ContextModel*> importContexts;
 

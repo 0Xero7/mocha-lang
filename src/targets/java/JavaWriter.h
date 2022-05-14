@@ -70,7 +70,7 @@ namespace MochaLang {
 						for (auto& pkgPart : pkgNameRaw) {
 							currentOutputDirectory = currentOutputDirectory.append(pkgPart);
 							std::filesystem::create_directory(currentOutputDirectory);
-							context = context->addContext(pkgPart);
+							context = context->addContext(pkgPart, MochaLang::Symbols::ContextModelType::PACKAGE);
 						}
 
 						writePackage(pkg);

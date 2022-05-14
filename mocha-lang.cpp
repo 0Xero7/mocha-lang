@@ -63,8 +63,8 @@ int main()
 	auto context = MochaLang::Passes::ContextPass::generateContext(program);
 
 	// Inject primitives
-	context->addContext("int");
-	context->addContext("String");
+	context->addContext("int", MochaLang::Symbols::ContextModelType::CLASS);
+	context->addContext("String", MochaLang::Symbols::ContextModelType::CLASS);
 
 	auto basePass = MochaLang::Passes::BasePass::BasePass(context);
 	basePass.performBasePass(program, (MochaLang::Statement**)&program);

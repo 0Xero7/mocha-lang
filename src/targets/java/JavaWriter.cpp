@@ -325,7 +325,7 @@ void MochaLang::Targets::Java::JavaWriter::writeClass(ClassStmt* cls) {
 	auto* orig = context;
 
 	pw.write({ "class ", cls->getClassName() });
-	context = context->addContext(cls->getClassName());
+	context = context->addContext(cls->getClassName(), MochaLang::Symbols::ContextModelType::CLASS);
 
 	// If generic type T is found, omit it and use "Object" in place of T
 	if (!cls->genericTemplates.empty()) {
@@ -335,7 +335,7 @@ void MochaLang::Targets::Java::JavaWriter::writeClass(ClassStmt* cls) {
 		for (auto* tmp : cls->genericTemplates) {
 			genTemps.push_back(MochaLang::Utils::TypeHelper::getTypeString(tmp));
 			genTemps.push_back(", ");
-			context->addContext(MochaLang::Utils::TypeHelper::getTypeString(tmp), true);
+			context->addContext(MochaLang::Utils::TypeHelper::getTypeString(tmp), MochaLang::Symbols::ContextModelType::CLASS, true);
 		}
 		
 		genTemps.pop_back();
