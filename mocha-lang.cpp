@@ -13,6 +13,7 @@
 #include "src/passes/Base.h"
 #include "src/output/StatementTreePrinter.h"
 #include "src/targets/java/JavaWriter.h"
+#include "src/targets/java/passes/Pass1.h"
 #include "src/DependencyResolver.h"
 #include "src/passes/ContextPass.h"
 
@@ -34,13 +35,13 @@ void recursively_parse(std::string& path, MochaLang::Program* program) {
 			std::istreambuf_iterator<char>());
 
 		std::string s = fileContents;
-		//cout << s << endl << endl;
+		cout << s << endl << endl;
 		auto lexer = MochaLang::Lexer::Tokenizer(s);
 		auto tokens = lexer.tokenize();
 
 		for (auto& v : tokens.get_tokens()) cout << "[" << v.tokenValue << "]" << endl;
 
-		auto parser = MochaLang::Parser::Parser();
+		auto parser = MochaLang::Parser::Parser(true);
 		auto tree = parser.parse(tokens, true, true);
 
 		auto pkg = (MochaLang::PackageStmt*)tree;
@@ -50,9 +51,9 @@ void recursively_parse(std::string& path, MochaLang::Program* program) {
 
 int main()
 {
-	std::string sourceDir = "C:\\Projects\\mocha-lang\\test\\list";
+	std::string sourceDir = R"(C:\Projects\mocha-lang\test\int_bootstrap)";
 
-	auto* program = new MochaLang::Program("ListTest");
+	auto* program = new MochaLang::Program("IntBootstrap");
 
 	auto start = std::chrono::high_resolution_clock::now();
 
@@ -73,10 +74,15 @@ int main()
 	MochaLang::Debug::debug(program, 0);
 	//cout << "ok";
 
+	auto p1 = MochaLang::Targets::Java::Passes::Pass1();
+	p1.runPass(program, (MochaLang::Statement**)&program);
+
 	auto jw = MochaLang::Targets::Java::JavaWriter("  ", context);
 	auto outputPath = R"(C:\Users\Soumya Pattanayak\IdeaProjects\MochaLangRuns\src)";
 	std::filesystem::remove_all(outputPath);
 	std::filesystem::create_directory(outputPath);
+
+
 	jw.transpileToJava(outputPath, program);
 
 	auto end = std::chrono::high_resolution_clock::now();

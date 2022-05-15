@@ -50,6 +50,10 @@ void MochaLang::Targets::Java::JavaWriter::writeStatement(Statement* S) {
 		writeBlock((BlockStmt*)S, false);
 		break;
 
+	/*case StmtType::OPERATOR_OVERLOAD:
+		writeOperatorOverload((OperatorOverload*)S);
+		break;*/
+
 	case StmtType::RETURN:
 		writeReturn((ReturnStmt*)S);
 		break;
@@ -223,6 +227,11 @@ void MochaLang::Targets::Java::JavaWriter::writeVarDecl(VarDecl* decl, bool endW
 
 	auto type = decl->getVarType();
 	std::string typeName = MochaLang::Utils::TypeHelper::getTypeString(type);
+	if (typeName[0] == '#')
+	{
+		typeName = typeName.substr(1);
+	}
+	
 
 	auto* ctxFind = MochaLang::Utils::findContext(type->type, context);
 	if (ctxFind && ctxFind->genericType)
@@ -315,6 +324,7 @@ void MochaLang::Targets::Java::JavaWriter::writeBlock(BlockStmt* stmt, bool writ
 void MochaLang::Targets::Java::JavaWriter::writeImports(ImportStmt* ret) {
 	for (Expr* expr : ret->getImports()) {
 		pw.write({ "import " });
+
 		writeExpr(expr, true);
 	}
 }
@@ -351,6 +361,14 @@ void MochaLang::Targets::Java::JavaWriter::writeClass(ClassStmt* cls) {
 	for (VarDecl* decl : cls->getMemberVariables()) {
 		writeVarDecl(decl, true);
 	}
+
+	pw.writeNewLine();
+
+	/*for (auto* opOv : cls->opOverloads) {
+		currentReturnType = MochaLang::Utils::TypeHelper::getTypeString(opOv->returnType);
+		writeOperatorOverload(opOv);
+		currentReturnType = "";
+	}*/
 
 	pw.writeNewLine();
 
@@ -436,4 +454,35 @@ void MochaLang::Targets::Java::JavaWriter::writePackage(PackageStmt* S) {
 			throw "Java output generator not yet implemented.";
 		}
 	}
+}
+
+void MochaLang::Targets::Java::JavaWriter::writeOperatorOverload(OperatorOverload* opOv)
+{
+	writeAttributes(opOv->attrbs);
+
+	pw.write({ MochaLang::Utils::TypeHelper::getTypeString(opOv->returnType), " "});
+	
+	switch (opOv->operatorStr[0])
+	{
+	case '+':
+		pw.write({ "__ADD__" });
+		break;
+	}
+
+	pw.write({ "(" });
+
+	std::vector<std::string> params;
+	int i = 0;
+	for (auto* param : opOv->parameters)
+	{
+		writeVarDecl(param, false);
+
+		if (i + 1 < opOv->parameters.size())
+			pw.write({ ", " });
+		++i;
+	}
+
+	pw.write({ ")" });
+
+	writeBlock(opOv->block, true);
 }

@@ -1,0 +1,16 @@
+package mocha.internal;
+
+pub class int {
+	#int value = 0;
+
+	pub int(#int value) {
+		this.value = value;
+	}
+
+	pub int operator + (int other) => return int(this.value + other.value);
+	pub int operator - (int other) => return int(this.value - other.value);
+	pub int operator * (int other) => return int(this.value * other.value);
+	pub int operator / (int other) => return int(this.value / other.value);
+
+	pub String str() => return "${value}";
+}

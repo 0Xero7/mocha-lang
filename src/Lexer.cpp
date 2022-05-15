@@ -19,6 +19,7 @@ namespace MochaLang
 			"int",
 			"float",
 			"string",*/
+			//"internal#int",
 			"operator",
 			"for",
 			"while",
@@ -107,6 +108,7 @@ namespace MochaLang
 			/*{ "void", TokenType::VOID },
 			{ "int", TokenType::INT },
 			{ "float", TokenType::FLOAT },*/
+			//{ "internal#int", TokenType::INT },
 			{ "return", TokenType::RETURN },
 			{ "for", TokenType::FOR },
 			{ "while", TokenType::WHILE },
@@ -227,10 +229,10 @@ namespace MochaLang
 
 
 				// Identifiers and Keywords
-				if (isalpha(CURR) || CURR == '_') {
+				if (isalpha(CURR) || CURR == '_' || CURR == '#') {
 
 					std::string str;
-					while (i < len && (isalnum(CURR) || CURR == '_')) {
+					while (i < len && (isalnum(CURR) || CURR == '_' || CURR == '#')) {
 						str.push_back(CURR);
 						++i;
 					}

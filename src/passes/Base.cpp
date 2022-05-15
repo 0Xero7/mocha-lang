@@ -130,6 +130,10 @@ void MochaLang::Passes::BasePass::BasePass::handleClass(Statement* _S, Statement
 	}
 
 	for (auto v : S->getMemberFunctions()) handleFunctionDecl(v, (Statement**)&S);
+	for (auto v : S->opOverloads)
+	{
+		handleBlock(v->block, (Statement**)(&v->block));
+	}
 	for (auto v : S->getMemberVariables()) handleVarDecl(v, (Statement**)&S);
 
 	context = context->parent;

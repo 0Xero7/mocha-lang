@@ -156,9 +156,10 @@ namespace MochaLang
 
 	class FunctionCall : public Expr {
 	private:
+	public:
 		Identifier* functionName;
 		std::vector<Expr*> parameters;
-	public:
+
 		FunctionCall(Identifier* functionName);
 
 		std::vector<Type*> specializedTypes;
@@ -173,9 +174,10 @@ namespace MochaLang
 
 	class ConstructorCall : public Expr {
 	private:
-		FunctionCall* cnstrCall;
 
 	public:
+		FunctionCall* cnstrCall;
+
 		ConstructorCall(FunctionCall*);
 		FunctionCall* getFunctionCall();
 	};
@@ -218,12 +220,13 @@ namespace MochaLang
 	{
 	private:
 		std::vector<Attribute> attrbs;
+		
+	public:
 		Type* returnType;
 		std::string functionName;
 		std::vector<VarDecl*> formalParams;
 		BlockStmt *body;
-		
-	public:
+
 		FunctionDecl(std::vector<Attribute>, Type*, const std::string&, std::vector<VarDecl*>, BlockStmt*);
 		
 		std::string getFunctionName();
@@ -285,11 +288,11 @@ namespace MochaLang
 	class ClassStmt : public Statement
 	{
 	private:
+			std::vector<Attribute> attrbs;
+	public:
 			std::vector<FunctionDecl*> memberFunctions;
 			std::vector<VarDecl*> memberVariables;
-			std::vector<Attribute> attrbs;
 			std::string className;
-	public:
 			std::vector<Type*> genericTemplates;
 			std::vector<ClassStmt*> nestedClasses;
 			std::vector<OperatorOverload*> opOverloads;
@@ -305,8 +308,8 @@ namespace MochaLang
 	class ImportStmt : public Statement
 	{
 	private:
-			std::vector<Expr*> imports;
 	public:
+			std::vector<Expr*> imports;
 			ImportStmt(std::vector<Expr*>);
 			std::vector<Expr*> getImports();
 	};

@@ -1,0 +1,13 @@
+package com.company;
+
+import mocha.internal.int;
+
+class Entrypoint {
+	int sum(int a, int b) {
+		return a + b;
+	}
+
+	void main() {
+		int x = 4 + 3;
+	}
+}

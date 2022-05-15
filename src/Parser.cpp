@@ -167,6 +167,12 @@ namespace MochaLang
 					if (tk.peekType(lookAheadOffset) == TokenType::OPERATOR) {
 						auto overload = parseOperatorOverload(tk, attributeAccumulator);
 						block->push_back(overload);
+
+						auto opName = MochaLang::Internal::operatorToString.at(overload->operatorStr);
+
+						auto overloadFn = new FunctionDecl(attributeAccumulator, overload->returnType, opName, overload->parameters, overload->block);
+						block->push_back(overloadFn);
+
 						attributeAccumulator.clear();
 						break;
 					}
@@ -330,6 +336,12 @@ namespace MochaLang
 				if (tk.peekType() != TokenType::IDEN)
 					throw "Expected identifier, found " + tk.peekValue();
 
+				if (tk.peekValue().find_first_of('#') != std::string::npos)
+				{
+					if (currentPackageName != "mocha.internal")
+						throw "Invalid symbol '#'";
+				}
+
 				iden.push_back(tk.peekValue());
 				tk.ignore();
 
@@ -395,9 +407,20 @@ namespace MochaLang
 					break;
 
 				case TokenType::NUMBER:
-					term.push_back(new Number(stoi(token.tokenValue)));
+				{
+					if (currentPackageName == "mocha.internal" && currentClassName == "int")
+					{
+						term.push_back(new Number(stoi(token.tokenValue)));
+					}
+					else {
+						std::vector<std::string> id = { "mocha", "internal", "int" };
+						auto* fcall = new FunctionCall(new Identifier(id));
+						fcall->addParameter(new Number(stoi(token.tokenValue)));
+						term.push_back(fcall);
+					}
 					indexable = true;
 					break;
+				}
 
 				case TokenType::RAW_STRING:
 					term.push_back(new RawString(token.tokenValue));
@@ -563,6 +586,14 @@ namespace MochaLang
 
 				Token token;
 				tk.accept(token);
+
+				if (token.tokenValue.find_first_of('#') != std::string::npos)
+				{
+					if (currentPackageName != "mocha.internal") {
+						std::cerr << "Invalid symbol '#'!";
+						throw "Invalid symbol '#'";
+					}
+				}
 
 				types.push_back(token.tokenValue);
 				if (tk.peekType() == TokenType::DOT)  { tk.ignore(); continue; }
@@ -813,6 +844,14 @@ namespace MochaLang
 		PackageStmt* Parser::parsePackage(TokenStream& tk) {
 			tk.ignore(); // Ignore package keyword
 			auto expr = parseIdentifier(tk);
+			currentPackageName = expr->get();
+
+			if (currentPackageName == "mocha.internal")
+			{
+				if (!parsingInternals)
+					throw "Cannot use package mocha.internal.";
+			}
+
 			tk.ignore(); // Ignore ;
 			return new PackageStmt(expr);
 		}

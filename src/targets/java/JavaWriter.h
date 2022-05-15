@@ -59,6 +59,8 @@ namespace MochaLang {
 
 				void writePackage(PackageStmt*);
 
+				void writeOperatorOverload(OperatorOverload* opOv);
+
 				void write(Statement* program) {
 					auto* prog = (Program*)program;
 					for (auto [pkgName, pkg] : prog->packages) {

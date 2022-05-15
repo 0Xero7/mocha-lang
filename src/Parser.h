@@ -2,10 +2,12 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include <iostream>
 
 #include "utils/TokenStream.h"
 #include "utils/TypeHelper.h"
 #include "utils/Statements.h"
+#include "internal/symbols/Symbols.h"
 
 namespace MochaLang
 {
@@ -54,12 +56,17 @@ namespace MochaLang
 		{
 		private:
 			std::string currentClassName = "";
+			std::string currentPackageName = "";
+
+			bool parsingInternals = false;
 
 			BlockStmt* parseFunctionBlockOrArrow(TokenStream& tk);
 
 			std::vector<VarDecl*> parseFormalParameters(TokenStream& tk);
 
 		public:
+			Parser(bool parsingInternals) : parsingInternals(parsingInternals) { }
+
 			Statement* parse(TokenStream&, bool, bool);
 
 			bool ignoreUntilNextStatement(TokenStream&);
