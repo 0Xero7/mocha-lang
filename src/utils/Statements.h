@@ -135,12 +135,12 @@ namespace MochaLang
 		std::vector<std::string> identifier;
 	public:
 		//Identifier(std::string&);
-		Identifier(std::vector<std::string>&);
+		Identifier(const std::vector<std::string>&);
 
 		std::string get();
 		std::vector<std::string> get_raw();
 	};
-
+	
 	class InlineArrayInit : public Expr {
 	public:
 		std::vector<Expr*> values;

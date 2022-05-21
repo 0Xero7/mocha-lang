@@ -3,6 +3,11 @@
 #include "../../../utils/Statements.h"
 #include <string>
 
+
+/*  Replaces identifiers with names that would conflict with built-in keywords in Java
+ *	Eg - int -> $int
+ */
+
 namespace MochaLang {
 namespace Targets {
 namespace Java {

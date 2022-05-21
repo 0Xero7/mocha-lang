@@ -13,16 +13,16 @@ void MochaLang::Passes::BasePass::BasePass::handleFunctionCall(Statement* _S, St
 		stmt->replaceParamAt(i, temp);
 	}
 
-	auto contextSearch = MochaLang::Utils::findContext(fname->get_raw(), context);
-	if (!contextSearch) {
+	auto contextSearch = contextGroup->tryFindContext(fname->get_raw());// MochaLang::Utils::_tryFindContext(fname->get_raw(), contexts);
+	/*if (!contextSearch) {
 		for (auto model : importContexts) {
 			contextSearch = MochaLang::Utils::findContext(fname->get_raw(), model);
 			if (contextSearch)
 				break;
 		}
-	}
+	}*/
 
-	if (contextSearch != nullptr) {
+	if (contextSearch != nullptr && contextSearch->contextType == Symbols::ContextModelType::CLASS) {
 		/*auto fcall = new FunctionCall(fname);
 
 		for (int i = 0; i < stmt->parameterSize(); ++i) {
@@ -35,10 +35,69 @@ void MochaLang::Passes::BasePass::BasePass::handleFunctionCall(Statement* _S, St
 	}
 }
 
+void MochaLang::Passes::BasePass::BasePass::lowerOperatorCalls(Statement* op, Statement** source)
+{
+	// TODO - Make sure op is a overloadable operator
+
+	BinaryOp* bop = (BinaryOp*)op;
+
+	if (!Internal::validOverloadOperators.count(bop->getType())) 
+		return;
+
+	//std::vector<Symbols::ContextModel*> contexts = { context };
+	auto left = MochaLang::Utils::resolveType(bop->left, contextGroup);
+	if (left->contextType == Symbols::ContextModelType::FUNCTION)
+		left = contextGroup->tryFindContext(left->variableType->type);
+	auto right = MochaLang::Utils::resolveType(bop->right, contextGroup);
+	if (right->contextType == Symbols::ContextModelType::FUNCTION)
+		right = contextGroup->tryFindContext(right->variableType->type);
+
+	std::string op_str = MochaLang::Internal::typeToOperator.at(bop->getType());
+
+	if (left->variableType && left->variableType->type[0][0] == '#') return;
+
+	if (left->contextType != Symbols::ContextModelType::CLASS)
+		throw "Invalid lhs for operator '" + op_str + "'";
+
+	ClassStmt* left_class = (ClassStmt*)left->context;
+	std::string right_type = right->longName;
+
+	for (OperatorOverload* oo : left_class->opOverloads)
+	{
+		if (oo->operatorStr != op_str) continue;
+
+		//auto ctx = MochaLang::Utils::_tryFindContext(oo->parameters[0]->getVarType()->type, contexts);
+		auto ctx = contextGroup->tryFindContext(oo->parameters[0]->getVarType()->type);
+
+		if (ctx->longName == right_type)
+		{
+			auto prefix = MochaLang::Utils::TypeHelper::getTypeString(left->variableType);
+			auto suffix = MochaLang::Internal::operatorToString.at(oo->operatorStr);
+			auto fcall_name = prefix + "." + suffix;
+
+			auto rightF = new FunctionCall(new Identifier({ suffix }));
+			rightF->addParameter(bop->right);
+
+
+			auto converted = new BinaryOp(bop->left, StmtType::OP_DOT, rightF);
+
+			*source = converted;
+			break;
+
+			//std::cout << fcall_name << "\n";
+		}
+	}
+}
+
 void MochaLang::Passes::BasePass::BasePass::handleFunctionDecl(Statement* _S, Statement** source) {
 	auto S = (FunctionDecl*)_S;
+
+	contextGroup->addAndMoveToSubContext();
+
 	for (VarDecl* v : S->getFormalParams()) handleVarDecl(v, (Statement**)&S);
 	performBasePass(S->getBody(), (Statement**)&S);
+
+	contextGroup->popSubContextAndMoveToParent();
 }
 
 void MochaLang::Passes::BasePass::BasePass::handleExpr(Statement* _S, Statement** source) {
@@ -65,6 +124,7 @@ void MochaLang::Passes::BasePass::BasePass::handleExpr(Statement* _S, Statement*
 	case StmtType::OP_DOT:
 	case StmtType::OP_ASSIGN:
 		binaryOps(S);
+		lowerOperatorCalls(S, source);
 		break;
 
 	case StmtType::FUNCTION_CALL:
@@ -75,14 +135,14 @@ void MochaLang::Passes::BasePass::BasePass::handleExpr(Statement* _S, Statement*
 		auto left = ((BinaryOp*)S)->left;
 		auto indexedExprName = getIndexVariable(left);
 		//if (indexedExprName->getType() == StmtType::IDEN && knownClasses.count(((Identifier*)indexedExprName)->get())) {
-		if (indexedExprName->getType() == StmtType::IDEN && MochaLang::Utils::findContext(((Identifier*)indexedExprName)->get_raw(), context)) {
-			// It is an explicit array init
-			std::vector<Expr*> collect;
-			getIndexIndices(S, collect);
+		//if (indexedExprName->getType() == StmtType::IDEN && MochaLang::Utils::_tryFindContext(((Identifier*)indexedExprName)->get_raw(), contexts)) {
+		//	// It is an explicit array init
+		//	std::vector<Expr*> collect;
+		//	getIndexIndices(S, collect);
 
-			*source = new ExplicitArrayInit(((Identifier*)indexedExprName)->get(), collect);
-			break;
-		}
+		//	*source = new ExplicitArrayInit(((Identifier*)indexedExprName)->get(), collect);
+		//	break;
+		//}
 
 		performBasePass(left, (Statement**)&left);
 
@@ -115,6 +175,8 @@ MochaLang::Expr* MochaLang::Passes::BasePass::BasePass::getIndexVariable(Expr* o
 void MochaLang::Passes::BasePass::BasePass::handleVarDecl(Statement* _S, Statement** source) {
 	auto S = (VarDecl*)_S;
 
+	contextGroup->currentContext->addContext(S->get()->get(), Symbols::ContextModelType::VARIABLE, false, S->getVarType(), S);
+
 	if (S->getInit() != nullptr) {
 		handleExpr(S->init, (Statement**)&S->init);
 	}
@@ -123,20 +185,42 @@ void MochaLang::Passes::BasePass::BasePass::handleVarDecl(Statement* _S, Stateme
 void MochaLang::Passes::BasePass::BasePass::handleClass(Statement* _S, Statement** source) {
 	auto S = (ClassStmt*)_S;
 
-	context = context->addContext(S->getClassName(), MochaLang::Symbols::ContextModelType::CLASS);
+	//int beforeQty = contexts.size();
+	contextGroup->currentContext = contextGroup->currentContext->addContext(S->getClassName(), MochaLang::Symbols::ContextModelType::CLASS);
+	contextGroup->addAndMoveToSubContext();
+
+	//contexts.push_back()
 
 	for (auto* tmp : S->genericTemplates) {
-		context->addContext(MochaLang::Utils::TypeHelper::getTypeString(tmp), MochaLang::Symbols::ContextModelType::CLASS, true);
+		//context->addContext(MochaLang::Utils::TypeHelper::getTypeString(tmp), MochaLang::Symbols::ContextModelType::CLASS, true);
+		contextGroup->currentContext->addContext(
+			MochaLang::Utils::TypeHelper::getTypeString(tmp),
+			MochaLang::Symbols::ContextModelType::CLASS,
+			true
+		);
+
+		/*contextGroup->addToCurrentSubContext(
+			new Symbols::ContextModel(
+				MochaLang::Utils::TypeHelper::getTypeString(tmp), 
+				MochaLang::Utils::TypeHelper::getTypeString(tmp),
+				nullptr,
+				MochaLang::Symbols::ContextModelType::CLASS,
+				true
+			)
+		);*/
 	}
+
+	for (auto v : S->getMemberVariables()) handleVarDecl(v, (Statement**)&S);
 
 	for (auto v : S->getMemberFunctions()) handleFunctionDecl(v, (Statement**)&S);
 	for (auto v : S->opOverloads)
 	{
 		handleBlock(v->block, (Statement**)(&v->block));
 	}
-	for (auto v : S->getMemberVariables()) handleVarDecl(v, (Statement**)&S);
 
-	context = context->parent;
+	//context = context->parent;
+	contextGroup->popSubContextAndMoveToParent();
+	contextGroup->currentContext = contextGroup->currentContext->parent;
 }
 
 void MochaLang::Passes::BasePass::BasePass::handleFor(Statement* _S, Statement** source) {
@@ -172,26 +256,28 @@ void MochaLang::Passes::BasePass::BasePass::handleWhile(Statement* _S, Statement
 
 void MochaLang::Passes::BasePass::BasePass::handlePackage(Statement* _S, Statement** source) {
 	auto S = (PackageStmt*)_S;
-	importContexts.clear();
 
-	auto* orig = context;
-	auto packageName = ((Identifier*)S->getPackageName())->get_raw();// MochaLang::Utils::flattenDotExpr(S->getPackageName());
+	contextGroup->clear_imports();
+
+	auto* orig = contextGroup->currentContext;
+	auto packageName = ((Identifier*)S->getPackageName())->get_raw();
+
 	for (auto& part : packageName) {
-		context = context->addContext(part, MochaLang::Symbols::ContextModelType::PACKAGE);
+		contextGroup->currentContext = contextGroup->currentContext->addContext(part, MochaLang::Symbols::ContextModelType::PACKAGE);
 	}
 
 	handleBlock(S->packageContents, (Statement**)&S);
-	context = orig;
-	//context->addContext(S->getPackageName(), S->get);
+
+	contextGroup->currentContext = orig;
 }
 
 void MochaLang::Passes::BasePass::BasePass::handleProgram(Statement* _S, Statement** source) {
 	auto S = (Program*)_S;
 
-	auto* orig = context;
+	auto* orig = contextGroup->currentContext;
 	for (auto [pkgName, pkg] : S->packages) {
-		context = orig;
 		handlePackage(pkg, (Statement**)&pkg);
+		contextGroup->currentContext = orig;
 	}
 	//context->addContext(S->getPackageName(), S->get);
 }
@@ -272,12 +358,21 @@ void MochaLang::Passes::BasePass::BasePass::handleImports(Statement* _S, Stateme
 
 	for (Expr* _id : S->getImports()) {
 		Identifier* id = (Identifier*)_id;
-		importContexts.push_back(MochaLang::Utils::findContext(id->get_raw(), context));
+
+		auto derivedContext = contextGroup->tryFindContext(id->get_raw());
+		if (!derivedContext)
+			throw "Package " + id->get() + " not found!";
+
+		contextGroup->import_contexts.push_back(derivedContext);
+
+		//importContexts.push_back(MochaLang::Utils::findContext(id->get_raw(), context));
 	}
 }
 
 void MochaLang::Passes::BasePass::BasePass::handleBlock(Statement* _S, Statement** source) {
 	auto S = (BlockStmt*)_S;
+
+	//contextGroup->addAndMoveToSubContext();
 
 	for (int i = 0; i < S->size(); ++i) {
 		Statement* V = S->get(i);
@@ -285,4 +380,6 @@ void MochaLang::Passes::BasePass::BasePass::handleBlock(Statement* _S, Statement
 		S->replace(i, V);
 		//performBasePass(S->get(i), (S->&get(i)));
 	}
+
+	//contextGroup->popSubContextAndMoveToParent();
 }

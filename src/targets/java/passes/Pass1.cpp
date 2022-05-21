@@ -114,6 +114,11 @@ void MochaLang::Targets::Java::Passes::Pass1::handleFunctionCall(Statement* S, S
 {
 	auto fcall = (FunctionCall*)S;
 
+	for (Expr* param : fcall->parameters)
+	{
+		handleExpr(param, (Statement**)&param);
+	}
+
 }
 
 void MochaLang::Targets::Java::Passes::Pass1::handleConstructorCall(Statement* S, Statement** source)
@@ -133,11 +138,24 @@ void MochaLang::Targets::Java::Passes::Pass1::handleConstructorCall(Statement* S
 
 void MochaLang::Targets::Java::Passes::Pass1::handleExpr(Statement* S, Statement** source)
 {
-	const std::vector<StmtType> binaryOperators = { StmtType::OP_ADD, StmtType::OP_ASSIGN };
+	const std::vector<StmtType> binaryOperators = {
+		StmtType::OP_ADD,
+		StmtType::OP_MINUS,
+		StmtType::OP_MUL,
+		StmtType::OP_DIV,
+		StmtType::OP_ASSIGN,
+		StmtType::OP_DOT
+	};
 
 	if (S->getType() == StmtType::CONSTRUCTOR_CALL)
 	{
 		handleConstructorCall(S, source);
+		return;
+	}
+
+	if (S->getType() == StmtType::FUNCTION_CALL)
+	{
+		handleFunctionCall(S, source);
 		return;
 	}
 
@@ -204,6 +222,7 @@ void MochaLang::Targets::Java::Passes::Pass1::runPass(Statement* S, Statement** 
 	case StmtType::OP_MINUS:
 	case StmtType::OP_MUL:
 	case StmtType::OP_DIV:
+	case StmtType::OP_DOT:
 		handleExpr(S, source);
 		break;
 

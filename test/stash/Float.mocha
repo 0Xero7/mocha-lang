@@ -1,0 +1,4 @@
+package mocha.internal;
+
+pub class float {
+}

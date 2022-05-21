@@ -27,7 +27,7 @@ namespace MochaLang
 		Expr(StmtType::NUMBER), number(number) { }
 	int Number::get() { return number; }
 
-	Identifier::Identifier(std::vector<std::string>& identifier) :
+	Identifier::Identifier(const std::vector<std::string>& identifier) :
 		Expr(StmtType::IDEN), identifier(identifier) { }
 	std::string Identifier::get() {
 		std::string ret;

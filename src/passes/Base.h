@@ -3,9 +3,13 @@
 #include <unordered_set>
 #include "../utils/Statements.h"
 #include "../utils/context/ContextModel.h"
+#include "../utils/context/ContextGroup.h"
 #include "../utils/DotExprToVecStr.h"
 #include "../utils/context/ContextFinder.h"
 #include "../utils/TypeHelper.h"
+#include "../utils/TypeResolver.h"
+#include "../internal/symbols/Symbols.h"
+#include "iostream"
 
 namespace MochaLang {
 namespace Passes {
@@ -13,19 +17,30 @@ namespace BasePass {
 
 	class BasePass {
 	private:
-		// For static context tree
-		MochaLang::Symbols::ContextModel* context;
+		////// For static context tree
+		//MochaLang::Symbols::ContextModel* context;
 
-		// In a function? Use this
-		MochaLang::Symbols::ContextModel* activeContext;
+		////// In a function? Use this
+		////MochaLang::Symbols::ContextModel* activeContext;
 
-		std::vector<MochaLang::Symbols::ContextModel*> importContexts;
+		//std::vector< Symbols::ContextModel*> contexts;
+
+		//std::vector<MochaLang::Symbols::ContextModel*> importContexts;
+
+		Utils::ContextGroup* contextGroup;
 
 	public:
-		BasePass(MochaLang::Symbols::ContextModel* context) : context(context) { }
+		BasePass(MochaLang::Symbols::ContextModel* context)
+		{
+			contextGroup = new Utils::ContextGroup(context);
+			/*std::vector<Symbols::ContextModel*> _contexts = { context };
+			contexts.push_back(Utils::_tryFindContext({ "mocha", "internal", "int" }, _contexts));*/
+		}
 
 		Expr* getIndexVariable(Expr* op);
 		void getIndexIndices(Expr* op, std::vector<Expr*>& collect);
+
+		void lowerOperatorCalls(Statement* op, Statement** source);
 
 		void handleProgram(Statement* S, Statement** source);
 		void handlePackage(Statement* S, Statement** source);

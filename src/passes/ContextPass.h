@@ -9,18 +9,34 @@ namespace MochaLang {
 namespace Passes {
 namespace ContextPass {
 
+	static std::vector<std::string> currentFullPath;
+
 	static void handleClass(Statement* _S, MochaLang::Symbols::ContextModel* context) {
 		auto* S = (ClassStmt*)_S;
-		context = context->addContext(S->getClassName(), MochaLang::Symbols::ContextModelType::CLASS);
+		context = context->addContext(S->getClassName(), MochaLang::Symbols::ContextModelType::CLASS, false, nullptr, S);
+
+		currentFullPath.push_back(S->className);
 
 		auto* head = context;
+
+		context->childContexts["this"] = new Symbols::ContextModel
+		(
+			"this",
+			"this",
+			context,
+			Symbols::ContextModelType::VARIABLE,
+			false,
+			new Type(currentFullPath, S->genericTemplates, 0),
+			S
+		);
 
 		for (auto* vdcl : S->getMemberVariables()) {
 			context->addContext(vdcl->get()->get(), MochaLang::Symbols::ContextModelType::VARIABLE, false, vdcl->getVarType());
 		}
 
 		for (auto* fdcl : S->getMemberFunctions()) {
-			context->addContext(fdcl->getFunctionName(), MochaLang::Symbols::ContextModelType::FUNCTION, false, fdcl->getReturnType());
+			if (fdcl->returnType != nullptr)
+				context->addContext(fdcl->getFunctionName(), MochaLang::Symbols::ContextModelType::FUNCTION, false, fdcl->getReturnType());
 		}
 
 		for (auto* ovr : S->opOverloads) {
@@ -31,6 +47,8 @@ namespace ContextPass {
 			handleClass(cls, context);
 			context = head;
 		}
+
+		currentFullPath.pop_back();
 	}
 
 	static void handlePackage(Statement* _S, MochaLang::Symbols::ContextModel* context) {
@@ -39,6 +57,7 @@ namespace ContextPass {
 
 		for (std::string& s : pkgName) {
 			context = context->addContext(s, MochaLang::Symbols::ContextModelType::PACKAGE);
+			currentFullPath.push_back(s);
 		}
 
 		auto* block = S->packageContents;
@@ -50,6 +69,9 @@ namespace ContextPass {
 				context = head;
 			}
 		}
+
+		for (int i = 0; i < pkgName.size(); ++i) 
+			currentFullPath.pop_back();
 	}
 
 	static MochaLang::Symbols::ContextModel* generateContext(Statement* stmt) {

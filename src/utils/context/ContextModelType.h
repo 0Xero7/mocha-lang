@@ -9,7 +9,8 @@ namespace Symbols {
 		PACKAGE,
 		FUNCTION,
 		OPERATOR_OVERLOAD,
-		VARIABLE
+		VARIABLE,
+		LOCAL
 	};
 
 }

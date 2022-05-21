@@ -63,15 +63,42 @@ int main()
 
 	auto context = MochaLang::Passes::ContextPass::generateContext(program);
 
+	//cout << MochaLang::Utils::resolveType(add, context, context)->longName << "\n";
+
+
 	// Inject primitives
-	context->addContext("int", MochaLang::Symbols::ContextModelType::CLASS);
-	context->addContext("String", MochaLang::Symbols::ContextModelType::CLASS);
+	/*context->addContext("int", MochaLang::Symbols::ContextModelType::CLASS);
+	context->addContext("String", MochaLang::Symbols::ContextModelType::CLASS);*/
+
 
 	auto basePass = MochaLang::Passes::BasePass::BasePass(context);
 	basePass.performBasePass(program, (MochaLang::Statement**)&program);
 
+
+
+
+	std::vector<std::string> I = { "mocha", "internal", "int" };
+	std::vector<std::string> J = { "mocha", "internal", "float" };
+
+	auto f1 = new MochaLang::FunctionCall(new MochaLang::Identifier(I));
+	f1->addParameter(new MochaLang::Number(5));
+	auto left = new MochaLang::ConstructorCall(f1);
+
+	auto f2 = new MochaLang::FunctionCall(new MochaLang::Identifier(J));
+	f2->addParameter(new MochaLang::Number(8));
+	auto right = new MochaLang::ConstructorCall(f2);
+
+	auto add = new MochaLang::BinaryOp(left, MochaLang::StmtType::OP_ADD, right);
+
+	std::vector<MochaLang::Symbols::ContextModel*> contexts;
+	contexts.push_back(context);
+	contexts.push_back(context->childContexts["mocha"]->childContexts["internal"]);
+
+	//cout << MochaLang::Utils::resolveType(add, contexts)->longName << "\n";
+
+
 	//cout << endl << endl;
-	MochaLang::Debug::debug(program, 0);
+	//MochaLang::Debug::debug(program, 0);
 	//cout << "ok";
 
 	auto p1 = MochaLang::Targets::Java::Passes::Pass1();
